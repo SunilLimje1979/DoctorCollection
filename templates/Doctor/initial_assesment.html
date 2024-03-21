@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initial Assesment</title>
+    
+
+    <!-- !-- Bootstrap CSS --> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .navbar-orange {
+          background-color:#008373;
+          box-shadow: 0px 4px 8px;
+        }
+        .navbar-brand{
+            color: #ffffff;
+        }
+        .btn1{
+            color:#000000 ;
+            background-color: #ffffff;
+
+        }
+
+        .label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .input-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        color: inherit;
+        text-decoration: none;
+        margin-bottom:5px ;
+      }
+
+      .input-row label {
+        flex: 1;
+        text-align: center;
+        padding-right: 0px;
+        font-size: 20px;
+        text-decoration: none;
+        
+      }
+
+      .input-row input {
+        flex: 2;
+        width: 100%;
+        margin: 5px;
+        padding: 5px;
+        box-sizing: border-box;
+      }
+
+      .row {
+        display: flex;
+        align-items: right;
+      }
+
+      .form-control{
+        border-color: #000000;
+      }
+        
+    </style>
+  </head>
+  <body>
+    <form id="myForm" method="post" {% if vital_data %}action="{% url 'update_initial_assesment' %}"{% else %}action="{% url 'initial_assesment' data1.appointment_id %}"{% endif %}>
+        {% csrf_token %}
+        <nav class="navbar navbar-orange fixed-top">
+            <div class="container-fluid">
+              
+              <a class="navbar-brand"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Initial Assesment</a>     
+              <button type="submit" class="btn btn-primary mx-3" style="background-color:#ffffff;color: #000000;">
+                <i class="fas fa-save"></i> 
+                  {%if vital_data %}
+                    Update
+                  {%else%}
+                    Save
+                  {%endif%}
+
+                  
+              </button>
+            </div>
+          </nav>
+        
+        <!--initial Assesment---------------------------------------------------------------->
+        <div class="container mb-2 " style="margin-top:25%;" >
+          
+          <div class="card p-2">
+                <div class="row">
+                  <!-- {{data}} -->
+                   <!-- {{vitals_id }}  -->
+                <input type="hidden" name="appointment_id" value={{data1.appointment_id}} />
+                <div class="label-row">
+                  <label for="label1" style="font-size: 20px;">{{ data1.appointment_name }}</label>
+                  <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color: #008373;"></i> {{data1.appointment_token}}</label>
+                </div>
+                <div class="label-row">
+                        <label for="label1"style="font-size: 20px;">{% if data1.appointment_gender is 0%}<i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i>{%else%}<i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 25px;"></i>{%endif%}</label>
+                        <label for="label2" style="margin-right: 70%;font-size:20px;">{{data1.age}} years</label>
+                </div>
+                <div class="label-row">
+                        <label for="label1"style="font-size: 20px;"><i class="fa-solid fa-phone"></i>{{data1.appointment_mobileno}}</label>
+                        <label for="label2" style="font-size: 20px;"><i class="fa-solid fa-circle-user"></i> {{data1.appointment_status}}</label>
+                </div>
+                
+          
+                <hr>
+                  <input type ="hidden" value="{{data1.appointment_id }}" name = "patient_id"/>
+                  <input type ="hidden" value="{{data1.doctor_id}}" name = "doctor_id"/>
+                  <input type ="hidden" value="{{data1.doctor_id}}" name = "operator_id"/>
+                  <input type = "hidden" value="{{data1.appointment_mobileno}}" name = "phoneno"/>
+                  
+                  <div class="input-row">
+                    <label for="input1">Weight(Kg)</label>
+                    <input type="number" id="input1" class="form-control" name="weight" value="{{vital_data.weight}}" placeholder=" " required>
+                    <label for="input1">Temp</label>
+                    <label for="input1">(°F)</label>
+                    <input type="number" id="input2" class="form-control" name="temp" value="{{vital_data.patient_temparature}}" placeholder=" " required >
+                  </div>
+                  <div class="input-row">
+                    <label for="input1">Blood_Pressure</label>
+                    <input type="number" id="input1" class="form-control" name="bp_s" value="{{vital_data.patient_bpsystolic}}" placeholder=" " required>
+                    <label for="input1">/</label>
+                    <input type="number" id="input2" class="form-control" name="bp_d" value="{{vital_data.patient_bpdistolic}}" placeholder=" " required>
+                  </div>
+      
+                  
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">Heart_rate</label>
+                    <input type="number" id="inputField" class="form-control" name="heart_rate" value="{{vital_data.patient_heartratepluse}}" placeholder=" " required  style="margin-right:01% ;" >
+                    <label for="" class=" p-1">Per/min</label>
+                    
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">Respiratory_rate</label>
+                    <input type="number" id="inputField" class="form-control" name="respiratory_rate" value="{{vital_data.patient_respiratoryrate}}" placeholder=" " required style="margin-right:01% ;" >
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">Pain_scale</label>
+                    <input type="number" id="inputField" class="form-control" name="pain_scale" value="{{vital_data.patient_painscale}}" placeholder=" " required style="margin-right:01% ;" >
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;" >Chest</label>
+                    <input type="text" id="inputField" class="form-control" name="chest" placeholder=" " value="{{vital_data.patient_chest}}" required  style="margin-right:1% ;">
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">ECG</label>
+                    <input type="text" id="inputField" class="form-control" name="ecg" placeholder=" " value="{{vital_data.patient_ecg}}" required style="margin-right:01% ;" >
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">Height</label>
+                    <input type="text" id="inputField" class="form-control" name="height" placeholder=" " value="{{vital_data.height}}" required style="margin-right:01% ;" >
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
+                    <label for="" class=" p-1" style="font-size:20px;">BMI</label>
+                    <input type="text" id="inputField" class="form-control" name="bmi" placeholder=" " value="{{vital_data.bmi}}" required style="margin-right:01% ;" >
+                  </div>
+                  </div>
+                    
+              </div>
+            </div>
+          
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
+                  {%if vital_data %}
+                    Update and Consultation
+                  {%else%}
+                  Save and Consultation
+                  {%endif%}
+                </button>
+            </div>
+          </div>
+          
+            </div>
+    </form>
+</body>
+</html>
