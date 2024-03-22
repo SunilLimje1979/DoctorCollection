@@ -85,7 +85,7 @@
 
     <nav class="navbar navbar-orange fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href='/DoctorCollection/dashboard/'><i class="fas fa-arrow-left"></i> Appointment</a>
+            <a class="navbar-brand" href='/dashboard/'><i class="fas fa-arrow-left"></i> Appointment</a>
             <input type="date" id="dateInput" name="dateInput" value="">
         </div>
     </nav>
@@ -125,7 +125,7 @@
             function fetchData(selectedDate) {
                 $.ajax({
                     type: 'POST',
-                    url: '/DoctorCollection/fetch_data/',
+                    url: '/fetch_data/',
                     data: {
                         csrfmiddlewaretoken: '{{ csrf_token }}', // Include the CSRF token
                         selectedDate: selectedDate,

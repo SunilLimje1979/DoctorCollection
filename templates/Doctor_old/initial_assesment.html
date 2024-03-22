@@ -78,7 +78,7 @@
     </style>
   </head>
   <body>
-    <form id="myForm" method="post" {% if vital_data %}action="{% url   'update_initial_assesment' %}"{% else %}action="{% url  'initial_assesment' data1.appointment_id %}"{% endif %}>
+    <form id="myForm" method="post" {% if vital_data %}action="{% url 'update_initial_assesment' %}"{% else %}action="{% url 'initial_assesment' data1.appointment_id %}"{% endif %}>
         {% csrf_token %}
         <nav class="navbar navbar-orange fixed-top">
             <div class="container-fluid">

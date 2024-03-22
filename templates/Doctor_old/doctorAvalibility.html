@@ -20,7 +20,7 @@
         }
 
         .navbar-brand {
-            /* font-weight: bold; */
+            font-weight: bold;
             color: #FFFFFF;
         }
 
@@ -62,27 +62,16 @@
 <body>
 
     <!-- Doctor Registration Form with Navigation Bar -->
-    <form class="container form-container"  method="Post">
+    <form class="container form-container" method="Post">
         {% csrf_token %}
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
-            <input type="hidden" name="avalibility_id" value="{{ avalibility_id }}">
             <div class="container-fluid pl-3">
-                {% if avalibility_id %}
-                    <a class="navbar-brand" href="/DoctorCollection/settingdashboard/" >
-                        <i class="fas fa-arrow-left"></i> 
-                        Edit Avaliability
-                    </a>
-                {% else %}
-                    <span class="navbar-brand">Add Avaliability</span>
-                {% endif %}
+                <a class="navbar-brand" >
+                    <i class="fas fa-arrow-left"></i> Add Time Slots
+                </a>
                 <button type="submit" value="Submit" class="btn btn-light mx-3">
-                    <i class="fas fa-save"></i> 
-                    {% if avalibility_id %}
-                        Update
-                    {% else %}
-                        Save
-                    {% endif %}
+                    <i class="fas fa-save"></i> Save
                 </button>
             </div>
         </nav>
@@ -104,16 +93,16 @@
                         <small><i class="fas fa-copy"></i></small>
                     </td>
                     <td>
-                        <input type="number" name="mondayMorningStart" value="{{ data.1.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="mondayMorningEnd" value="{{ data.1.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="mondayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="mondayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="mondayAfternoonStart" value="{{ data.2.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="mondayAfternoonEnd" value="{{ data.2.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="mondayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="mondayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="mondayEveningStart" value="{{ data.3.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="mondayEveningEnd" value="{{ data.3.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="mondayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="mondayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
                 <!-- Repeat similar rows for Tuesday and Wednesday -->
@@ -121,48 +110,48 @@
                     <!-- Tuesday -->
                     <td>Tuesday</td>
                     <td>
-                        <input type="number" name="tuesdayMorningStart" value="{{ data.4.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="tuesdayMorningEnd" value="{{ data.4.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="tuesdayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="tuesdayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="tuesdayAfternoonStart" value="{{ data.5.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="tuesdayAfternoonEnd" value="{{ data.5.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="tuesdayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="tuesdayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="tuesdayEveningStart" value="{{ data.6.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="tuesdayEveningEnd" value="{{ data.6.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="tuesdayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="tuesdayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
                 <!-- Wednesday -->
                 <tr>
                     <td>Wednesday</td>
                     <td>
-                        <input type="number" name="wednesdayMorningStart" value="{{ data.7.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="wednesdayMorningEnd" value="{{ data.7.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="wednesdayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="wednesdayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="wednesdayAfternoonStart" value="{{ data.8.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="wednesdayAfternoonEnd" value="{{ data.8.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="wednesdayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="wednesdayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="wednesdayEveningStart" value="{{ data.9.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="wednesdayEveningEnd" value="{{ data.9.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="wednesdayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="wednesdayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
                 <!-- Thursday -->
                 <tr>
                     <td>Thursday</td>
                     <td>
-                        <input type="number" name="thursdayMorningStart" value="{{ data.10.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="thursdayMorningEnd" value="{{ data.10.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="thursdayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="thursdayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="thursdayAfternoonStart" value="{{ data.11.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="thursdayAfternoonEnd" value="{{ data.11.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="thursdayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="thursdayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="thursdayEveningStart" value="{{ data.12.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="thursdayEveningEnd" value="{{ data.12.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="thursdayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="thursdayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
 
@@ -170,16 +159,16 @@
                 <tr>
                     <td>Friday</td>
                     <td>
-                        <input type="number" name="fridayMorningStart" value="{{ data.13.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="fridayMorningEnd" value="{{ data.13.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="fridayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="fridayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="fridayAfternoonStart" value="{{ data.14.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="fridayAfternoonEnd" value="{{ data.14.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="fridayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="fridayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="fridayEveningStart" value="{{ data.15.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="fridayEveningEnd" value="{{ data.15.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="fridayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="fridayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
 
@@ -187,16 +176,16 @@
                 <tr>
                     <td>Saturday</td>
                     <td>
-                        <input type="number" name="saturdayMorningStart" value="{{ data.16.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="saturdayMorningEnd" value="{{ data.16.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="saturdayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="saturdayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="saturdayAfternoonStart" value="{{ data.17.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="saturdayAfternoonEnd" value="{{ data.17.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="saturdayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="saturdayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="saturdayEveningStart" value="{{ data.18.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="saturdayEveningEnd" value="{{ data.18.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="saturdayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="saturdayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
 
@@ -204,30 +193,25 @@
                 <tr>
                     <td>Sunday</td>
                     <td>
-                        <input type="number" name="sundayMorningStart" value="{{ data.19.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="sundayMorningEnd" value="{{ data.19.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="sundayMorningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="sundayMorningEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="sundayAfternoonStart" value="{{ data.20.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="sundayAfternoonEnd" value="{{ data.20.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="sundayAfternoonStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="sundayAfternoonEnd" placeholder="End" required class="form-control">
                     </td>
                     <td>
-                        <input type="number" name="sundayEveningStart" value="{{ data.21.availability_starttime}}" placeholder="Start" required class="form-control">
-                        <input type="number" name="sundayEveningEnd" value="{{ data.21.availability_endtime}}" placeholder="End" required class="form-control">
+                        <input type="number" name="sundayEveningStart" placeholder="Start" required class="form-control">
+                        <input type="number" name="sundayEveningEnd" placeholder="End" required class="form-control">
                     </td>
                 </tr>
+
             </tbody>
         </table>
 
         <!-- Save Button (Bottom) -->
         <div class="text-center mt-3">
-            <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
-                {% if avalibility_id %}
-                   Update
-                {% else %}
-                    Save
-               {% endif %}
-            </button>
+            <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;">Save</button>
         </div>
     </form>
 
