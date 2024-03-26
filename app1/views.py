@@ -7,6 +7,10 @@ from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_protect
 from datetime import timedelta
+from django.utils import timezone
+
+# Now you can use timezone in your code
+
 
 
 # Create your views here.
@@ -565,7 +569,7 @@ def updateleave(request,leave_date):
                 api_url = "http://13.233.211.102/doctor/api/update_doctor_leave/"
                 response = requests.post(api_url, json=api_data)
                 # data[order]=[start_time,end_time]
-
+        print(response.text)
         return redirect(leaves)
 
 def day_name_to_int(day):
@@ -970,12 +974,12 @@ def update_initial_assesment(request):
             # "doctor_id": request.POST['doctor_id'],
             # "operator_id": request.POST['doctor_id'],
             # "patient_status": request.POST['patient_status'],
-            "patient_heart_rate": request.POST['heart_rate'],
-            "patient_bp_systolic": request.POST['bp_s'],
-            "patient_bp_diastolic": request.POST['bp_d'],
-            "patient_pain_scale": request.POST['pain_scale'],
-            "patient_respiratory_rate": request.POST['respiratory_rate'],
-            "patient_temperature": request.POST['temp'],
+            "patient_heartratepluse": request.POST['heart_rate'],
+            "patient_bpsystolic": request.POST['bp_s'],
+            "patient_bpdistolic": request.POST['bp_d'],
+            "patient_painscale": request.POST['pain_scale'],
+            "patient_respiratoryrate": request.POST['respiratory_rate'],
+            "patient_temparature": request.POST['temp'],
             "patient_chest": request.POST['chest'],
             "patient_ecg": request.POST['ecg'],
             "weight":request.POST['weight'],
@@ -1078,14 +1082,14 @@ def consultation(request):
                 "Patient_Id":patient_id,
                 "Patient_Status":patient_status,
                 "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                "Patient_HeartRatePluse":request.POST["Patient_HeartRatePluse"],
-                "Patient_BPSystolic":request.POST["Patient_BPSystolic"],
-                "Patient_BPDistolic":request.POST["Patient_BPDistolic"],
-                "Patient_PainScale":request.POST["Patient_PainScale"],
-                "Patient_RespiratoryRate":request.POST["Patient_RespiratoryRate"],
-                "Patient_Temparature":request.POST["Patient_Temparature"],
-                "Patient_Chest":request.POST["Patient_Chest"],
-                "Patient_ECG":request.POST["Patient_ECG"],
+                "patient_heartratepluse":request.POST["Patient_HeartRatePluse"],
+                "patient_bpsystolic":request.POST["Patient_BPSystolic"],
+                "patient_bpsystolic":request.POST["Patient_BPDistolic"],
+                "patient_painscale":request.POST["Patient_PainScale"],
+                "patient_respiratoryrate":request.POST["Patient_RespiratoryRate"],
+                "patient_temparature":request.POST["Patient_Temparature"],
+                "patient_chest":request.POST["Patient_Chest"],
+                "patient_ecg":request.POST["Patient_ECG"],
                 "weight":request.POST['weight'],
                 "further_assited":"0",
                 'appointment_id':request.session['appointment_id'],
