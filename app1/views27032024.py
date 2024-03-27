@@ -544,28 +544,6 @@ def leavesystem(request):
     
 def updateleave(request,leave_date):
     if(request.method=='GET'):
-        api_data={"doctor_id":request.session['doctor_id']}
-        # api_url = "http://127.0.0.1:8000/api/get_doctor_leave_details/"
-        api_url = "http://13.233.211.102/doctor/api/get_doctor_leave_details/"
-        response = requests.post(api_url, json=api_data)
-        Leaves=response.json().get("message_data",{})
-        # print(leaves)
-        data=[]
-        detail={}
-        for i in Leaves:
-            i['day']=(day_name_to_string(i['day'])).title()
-            if(i['order'] in detail):
-                d=detail.copy()
-                data.append(d)
-                detail.clear()
-                detail[i['order']]=i
-            else:
-                detail[i['order']]=i
-
-        data.append(detail)
-        # print(data)
-        global leave_data
-        leave_data=data.copy()
         for leave in leave_data:
             if(leave_date == leave[1]['leave_date']):
                 # print(leave)
@@ -714,12 +692,6 @@ def insert_medicine(request):
 
 def update_medicine(request,doctor_medicine_id):
     if(request.method=="GET"):
-        api_data = {"doctor_id":request.session['doctor_id']}
-        api_url = 'http://13.233.211.102/doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
-
-        response = requests.post(api_url,json=api_data)
-        global all_medicines
-        all_medicines=response.json().get('message_data', {})
         for medicine in all_medicines:
             if(doctor_medicine_id==medicine['doctor_medicine_id']):
                 # print(medicine)
@@ -810,6 +782,30 @@ def get_all_lab_report(request):
     # print(lab_investigation_report)
     return render(request,'Doctor/lab_report.html',{'lab_reports':lab_investigation_report})
 
+
+# def update_lab_report(request,investigation_id):
+#     if(request.method=="GET"):
+#         for report in lab_investigation_report:
+#             if(investigation_id==report['investigation_id']):
+#                 # print(medicine)
+#                 return render(request,'Doctor/addandupdate_labreport.html',{'report':report})
+#         else:
+#             return HttpResponse("no data found")
+#     else:
+#         api_data = { 
+#                   "doctor_id":request.session['doctor_id'],
+#                   "investigation_id":investigation_id,
+#                   "investigation_category":request.POST['investigation_category'],
+#                   "investigation_name":request.POST["investigation_name"]
+#                 }
+#         api_url = f"http://13.233.211.102/doctor/api/update_labinvestigations/"
+#         response = requests.post(api_url,json=api_data)
+#         print(response.text)
+#         if response.status_code == 200:
+#             messages.success(request, 'Lab report Updated successfully!')
+#             return redirect(get_all_lab_report)
+#         else:
+#             return HttpResponse("lab data is not updated.")
 
 def update_lab_report(request,investigation_id):
     if(request.method=="GET"):
