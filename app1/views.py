@@ -783,8 +783,39 @@ def get_all_lab_report(request):
     return render(request,'Doctor/lab_report.html',{'lab_reports':lab_investigation_report})
 
 
+# def update_lab_report(request,investigation_id):
+#     if(request.method=="GET"):
+#         for report in lab_investigation_report:
+#             if(investigation_id==report['investigation_id']):
+#                 # print(medicine)
+#                 return render(request,'Doctor/addandupdate_labreport.html',{'report':report})
+#         else:
+#             return HttpResponse("no data found")
+#     else:
+#         api_data = { 
+#                   "doctor_id":request.session['doctor_id'],
+#                   "investigation_id":investigation_id,
+#                   "investigation_category":request.POST['investigation_category'],
+#                   "investigation_name":request.POST["investigation_name"]
+#                 }
+#         api_url = f"http://13.233.211.102/doctor/api/update_labinvestigations/"
+#         response = requests.post(api_url,json=api_data)
+#         print(response.text)
+#         if response.status_code == 200:
+#             messages.success(request, 'Lab report Updated successfully!')
+#             return redirect(get_all_lab_report)
+#         else:
+#             return HttpResponse("lab data is not updated.")
+
 def update_lab_report(request,investigation_id):
     if(request.method=="GET"):
+        doctor_id ={"doctor_id":request.session['doctor_id']}
+        api_url ='http://13.233.211.102/medicalrecord/api/get_labinvestigation_bydoctorid/'
+
+        response = requests.post(api_url,json=doctor_id)
+        #print("lab_investigation_report_data:", lab_investigation_report_data)
+        global lab_investigation_report
+        lab_investigation_report =response.json().get('message_data')
         for report in lab_investigation_report:
             if(investigation_id==report['investigation_id']):
                 # print(medicine)
