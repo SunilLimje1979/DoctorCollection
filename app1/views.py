@@ -1296,7 +1296,7 @@ def Consultation(request):
                 #     for medicine in all_medicines:
                 #         if(name==medicine['medicine_name']):
                 #             med_id_list.append(medicine['doctor_medicine_id'])
-                if(unique_list[0]):
+                if(unique_list and unique_list[0]):
                     med_id_list=[]
                     for name in unique_list:
                       for medicine in all_medicines:
