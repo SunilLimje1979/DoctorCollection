@@ -126,8 +126,8 @@
                   <input type = "hidden" value="{{data1.appointment_mobileno}}" name = "phoneno"/>
                   
                   <div class="input-row">
-                    <label for="input1">Weight(Kg)</label>
-                    <input type="number" id="input1" class="form-control" name="weight" value="{{vital_data.weight}}" placeholder=" " required>
+                    <label for="inputWeight">Weight(Kg)</label>
+                    <input type="number" id="inputWeight" class="form-control" name="weight" value="{{vital_data.weight}}" placeholder=" " required>
                     <label for="input1">Temp</label>
                     <label for="input1">(°F)</label>
                     <input type="number" id="input2" class="form-control" name="temp" value="{{vital_data.patient_temparature}}" placeholder=" " required >
@@ -163,12 +163,12 @@
                     <input type="text" id="inputField" class="form-control" name="ecg" placeholder=" " value="{{vital_data.patient_ecg}}" required style="margin-right:01% ;" >
                   </div>
                   <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
-                    <label for="" class=" p-1" style="font-size:20px;">Height</label>
-                    <input type="text" id="inputField" class="form-control" name="height" placeholder=" " value="{{vital_data.height}}" required style="margin-right:01% ;" >
+                    <label for="" class=" p-1" style="font-size:20px;">Height(cm)</label>
+                    <input type="text" id="inputHeight" class="form-control" name="height" placeholder=" " value="{{vital_data.height}}" required style="margin-right:01% ;" >
                   </div>
                   <div class="d-flex justify-content-between" style="margin-bottom: 7px;">
                     <label for="" class=" p-1" style="font-size:20px;">BMI</label>
-                    <input type="text" id="inputField" class="form-control" name="bmi" placeholder=" " value="{{vital_data.bmi}}" required style="margin-right:01% ;" >
+                    <input type="text" id="inputBMI" class="form-control" name="bmi" placeholder=" " value="{{vital_data.bmi}}" readonly style="margin-right:01% ;" >
                   </div>
                   </div>
                     
@@ -188,5 +188,29 @@
           
             </div>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Your existing JavaScript code -->
+    <script>
+        // Function to calculate BMI
+        function calculateBMI() {
+            // Get the values of weight and height
+            let weight = document.getElementById('inputWeight').value;
+            let height = document.getElementById('inputHeight').value;
+            
+            // Convert height from cm to meters
+            height /= 100;
+            
+            // Calculate BMI
+            let bmi = (weight / (height * height)).toFixed(2); // Rounded to 2 decimal places
+            
+            // Display BMI in the BMI input field
+            document.getElementById('inputBMI').value = bmi;
+        }
+        
+        // Event listener for input fields
+        document.getElementById('inputWeight').addEventListener('input', calculateBMI);
+        document.getElementById('inputHeight').addEventListener('input', calculateBMI);
+    </script>
 </body>
 </html>

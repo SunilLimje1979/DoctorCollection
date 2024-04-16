@@ -1,5 +1,5 @@
 
-{% load static %}
+<!-- {% load static %} -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,10 +22,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
-    <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}"/>
+    <!-- <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}"/>
     <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}"/>
     <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" /> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
     <style>
       .navbar-orange {
@@ -99,7 +99,7 @@
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
             <div class="container-fluid pl-3">
                 
-                <a class="navbar-brand"  href="{% url 'consultation' %}" style="color:#ffffff ;"><i class="fas fa-arrow-left"></i>
+                <a class="navbar-brand"  href="{% url 'consultation' %}" style="color:#ffffff ;"><i class=""></i>
                     </i> Consultation
                 </a>
                 <div class="d-flex justify-content-end">
@@ -122,26 +122,26 @@
                 </div>
                 <div class="label-row">
                   <label for="label1">{{get_patient_by_appointment_id.appointment_name}}{{patient_info.appointment_name}}</label>
-                  <label for="label2"><img src="{% static 'img/group-256.png'%}" alt="img" style="width:25px;height: 25px;">{{get_patient_by_appointment_id.appointment_token}}{{patient_info.appointment_token}}</label>
+                  <label for="label2"><i class="fa-solid fa-user-group" style="color: #008373;"></i>{{get_patient_by_appointment_id.appointment_token}}{{patient_info.appointment_token}}</label>
                 </div>
                 <div class="label-row">
-                  <label for="label2"><img src="{% static 'img/male.png'%}" alt="img" style="width:25px;height:35px"> 
+                  <label for="label2">{% if get_patient_by_appointment_id.appointment_gender is 0%}<i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i>{%else%}<i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 25px;"></i>{%endif%} 
                     <!-- {{data1.appointment_gender}} -->
                   </label>
-                  <label for="label2" style="margin-right: 67%;"> 25 years</label>
+                  <label for="label2" style="margin-right: 67%;">{{get_patient_by_appointment_id.age}} years</label>
                  
                 </div>
                 <div class="label-row">
-                  <label for="label2"><img src="{% static 'img/phone-4-128.png'%}" alt="img" style="width:25px;height: 25px;">{{get_patient_by_appointment_id.appointment_mobileno}}{{patient_info.appointment_mobileno}}</label>
-                  <label for="label2"><img src="{% static 'img/change-user-256.png'%}" alt="img" style="width:25px;height:25px;">{{get_patient_by_appointment_id.appointment_status}}{{patient.appointment_status}}</label>
+                  <label for="label2"><i class="fa-solid fa-phone"></i>{{get_patient_by_appointment_id.appointment_mobileno}}{{patient_info.appointment_mobileno}}</label>
+                  <label for="label2"><i class="fa-solid fa-circle-user"></i> {{get_patient_by_appointment_id.appointment_status}}{{patient.appointment_status}}</label>
                 </div>
                 <div class="d-flex justify-content-between mb-2 ">
                   <label for=""  style="font-size: 20PX;"> ReferredBy </label>
-                  <input type="text" class="form-control"   name="referred_by_doctor" style="margin-left: 1%; margin-right: 0%;"  required>
+                  <input type="text" class="form-control"   name="referred_by_doctor" value="{{consult_data.referred_by_doctor}}" style="margin-left: 1%; margin-right: 0%;"  required>
                   </div>
                 <div class="d-flex justify-content-between">
                   <label for=""  style="font-size: 20PX;">ReferredTo</label>
-                  <input type="text"  class="form-control" name="referred_to_doctor" style="margin-left: 1%; margin-right: 0%;"     required>
+                  <input type="text"  class="form-control" name="referred_to_doctor" value="{{consult_data.referred_to_doctor}}" style="margin-left: 1%; margin-right: 0%;"     required>
                 </div>
                 
                 
@@ -299,7 +299,7 @@
                 <div class="col">
                   <div class="d-flex justify-content-between">
                     <label for="treatment" class="  times-new-roman fw-bold" style="font-size:20px;">Treatment</label>
-                    <i> <a href="" data-bs-toggle="modal" data-bs-target="#successModal"><img src="{% static 'img/add-list-256.png'%}" alt="img"  style="max-width: 30px;"></a></i>
+                    <i> <a href="" data-bs-toggle="modal" data-bs-target="#successModal"><i class="fa-solid fa-rectangle-list" style="font-size: 30px;color: #008373;"></i></a></i>
                     <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#successModal" style="height: 30px; margin-top:2%;width:40px;margin-bottom: 2%;text-align: center;"> <i class="bi bi-plus"></i></button> -->
                 <!-- </div> -->
               </div>
@@ -347,7 +347,7 @@
             </div>
             <div class="form-group">
                <!-- {{lab_investigation_report}}  -->
-              <select class="form-control search form-select" name="labOptions" required onchange="updateTextArea()">
+              <select class="form-control search form-select" name="labOptions"   onchange="updateTextArea()">
                 <option value="" disabled selected hidden>None</option>
                 <option value="clear">Clear Selection</option>
             
@@ -371,7 +371,7 @@
           </div>
           <div class="col-12">
             <div class="form-group">
-              <textarea id="selectedOptions" type="text" placeholder="Display here selected options" class="form-control" name="complaint_value" rows="4" required></textarea>
+              <textarea id="selectedOptions" type="text" placeholder="Display here selected options" class="form-control" name="lab_tests" rows="4" ></textarea>
             </div>
           </div> 
         </div>
@@ -406,7 +406,7 @@
               </div>
               <div class="col-12">
                 <div class="form-group">
-                    <textarea type="text" placeholder="Display here selected options" class="form-control" name="Instructions" rows="4" required></textarea>
+                    <textarea type="text" placeholder="Add Prescription" class="form-control" name="Prescription" rows="4" required></textarea>
                 </div>
               </div>
           </div>
@@ -513,10 +513,10 @@
                       </select>
                     </div>
                     <div class="col-sm-7">
-                      <select class="form-control search form-select" name="Instructions" type="hidden"  required>
+                      <select class="form-control search form-select" name="Instructions" type="hidden" id="Instructions"  required>
                         <option value="instruction"  disabled selected hidden>Instructions</option>
                         {% for inst in medicine_instruction %}
-                        <option value="{{inst.instruction_text}}"   >{{inst.instruction_text}}</option>
+                        <option value="{{inst.doctor_instruction_id}}"   >{{inst.instruction_text}}</option>
                          {%endfor%}
                       </select>
                     </div>
@@ -532,10 +532,10 @@
     </div>
     
 
-    <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+    <!-- <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'assets/js/popper.min.js' %}"></script>
     <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script src="{% static 'assets/js/script.js' %}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
@@ -579,73 +579,6 @@
       }
     </script>
 
-    <!-- Adive--Selected Options -->
-    <!-- <script>
-      document.getElementById('selectAdvice').addEventListener('change', function() {
-        var selectedAdvice = this.value;
-        document.getElementById('selectedAdviceTextArea').value = selectedAdvice;
-      });
-    </script> -->
-     
-    <!-- <script>
-      const selectAdviceElement = document.getElementById('selectAdvice');
-      const selectedAdviceTextArea = document.getElementById('selectedAdviceTextArea');
-      let selectedAdviceOptions = [];
-  
-      selectAdviceElement.addEventListener('change', function() {
-          const selectedOptionText = this.options[this.selectedIndex].text;
-          if (selectedOptionText === 'Clear') { // If "Clear" option is selected
-              clearAdviceTextArea();
-          } else {
-              if (!selectedAdviceOptions.includes(selectedOptionText)) {
-                  selectedAdviceOptions.push(selectedOptionText);
-                  updateSelectedAdviceTextArea();
-              }
-          }
-      });
-  
-      selectedAdviceTextArea.addEventListener('input', function() {
-          const textAreaValue = this.value;
-          selectedAdviceOptions = textAreaValue.split(',').map(option => option.trim()).filter(option => option !== "");
-          updateSelectedAdviceTextArea();
-      });
-  
-      function updateSelectedAdviceTextArea() {
-          selectedAdviceTextArea.value = selectedAdviceOptions.join(',');
-      }
-  
-      function clearAdviceTextArea() {
-          selectedAdviceOptions = [];
-          selectedAdviceTextArea.value = ""; // Clear the textarea
-      }
-  </script> -->
-<!--   
-  
-<script>
-  const selectElement = document.getElementById('mySelect');
-  const selectedOptionsTextArea = document.getElementById('selectedOptionsTextArea');
-  let selectedOptions = [];
-
-  selectElement.addEventListener('change', function() {
-      const selectedOptionText = this.options[this.selectedIndex].text;
-      if (!selectedOptions.includes(selectedOptionText)) {
-          selectedOptions.push(selectedOptionText);
-          updateSelectedOptionsTextArea();
-      }
-  });
-
-  selectedOptionsTextArea.addEventListener('input', function() {
-      const textAreaValue = this.value;
-      selectedOptions = textAreaValue.split(',').map(option => option.trim()).filter(option => option !== "");
-      updateSelectedOptionsTextArea();
-  });
-
-  function updateSelectedOptionsTextArea() {
-      selectedOptionsTextArea.value = selectedOptions.join(', ');
-  }
-</script> -->
-
-
 
 <script>
   function UpdateKCOTextArea() {
@@ -680,186 +613,56 @@
   }
 </script>
 
-
-
-        <!-- <script>
-          const medicineForm = document.getElementById('medicineForm');
-          const medicineTableBody = document.getElementById('medicineTableBody');
-          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-
-          medicineForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-            const data = {};
-            for (const [key, value] of formData.entries()) {
-              data[key] = value;
-            }
-
-            // Create first row
-            const newRow1 = document.createElement('tr');
-            newRow1.innerHTML = `
-              <td>${data.mode}</td>
-              <td>${data.medicine}</td>
-              <td>${data.days}</td>
-            `;
-            medicineTableBody1.appendChild(newRow1);
-
-            // Create second row
-            const newRow2 = document.createElement('tr');
-            newRow2.innerHTML = `
-              <td>${data.dosage}</td>
-              <td>${data.language}</td>
-              <td>${data.Instructions}</td>
-            `;
-            medicineTableBody2.appendChild(newRow2);
-            
-            Mode_input = document.getElementById('Mode_input');
-            Mode_input.value = data.mode;
-
-            Medicine_input = document.getElementById('Medicine_input');
-            Medicine_input.value = data.medicine;
-
-            Days_input = document.getElementById('Days_input');
-            Days_input.value = data.days;
-            
-            Dosage_input = document.getElementById('Dosage_input');
-            Dosage_input.value = data.dosage;
-
-            Language_input = document.getElementById('language_input');
-            Language_input.value = data.language;
-
-            Instructions_input = document.getElementById('Instructions_input');
-            Instructions_input.value = data.Instructions;
-            
-
-            // Clear form fields
-            this.reset();
-
-            // Hide the modal
-            // successModal2.hide();
-          });
-        </script>
-
-
-
-      <script>
-        function updateTextArea() {
-          var selectElement = document.querySelector('select[name="labOptions"]');
-          var textArea = document.getElementById('selectedOptions');
-          var selectedOption = selectElement.value;
-          //console.log("selected:"  + selectElement);
-          if (selectedOption === "clear") {
-            textArea.value = ""; // Clear the text area
-          } else {
-            var existingText = textArea.value;
-            if (!existingText.includes(selectedOption)) {
-              if (existingText.length > 0) {
-                // Append a newline before adding the new option
-                textArea.value += '\n' + selectedOption;
-              } else {
-                textArea.value += selectedOption;
-              }
-            }
-          }
-        }
-    </script>
-    <script>
-          function saveData() {
-              // Display loading circle on the button
-              const saveButton = document.getElementById('saveButton');
-              saveButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
-          
-              // Simulate saving process (you would replace this with your actual saving logic)
-              setTimeout(function() {
-                  // After saving is done, revert the button text
-                  saveButton.innerHTML = 'Save';
-              }, 2000); // Assuming saving process takes 2 seconds
-          }
-      </script> 
-  
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-
-  <script>
-    // Get elements
-    var medicineSelect = document.getElementById('medicineSelect');
-    var medicineFormInput = document.getElementById('Form');
-    var medicineDurationInput = document.getElementById('medicineDuration');
-    var medicineDosagesInput = document.getElementById('medicineDosages');
-
-    // Add event listener to the select element
-    medicineSelect.addEventListener('change', function() {
-        // Get the selected option
-        var selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
-
-        // Update the input fields
-        medicineDurationInput.value = selectedOption.getAttribute('data-duration');
-        medicineDosagesInput.value = selectedOption.getAttribute('data-dosages');
-        medicineFormInput.value = selectedOption.getAttribute('data-form');
-
-    });
-  </script>
-  
- -->
+ 
  <script>
-  const medicineForm = document.getElementById('medicineForm');
-  const medicineTableBody = document.getElementById('medicineTableBody');
-  const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const medicineForm = document.getElementById('medicineForm');
+    const medicineTableBody1 = document.getElementById('medicineTableBody1');
+    const medicineTableBody2 = document.getElementById('medicineTableBody2');
+    const Mode_input = document.getElementById('Mode_input');
+    const Medicine_input = document.getElementById('Medicine_input');
+    const Days_input = document.getElementById('Days_input');
+    const Dosage_input = document.getElementById('Dosage_input');
+    const Language_input = document.getElementById('language_input');
+    const Instructions_input = document.getElementById('Instructions_input');
 
-  medicineForm.addEventListener('submit', function(event) {
+    const instructionsSelect = document.getElementById('Instructions');
+
+    medicineForm.addEventListener('submit', function(event) {
       event.preventDefault();
 
       const formData = new FormData(this);
-      const data = {};
-      for (const [key, value] of formData.entries()) {
-          data[key] = value;
-      }
 
-      // Create first row
+      // Get the selected option and its text
+      const selectedOption = instructionsSelect.options[instructionsSelect.selectedIndex];
+      const instructionText = selectedOption.textContent;
+
       const newRow1 = document.createElement('tr');
       newRow1.innerHTML = `
-          <td>${data.mode}</td>
-          <td>${data.medicine}</td>
-          <td>${data.days}</td>
+        <td>${formData.get('mode')}</td>
+        <td>${formData.get('medicine')}</td>
+        <td>${formData.get('days')}</td>
       `;
       medicineTableBody1.appendChild(newRow1);
 
-      // Create second row
       const newRow2 = document.createElement('tr');
       newRow2.innerHTML = `
-          <td>${data.dosage}</td>
-          <td>${data.language}</td>
-          <td>${data.Instructions}</td>
+        <td>${formData.get('dosage')}</td>
+        <td>${formData.get('language')}</td>
+        <td>${instructionText}</td>
       `;
       medicineTableBody2.appendChild(newRow2);
 
-      // Update hidden fields with multiple values
-      const Mode_input = document.getElementById('Mode_input');
-      Mode_input.value = data.mode;
+      // Append data to hidden fields
+      Mode_input.value += (Mode_input.value ? ',' : '') + formData.get('mode');
+      Medicine_input.value += (Medicine_input.value ? ',' : '') + formData.get('medicine');
+      Days_input.value += (Days_input.value ? ',' : '') + formData.get('days');
+      Dosage_input.value += (Dosage_input.value ? ',' : '') + formData.get('dosage');
+      Language_input.value += (Language_input.value ? ',' : '') + formData.get('language');
+      Instructions_input.value += (Instructions_input.value ? ',' : '') + selectedOption.value;
 
-      const Medicine_input = document.getElementById('Medicine_input');
-      Medicine_input.value = data.medicine;
-
-      const Days_input = document.getElementById('Days_input');
-      Days_input.value = data.days;
-
-      const Dosage_input = document.getElementById('Dosage_input');
-      Dosage_input.value = data.dosage;
-
-      const Language_input = document.getElementById('language_input');
-      Language_input.value = data.language;
-
-      const Instructions_input = document.getElementById('Instructions_input');
-      Instructions_input.value = data.Instructions;
-
-      // Clear form fields
       this.reset();
+    });
 
-      // Hide the modal
-      // successModal.hide();
-  });
 
   // Additional JavaScript code
   function updateTextArea() {

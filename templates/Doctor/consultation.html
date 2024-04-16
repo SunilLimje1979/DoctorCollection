@@ -104,7 +104,12 @@
                 </a>
                 <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary mx-3" id="saveButton" onclick="saveData()" style="background-color:#ffff ; color:#000000">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i> 
+                      {%if consult_data%}
+                        Update
+                      {%else%}
+                        Save 
+                      {%endif%}        
                 </button>
             </div>
         </nav>
@@ -137,11 +142,11 @@
                 </div>
                 <div class="d-flex justify-content-between mb-2 ">
                   <label for=""  style="font-size: 20PX;"> ReferredBy </label>
-                  <input type="text" class="form-control"   name="referred_by_doctor" style="margin-left: 1%; margin-right: 0%;"  required>
+                  <input type="text" class="form-control"   name="referred_by_doctor" value="{{consult_data.referred_by_doctor}}" style="margin-left: 1%; margin-right: 0%;"  required>
                   </div>
                 <div class="d-flex justify-content-between">
                   <label for=""  style="font-size: 20PX;">ReferredTo</label>
-                  <input type="text"  class="form-control" name="referred_to_doctor" style="margin-left: 1%; margin-right: 0%;"     required>
+                  <input type="text"  class="form-control" name="referred_to_doctor" value="{{consult_data.referred_to_doctor}}" style="margin-left: 1%; margin-right: 0%;"     required>
                 </div>
                 
                 
@@ -215,7 +220,7 @@
                 </div>
                 <div class="col-12">
                   <div class="form-group">
-                      <textarea type="text" placeholder="Type here" class="form-control" name="complaint_details" rows="4" required></textarea>
+                      <textarea type="text" placeholder="Type here" class="form-control" name="complaint_details" rows="4" required>{{symptoms_data.symtoms}}</textarea>
                   </div>
                 </div>
           </div>
@@ -229,7 +234,7 @@
                       <!-- {{kco}} -->
                       <div class="d-flex justify-content-between mb-2">
                           <label for="" class="fw-bold times-new-roman" style="margin-right:2%;font-size: 20px;">KCO</label>
-                          <select class="form-control search form-select" id="kco" required onchange="UpdateKCOTextArea()">
+                          <select class="form-control search form-select" id="kco" required  onchange="UpdateKCOTextArea()">
                               <option value="" disabled selected hidden>None</option>
                               <option value="clear">Clear</option>
                              
@@ -241,7 +246,7 @@
                   </div>
                   <div class="col-12">
                       <div class="form-group">
-                          <textarea type="text" name="kco" id="selectedKCOTextArea" placeholder="display selected options here" class="form-control" rows="4" required ></textarea>
+                          <textarea type="text" name="kco" id="selectedKCOTextArea" placeholder="display selected options here" class="form-control" rows="4" required >{{symptoms_data.kco}}</textarea>
                       </div>
                   </div>
               </div>
@@ -262,7 +267,7 @@
                   </div>
                   <div class="col-12">
                     <div class="form-group">
-                        <textarea type="text" placeholder="Type here" class="form-control" name="Diagnosis" rows="4" required></textarea>
+                        <textarea type="text" placeholder="Type here" class="form-control" name="Diagnosis"  rows="4" required>{{ symptoms_data.findings }}</textarea>
                     </div>
                   </div>
             </div>
@@ -275,7 +280,7 @@
               <div class="col-12 mb-2">
                 <div class="d-flex justify-content-between mb-2">
                   <label for="" class="  fw-bold times-new-roman" style="margin-right:2% ;font-size: 20px;">Advice</label>
-                  <select class="form-control search form-select" name="advice" id="advice" required onchange="updateAdviceTextArea()" >
+                  <select class="form-control search form-select" name="advice" id="advice"  required  onchange="updateAdviceTextArea()" >
                     <option value="" disabled selected hidden>Advice</option>
                     <option value="clear">Clear</option>
                     {% for a in advice %}
@@ -286,7 +291,7 @@
               </div>
               <div class="col-12">
                   <div class="form-group">
-                      <textarea type="text" name="advice" placeholder="Display here selected options" class="form-control" id="selectedAdviceTextArea" rows="4" required ></textarea>
+                      <textarea type="text" name="advice" placeholder="Display here selected options" class="form-control" id="selectedAdviceTextArea" rows="4" required>{{symptoms_data.advice}}</textarea>
                   </div>
               </div>
           </div>
@@ -303,7 +308,7 @@
                     <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#successModal" style="height: 30px; margin-top:2%;width:40px;margin-bottom: 2%;text-align: center;"> <i class="bi bi-plus"></i></button> -->
                 <!-- </div> -->
               </div>
-            </div>
+            <!-- </div>
             <div id="tableContainer">
               <table class="table" style="max-width:100%;min-width: 40;">
               <thead>
@@ -315,6 +320,11 @@
                   </tr>
               </thead>
               <tbody id="medicineTableBody1">
+                {%for i in medic_list%}
+                  <td>{{i.medicine_form}}</td>
+                  <td>{{i.medicine_name}}</td>
+                  <td>{{i.medicine_duration}}</td>
+                {%endfor%}
               </tbody>
               <thead>
                   <tr>
@@ -325,8 +335,54 @@
                   </tr>
               </thead>
               <tbody id="medicineTableBody2">
+                {%for i in medic_list%}
+                  <td>{{i.medicine_doses}}</td>
+                  <td>Eng</td>
+                  <td>{{i.medicine_instruction_id}}</td>
+                {%endfor%}
               </tbody>
-              </table>
+              </table> -->
+              <div id="tableContainer">
+                <table class="table" style="max-width:100%;min-width: 40;">
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Medicine</th>
+                            <th>Days</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicineTableBody1">
+                        {% for i in medic_list %}
+                        <tr>
+                            <td>{{ i.medicine_form }}</td>
+                            <td>{{ i.medicine_name }}</td>
+                            <td>{{ i.medicine_duration }}</td>
+                            <td><button class="removeBtn">Remove</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <table class="table" style="max-width:100%;min-width: 40;">
+                    <thead>
+                        <tr>
+                            <th>Dosage</th>
+                            <th>Language</th>
+                            <th>Instructions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicineTableBody2">
+                        {% for i in medic_list %}
+                        <tr>
+                            <td>{{ i.medicine_doses }}</td>
+                            <td>Eng</td>
+                            <td>{{ i.medicine_instruction_id }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+             
               <input type="hidden" id="Mode_input" name="Mode" >
               <input type="hidden" id="Medicine_input" name="Medicine" >
               <input type="hidden" id="Days_input" name="days" > 
@@ -371,7 +427,7 @@
           </div>
           <div class="col-12">
             <div class="form-group">
-              <textarea id="selectedOptions" type="text" placeholder="Display here selected options" class="form-control" name="lab_tests" rows="4" ></textarea>
+              <textarea id="selectedOptions" type="text" placeholder="Display here selected options" class="form-control" name="lab_tests" rows="4" >{% for i in lab_list %}{{i}}{% if not forloop.last %}&#10;{% endif %}{% endfor %}</textarea>
             </div>
           </div> 
         </div>
@@ -382,7 +438,7 @@
           <div class="col-12">
             <div class="d-flex justify-content-between mb-2">
                 <label for="" class="  fw-bold times-new-roman fs-5" style="margin-right:2% ;" style="font-size:20px;">FollowUp</label>
-                <input type="datetime-local" name="followup_datetime" class="form-control">
+                <input type="datetime-local" name="followup_datetime" value="{{consult_data.followup_datetime}}" class="form-control">
                  <!-- <select class="form-control search form-select" name="shopId" required >
                   <option value="" disabled selected hidden>None</option>
                   <option value="1">One</option>
@@ -406,7 +462,7 @@
               </div>
               <div class="col-12">
                 <div class="form-group">
-                    <textarea type="text" placeholder="Add Prescription" class="form-control" name="Prescription" rows="4" required></textarea>
+                    <textarea type="text" placeholder="Add Prescription" class="form-control" name="Prescription" rows="4" required>{%if prescription %}{{prescription}}{%endif%}</textarea>
                 </div>
               </div>
           </div>
@@ -419,7 +475,7 @@
           <div class="col mb-2">
             <div class="d-flex justify-content-between mb-2">
               <label for="" class="  fw-bold times-new-roman"  style="max-width:60%; font-size: 20px;">Consultation Fees <i class="fa fa-inr"></i></label>
-              <input type="number" class="form-control" name="Fess" placeholder="Amount" style="max-width:40%;" />
+              <input type="number" class="form-control" name="Fess" value="{{consult_data.consultation_fees}}" placeholder="Amount" style="max-width:40%;" />
           </div>
           </div>
           
@@ -431,10 +487,25 @@
       <!-- <h1>Print and Save Example</h1> -->
       <div class="row mt-3 " style="margin-bottom:1%">
       <div class="d-flex justify-content-between">
-        <button class="btn btn-success" onclick="printPage()">Print & save</button>
-        <button class="btn btn-primary" onclick="savePage()">Print</button>
-        <button class="btn btn-success" onclick="savePage()">Complete</button>
-
+        <button type="submit" class="btn btn-primary mx-3" id="SaveButton"  onclick="saveData()" style="background-color: #008373; color:white ;display: block;">
+          <i class="fas fa-save"></i> 
+            {%if consult_data%}
+              Update
+            {%else%}
+              Save 
+            {%endif%}        
+        </button>
+        <button id="backToAppointmentBtn" onclick="location.href='/DoctorCollection/get_all_doctor_appointments'" class="btn btn-primary" style="display: none;background-color: #008373;"><i class="fa-solid fa-circle-arrow-left"></i> Appointment</button>
+        <!-- <button class="btn btn-success" onclick="printPage()">Print & save</button>
+        <button class="btn btn-primary" onclick="savePage()">Print</button> -->
+        {%if consult_data%}
+        <!-- <button class="btn btn-success" onclick="savePage()">Complete</button> -->
+        <button id="completeBtn" class="btn btn-success">Complete</button>
+        <button id="printBtn" class="btn btn-primary" style="display: none;background-color: #008373;">Print</button>
+        <button id="paidBtn" class="btn btn-primary" style="display: none;background-color: #008373;">Paid</button>
+        <div id="pdfViewer"></div>
+        {%endif%}
+         
       </div>
       </div>
       <div class="row mb-5">
@@ -526,6 +597,7 @@
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn" style="background-color: orange; color: white;">Submit</button>
                 </div>
+                {{ medic_list|json_script:"medicListData" }}
               </form>
             </div>
         </div>
@@ -626,6 +698,19 @@
     const Instructions_input = document.getElementById('Instructions_input');
 
     const instructionsSelect = document.getElementById('Instructions');
+     // Retrieve the embedded JSON data and assign it to medicListData variable
+     var medicListData = JSON.parse(document.getElementById('medicListData').textContent);
+    
+    // Append previous data from medicListData to hidden fields
+    medicListData.forEach(function(item) {
+        Mode_input.value += (Mode_input.value ? ',' : '') + item.medicine_form;
+        Medicine_input.value += (Medicine_input.value ? ',' : '') + item.medicine_name;
+        Days_input.value += (Days_input.value ? ',' : '') + item.medicine_duration;
+        Dosage_input.value += (Dosage_input.value ? ',' : '') + item.medicine_doses;
+        Language_input.value += (Language_input.value ? ',' : '') + 'Eng';
+        Instructions_input.value += (Instructions_input.value ? ',' : '') + item.medicine_instruction_id;
+    });
+    
 
     medicineForm.addEventListener('submit', function(event) {
       event.preventDefault();
@@ -710,9 +795,211 @@
   });
 </script>
 
+<!-- <script>
+  // Add event listener to remove buttons
+  document.querySelectorAll('.removeBtn').forEach(item => {
+    item.addEventListener('click', event => {
+      // Find the parent row of the clicked remove button
+      const parentRow = event.target.closest('tr');
+
+      // Remove the corresponding row from the first table body
+      parentRow.parentNode.removeChild(parentRow);
+
+      // Find the index of the removed row
+      const rowIndex = parentRow.rowIndex;
+
+      // Remove the corresponding row from the second table body
+      const medicineTableBody2 = document.getElementById('medicineTableBody2');
+      if (medicineTableBody2.rows.length > rowIndex) {
+        medicineTableBody2.deleteRow(rowIndex);
+      }
+
+      // Clear hidden field values
+      const Mode_input = document.getElementById('Mode_input');
+      const Medicine_input = document.getElementById('Medicine_input');
+      const Days_input = document.getElementById('Days_input');
+      const Dosage_input = document.getElementById('Dosage_input');
+      const Language_input = document.getElementById('language_input');
+      const Instructions_input = document.getElementById('Instructions_input');
+
+      // Remove values from hidden fields based on row index
+      let modes = Mode_input.value.split(',');
+      let medicines = Medicine_input.value.split(',');
+      let days = Days_input.value.split(',');
+      let dosages = Dosage_input.value.split(',');
+      let languages = Language_input.value.split(',');
+      let instructions = Instructions_input.value.split(',');
+
+      // Remove the values corresponding to the removed row
+      modes.splice(rowIndex, 1);
+      medicines.splice(rowIndex, 1);
+      days.splice(rowIndex, 1);
+      dosages.splice(rowIndex, 1);
+      languages.splice(rowIndex, 1);
+      instructions.splice(rowIndex, 1);
+
+      // Update hidden field values with the modified arrays
+      Mode_input.value = modes.join(',');
+      Medicine_input.value = medicines.join(',');
+      Days_input.value = days.join(',');
+      Dosage_input.value = dosages.join(',');
+      Language_input.value = languages.join(',');
+      Instructions_input.value = instructions.join(',');
+    });
+  });
+</script> -->
+<script>
+  // Add event listener to remove buttons
+  document.querySelectorAll('.removeBtn').forEach(item => {
+    item.addEventListener('click', event => {
+      // Find the parent row of the clicked remove button
+      const parentRow = event.target.closest('tr');
+
+      // Find the index of the removed row
+      const rowIndex = parentRow.rowIndex - 1; // Adjusting index to match array index
+
+      // Remove the corresponding row from the first table body
+      parentRow.parentNode.removeChild(parentRow);
+
+      // Remove the corresponding row from the second table body
+      const medicineTableBody2 = document.getElementById('medicineTableBody2');
+      if (medicineTableBody2.rows.length > rowIndex) {
+        medicineTableBody2.deleteRow(rowIndex);
+      }
+
+      // Clear hidden field values
+      const Mode_input = document.getElementById('Mode_input');
+      const Medicine_input = document.getElementById('Medicine_input');
+      const Days_input = document.getElementById('Days_input');
+      const Dosage_input = document.getElementById('Dosage_input');
+      const Language_input = document.getElementById('language_input');
+      const Instructions_input = document.getElementById('Instructions_input');
+
+      // Remove values from hidden fields based on row index
+      let modes = Mode_input.value.split(',');
+      let medicines = Medicine_input.value.split(',');
+      let days = Days_input.value.split(',');
+      let dosages = Dosage_input.value.split(',');
+      let languages = Language_input.value.split(',');
+      let instructions = Instructions_input.value.split(',');
+
+      // Remove the values corresponding to the removed row
+      modes.splice(rowIndex, 1);
+      medicines.splice(rowIndex, 1);
+      days.splice(rowIndex, 1);
+      dosages.splice(rowIndex, 1);
+      languages.splice(rowIndex, 1);
+      instructions.splice(rowIndex, 1);
+
+      // Update hidden field values with the modified arrays
+      Mode_input.value = modes.join(',');
+      Medicine_input.value = medicines.join(',');
+      Days_input.value = days.join(',');
+      Dosage_input.value = dosages.join(',');
+      Language_input.value = languages.join(',');
+      Instructions_input.value = instructions.join(',');
+    });
+  });
+</script>
+
+<!-- <script>
+  document.getElementById('completeBtn').addEventListener('click', function() {
+      // Send AJAX request to backend API to fetch the PDF link
+      fetch('/DoctorCollection/get_pdf_link/')
+      .then(response => response.json())
+      .then(data => {
+          // Check if the response contains the PDF link
+          if (data && data.pdf_link) {
+              // Set the PDF link to the anchor tag
+              const pdfLink = document.getElementById('pdfLink');
+              pdfLink.href = data.pdf_link;
+              // Show the anchor tag and Print button
+              pdfLink.style.display = 'block';
+              document.getElementById('printBtn').style.display = 'block';
+          } else {
+              alert('Failed to fetch PDF link.');
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to fetch PDF link.');
+      });
+  });
+  
+  document.getElementById('printBtn').addEventListener('click', function() {
+      // Open the PDF link in a new tab for printing
+      const pdfLink = document.getElementById('pdfLink').href;
+      window.open(pdfLink, '_blank');
+  });
+  </script> -->
+  <script>
+    document.getElementById('completeBtn').addEventListener('click', function() {
+        // Send AJAX request to backend API to fetch the PDF link
+        fetch('/DoctorCollection/get_pdf_link/')
+        .then(response => response.json())
+        .then(data => {
+            // Check if the response contains the PDF link
+            if (data && data.pdf_link) {
+                // Show the Print button
+                document.getElementById('printBtn').style.display = 'block';
+                // Show the Paid button
+                document.getElementById('paidBtn').style.display = 'block';
+                // hide  the complete button
+                document.getElementById('completeBtn').style.display = 'none';
+                // Show the Back to Appointment button
+                document.getElementById('backToAppointmentBtn').style.display = 'block';
+                // hide  the update to Appointment button
+                document.getElementById('saveButton').style.display = 'none';
+                document.getElementById('SaveButton').style.display = 'none';
+                
+                // Store the PDF link in a variable
+                const pdfLink = data.pdf_link;
+                
+                // Attach the PDF link to the print button
+                document.getElementById('printBtn').dataset.pdfLink = pdfLink;
+            } else {
+                alert('Failed to fetch PDF link.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to fetch PDF link.');
+        });
+    });
+    
+    document.getElementById('printBtn').addEventListener('click', function() {
+        // Open the PDF link in a new tab for printing
+        const pdfLink = this.dataset.pdfLink;
+        if (pdfLink) {
+            window.open(pdfLink, '_blank');
+        } else {
+            alert('PDF link not available.');
+        }
+    });
+
+    document.getElementById('paidBtn').addEventListener('click', function() {
+       // Send AJAX request to backend API to fetch the PDF link
+       fetch('/DoctorCollection/paid/')
+        .then(response => response.json())
+        .then(data => {
+            // Check the response from the server
+            if (data.message === 'Payment successful') {
+                // Display a success message on the page
+                alert('Payment done successfully!');
+            } else {
+                // Display an error message if payment failed
+                alert('Payment failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Payment not done');
+        });
+    });
+         
+</script>
 
 
-   
 
 
 </body>
