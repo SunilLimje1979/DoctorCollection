@@ -498,8 +498,12 @@ def pdf_view(request):
 
 
 def dashboard(request):
-    print("role",request.session['role'])
-    return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
+    if('role' in request.session):
+        print("role",request.session['role'])
+        return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
+    else:
+        request.session['role']='Doctor'
+        return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
 
 def no_service(request):
     return render(request, 'Doctor/no_service.html')
