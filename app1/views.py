@@ -1607,6 +1607,7 @@ def Consultation(request,id):
                 dosage_list=dosage.split(",")
                 language_list=language.split(",")
                 med_id_list=[]
+                All_medicines(requests,request.session['doctor_id'])
                 for name in medicine_list:
                     print("name",name)
                     for medicine in all_medicines:
