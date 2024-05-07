@@ -1,719 +1,240 @@
-
-<!-- {% load static %} -->
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultation_application</title>
-    
 
-    <!-- !-- Bootstrap CSS --> 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Appointments</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
-    <!-- <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" /> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
-    <style>
-      .navbar-orange {
-          background-color:#008373;
-          box-shadow: 0px 4px 8px;
-        }
-        .label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .label-row label {
-        font-size: 20px; /* Adjust font size as needed */
-      }
-      .input-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: center;
-      }
-
-      .input-row label {
-        flex: 1;
-        text-align: center;
-        padding-right: 0px;
-        font-size: 20px;
-      }
-
-      .input-row input {
-        flex: 2;
-        width: 100%;
-        margin: 5px;
-        padding: 5px;
-        box-sizing: border-box;
-      }
-
-      .row {
-        display: flex;
-        align-items: right;
-      }
-
-      .row label {
-        flex: 1; /* This will make the label take up 1/3 of the row width */
-        margin-right: 10px; /* Adjust margin as needed */
-      }
-
-      .row input {
-        flex: 1; /* This will make the input field take up 2/3 of the row width */
-        /* Add any additional styling here */
-        margin-right: 10px;
-      }
-      /* styles.css */
-        #navbar, #title {
-          display: block;
-        }
-
-        /* Hide navbar and title when printing */
-        @media print {
-          .navbar, #title {
-            display: none;
-          }
-        }
-        
-    </style>
-  </head>
-
-  <body>
-    <form id="myForm" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
-            <div class="container-fluid pl-3">
-                
-                <a class="navbar-brand"  href="{% url 'consultation' %}" style="color:#ffffff ;"><i class=""></i>
-                    </i> Consultation
-                </a>
-                <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary mx-3" id="saveButton" onclick="saveData()" style="background-color:#ffff ; color:#000000">
-                    <i class="fas fa-save"></i> Save
-                </button>
-            </div>
-        </nav>
-        <!--initial Assesment---------------------------------------------------------------->
-        
-        
-        <div class="container mb-2" style="margin-top:20%;">
-          <div class="card " style="padding: 1%;">
-                
-                <div class="row">
-                  <!-- {{data1}}
-                  {{data2}} -->
-                  <!-- {{data3}} -->
-                  <!-- {{get_patient_by_appointment_id}} -->
-                </div>
-                <div class="label-row">
-                  <label for="label1">{{get_patient_by_appointment_id.appointment_name}}{{patient_info.appointment_name}}</label>
-                  <label for="label2"><i class="fa-solid fa-user-group" style="color: #008373;"></i>{{get_patient_by_appointment_id.appointment_token}}{{patient_info.appointment_token}}</label>
-                </div>
-                <div class="label-row">
-                  <label for="label2">{% if get_patient_by_appointment_id.appointment_gender is 0%}<i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i>{%else%}<i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 25px;"></i>{%endif%} 
-                    <!-- {{data1.appointment_gender}} -->
-                  </label>
-                  <label for="label2" style="margin-right: 67%;">{{get_patient_by_appointment_id.age}} years</label>
-                 
-                </div>
-                <div class="label-row">
-                  <label for="label2"><i class="fa-solid fa-phone"></i>{{get_patient_by_appointment_id.appointment_mobileno}}{{patient_info.appointment_mobileno}}</label>
-                  <label for="label2"><i class="fa-solid fa-circle-user"></i> {{get_patient_by_appointment_id.appointment_status}}{{patient.appointment_status}}</label>
-                </div>
-                <div class="d-flex justify-content-between mb-2 ">
-                  <label for=""  style="font-size: 20PX;"> ReferredBy </label>
-                  <input type="text" class="form-control"   name="referred_by_doctor" value="{{consult_data.referred_by_doctor}}" style="margin-left: 1%; margin-right: 0%;"  required>
-                  </div>
-                <div class="d-flex justify-content-between">
-                  <label for=""  style="font-size: 20PX;">ReferredTo</label>
-                  <input type="text"  class="form-control" name="referred_to_doctor" value="{{consult_data.referred_to_doctor}}" style="margin-left: 1%; margin-right: 0%;"     required>
-                </div>
-                
-                
-                <hr>
-                <div class="col">
-                  <div class="d-flex justify-content-between">
-                   <label for="Name" class="   times-new-roman fw-bold" style="font-size:20px;">Examination</label>
-                   <!-- <button class="btn btn-primary btn-lg">save</button> -->
-                 </div> 
-                </div>
-                
-                {% for i in get_patient_boimterics_vitals %}
-               <input type ="hidden" value="{{i.doctor_id}}" name ="Doctor_Id"/>
-               <input type ="hidden" value="{{i.patient_id }}" name ="Patient_Id"/>
-               <input type = "hidden" value="{{i.patient_status}}" name = "Patient_Status"/>
-               <!-- <input type=" hiden" value="{{i.consultation_id}}" name ="consultation_id"/> -->
-               <input type ="hidden" value="{{get_patient_by_appointment_id.appointment_datetime}}" name = "Consultation_DateTime"/>
-                <div class="input-row">
-                  <label for="input1">Weight(Kg)</label>
-                  <input type="number" id="input1" class="form-control" name="weight" placeholder=" " value="{{i.weight}}" required >
-                  <label for="input1">Temp</label>
-                  <label for="input1">(°F)</label>
-                  <input type="number" id="input2" class="form-control" name="Patient_Temparature" placeholder=" " value="{{i.patient_temparature}}" required>
-                </div>
-                <div class="input-row">
-                  <label for="input1">Blood_Pressure</label>
-                  <input type="number" id="input1" class="form-control" name="Patient_BPSystolic" placeholder=" "  value="{{i.patient_bpsystolic}}" required>
-                  <label for="input1">/</label>
-                  <input type="number" id="input2" class="form-control" name="Patient_BPDistolic" placeholder=" " value="{{i.patient_bpdistolic}}" required>
-                </div>
-    
-                
-                <div class="d-flex justify-content-between">
-                  <label for="" class=" p-1" style="font-size:20px;">Heart_rate</label>
-                  <input type="number" id="inputField" class="form-control" placeholder=" " name="Patient_HeartRatePluse" value= "{{i.patient_heartratepluse}}"  style="margin-right:01% ;" required >
-                  <label for="" class=" p-1">Per/min</label>
-                  
-                </div>
-                <div class="d-flex justify-content-between">
-                  <label for="" class=" p-1" style="font-size:20px;">Respiratory_rate</label>
-                  <input type="number" id="inputField" class="form-control" placeholder=" " name="Patient_RespiratoryRate" style="margin-right:01% ;" value="{{i.patient_respiratoryrate}}" required >
-                </div>
-                <div class="d-flex justify-content-between">
-                  <label for="" class=" p-1" style="font-size:20px;">Pain_scale</label>
-                  <input type="number" id="inputField" class="form-control" placeholder=" " name="Patient_PainScale" value="{{i.patient_painscale}}" style="margin-right:01% ;" required>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <label for="" class=" p-1" style="font-size:20px;" >Chest</label>
-                  <input type="text" id="inputField" class="form-control" placeholder=" " name="Patient_Chest" value="{{i.patient_chest}}" style="margin-right:1% ;" required>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <label for="" class=" p-1" style="font-size:20px;">ECG</label>
-                  <input type="text" id="inputField" class="form-control" placeholder=" " name="Patient_ECG" value="{{i.patient_ecg}}" style="margin-right:01% ;" required>
-                </div>
-                </div>
-                {%endfor%}
-              </div>
-            </div>
-          </div>
-        </div>
-         <!------------- Complain------------ -->
-        <div class="container mb-2" >
-          <div class="card "  style="padding: 1%;">
-              <div class="row">
-                  <div class="col ">
-                    <div class="d-flex justify-content-between">
-                      <label for="Name" class="col-sm-8 col-form-label times-new-roman fw-bold" style="font-size:20px;">Complaint</label>
-                      
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-group">
-                      <textarea type="text" placeholder="Type here" class="form-control" name="complaint_details" rows="4" required></textarea>
-                  </div>
-                </div>
-          </div>
-        </div>
-      </div>
-        <!-- KCO     -->
-        <div class="container mb-2">
-          <div class="card" style="padding: 1%;">
-              <div class="pt-3">
-                  <div class="col-12 mb-2">
-                      <!-- {{kco}} -->
-                      <div class="d-flex justify-content-between mb-2">
-                          <label for="" class="fw-bold times-new-roman" style="margin-right:2%;font-size: 20px;">KCO</label>
-                          <select class="form-control search form-select" id="kco" required onchange="UpdateKCOTextArea()">
-                              <option value="" disabled selected hidden>None</option>
-                              <option value="clear">Clear</option>
-                             
-                              {% for i in kco %}
-                              <option value="{{ i.datacodevalue }}">{{ i.datacodedescription }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-                  </div>
-                  <div class="col-12">
-                      <div class="form-group">
-                          <textarea type="text" name="kco" id="selectedKCOTextArea" placeholder="display selected options here" class="form-control" rows="4" required ></textarea>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-
-        <!-- Diagnosis -->
-        
-        <div class="container mb-2" >
-            <div class="card "  style="padding: 1%;">
-                <div class="row">
-                    <div class="col ">
-                      <div class="d-flex justify-content-between">
-                        <label for="Name" class="col-sm-8 col-form-label times-new-roman fw-bold" style="font-size:20px;">Diagnosis</label>
-                        
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <div class="form-group">
-                        <textarea type="text" placeholder="Type here" class="form-control" name="Diagnosis" rows="4" required></textarea>
-                    </div>
-                  </div>
-            </div>
-          </div>
-        </div>
-          <!-- Advice -->
-        <div class="container mb-2" style="margin-bottom:0%;">
-          <div class="card" style="padding: 1%;">
-          <!-- <div class="pt-3"> -->
-              <div class="col-12 mb-2">
-                <div class="d-flex justify-content-between mb-2">
-                  <label for="" class="  fw-bold times-new-roman" style="margin-right:2% ;font-size: 20px;">Advice</label>
-                  <select class="form-control search form-select" name="advice" id="advice" required onchange="updateAdviceTextArea()" >
-                    <option value="" disabled selected hidden>Advice</option>
-                    <option value="clear">Clear</option>
-                    {% for a in advice %}
-                    <option value="{{a.datacodevalue}}">{{a.datacodedescription}}</option>
-                    {%endfor%}
-                  </select>
-              </div>
-              </div>
-              <div class="col-12">
-                  <div class="form-group">
-                      <textarea type="text" name="advice" placeholder="Display here selected options" class="form-control" id="selectedAdviceTextArea" rows="4" required ></textarea>
-                  </div>
-              </div>
-          </div>
-          </div>
-      </div>
-      <!-- Treatment -->
-      <div class="container mb-2 " style="margin-bottom:0% ">
-        <div class="card " style="padding: 1%;">
-            <!-- <div class="row mb-5"> -->
-                <div class="col">
-                  <div class="d-flex justify-content-between">
-                    <label for="treatment" class="  times-new-roman fw-bold" style="font-size:20px;">Treatment</label>
-                    <i> <a href="" data-bs-toggle="modal" data-bs-target="#successModal"><i class="fa-solid fa-rectangle-list" style="font-size: 30px;color: #008373;"></i></a></i>
-                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#successModal" style="height: 30px; margin-top:2%;width:40px;margin-bottom: 2%;text-align: center;"> <i class="bi bi-plus"></i></button> -->
-                <!-- </div> -->
-              </div>
-            </div>
-            <div id="tableContainer">
-              <table class="table" style="max-width:100%;min-width: 40;">
-              <thead>
-                  <tr>
-                  <th>Mode</th>
-                  <th>Medicine</th>
-                  <th>Days</th>
-                  
-                  </tr>
-              </thead>
-              <tbody id="medicineTableBody1">
-              </tbody>
-              <thead>
-                  <tr>
-                  
-                  <th>Dosage</th>
-                  <th>Language</th>
-                  <th>Instructions</th>
-                  </tr>
-              </thead>
-              <tbody id="medicineTableBody2">
-              </tbody>
-              </table>
-              <input type="hidden" id="Mode_input" name="Mode" >
-              <input type="hidden" id="Medicine_input" name="Medicine" >
-              <input type="hidden" id="Days_input" name="days" > 
-              <input type="hidden" id="Dosage_input" name="dosage" >
-              <input type="hidden" id="language_input" name="Language" >
-              <input type="hidden" id="Instructions_input" name="Instructions">
-        </div>
-          </div>
-        </div> 
-        </div>
-      </div>
-      <!-- Lab Investigation -->
-      <div class="container mb-2" style="margin-bottom:0%;">
-        <div class="card" style="padding: 1%;">
-          <div class="col-12 mb-2">
-            <div class="d-flex justify-content-between">
-              <label for="Lab Investigation" class="times-new-roman fw-bold" style="font-size:20px;">Lab Investigation</label>
-            </div>
-            <div class="form-group">
-               <!-- {{lab_investigation_report}}  -->
-              <select class="form-control search form-select" name="labOptions"   onchange="updateTextArea()">
-                <option value="" disabled selected hidden>None</option>
-                <option value="clear">Clear Selection</option>
-            
-                {% for lab in lab_investigation_report  %}
-                <option value="{{lab.investigation_name}}">{{lab.investigation_name}}</option>
-                {%endfor%}
-                <!-- <option value="{{lab_investigation_report.investigation_name}}">{{lab_investigation_report.investigation_name}}</option> -->
-                <!-- <option value="{{lab_investigation_report.investigation_name}}">{{lab_investigation_report.investigation_category}}</option> -->
-
-                
-                <!-- {% for i in lab_investigation_report %} -->
-                <!-- {%endfor%} -->
-                <!-- <option value="{{lab_test_report}}">{{lab_test_report}}</option> -->
-                <!-- <option value="{{lab_investigation_report}}">{{lab_investigation_report}}</option> -->
-
-
-                <!-- <option value="Two">Two</option>
-                <option value="Three">Three</option> -->
-              </select>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="form-group">
-              <textarea id="selectedOptions" type="text" placeholder="Display here selected options" class="form-control" name="lab_tests" rows="4" ></textarea>
-            </div>
-          </div> 
-        </div>
-      </div>
-      <div class="container mb-2" style="margin-bottom:0%;">
-        <div class="card"  style="padding: 1%;" >
-        <div class="pt-2 ">
-          <div class="col-12">
-            <div class="d-flex justify-content-between mb-2">
-                <label for="" class="  fw-bold times-new-roman fs-5" style="margin-right:2% ;" style="font-size:20px;">FollowUp</label>
-                <input type="datetime-local" name="followup_datetime" class="form-control">
-                 <!-- <select class="form-control search form-select" name="shopId" required >
-                  <option value="" disabled selected hidden>None</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select> --> 
-            </div>
-            
-          </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
-      <div class="container mb-2 " style="margin-bottom:0% ">
-      <div class="card "  style="padding: 1%;">
-              <div class="col-12">
-                <div class="d-flex justify-content-between">
-                  <label for="Instructions" class="times-new-roman fw-bold" style="font-size:20px;">Instructions</label>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="form-group">
-                    <textarea type="text" placeholder="Add Prescription" class="form-control" name="Prescription" rows="4" required></textarea>
-                </div>
-              </div>
-          </div>
-        
-        </div>
-
-      <div class="container mb-2" style="margin-bottom:0%;">
-      <div class="card" style="padding: 1%;">
-      <!-- <div class="pt-3"> -->
-          <div class="col mb-2">
-            <div class="d-flex justify-content-between mb-2">
-              <label for="" class="  fw-bold times-new-roman"  style="max-width:60%; font-size: 20px;">Consultation Fees <i class="fa fa-inr"></i></label>
-              <input type="number" class="form-control" name="Fess" placeholder="Amount" style="max-width:40%;" />
-          </div>
-          </div>
-          
-      </div>
-      </div>
-      </div>
-  
-      <div class="container mb-5 ">
-      <!-- <h1>Print and Save Example</h1> -->
-      <div class="row mt-3 " style="margin-bottom:1%">
-      <div class="d-flex justify-content-between">
-        <button class="btn btn-success" onclick="printPage()">Print & save</button>
-        <button class="btn btn-primary" onclick="savePage()">Print</button>
-        <button class="btn btn-success" onclick="savePage()">Complete</button>
-
-      </div>
-      </div>
-      <div class="row mb-5">
-      <div class="d-flex justify-content-end mb-5" >
-        <!-- <button class="btn btn-danger" onclick="savePage()">Close</button> -->
-      </div>
-     </div>
-      </div>
-  
-      
-      </div>
-      </div>
-    </form>
-    <!-- Bootstrap Modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Medicine</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-          </div>
-                 
-
-            <div class="modal-body">
-              <form id="medicineForm" method="POST" action="{% url 'consultation' %}">
-                <div class="modal-body">
-                  {% csrf_token %}
-                  <div class="d-flex justify-content-between mb-3">
-                    <div class="col-sm-4">
-                      <!-- <select class="form-control search form-select" id="Form"  type="hidden" name="mode" required>
-                        <option value='' disabled selected hidden>mode</option>
-                       
-                      </select> -->
-                      <input type="text" id="Form" class="form-control" name="mode"> 
-
-                    </div>
-                    <div class="col-sm-8">
-                      <select class="form-control search form-select"  type="hidden" name="medicine" id="medicineSelect"  required>
-                        <option value='' disabled selected hidden>Medicine</option>
-                        {% for m in all_medicines %}
-                        <option value="{{ m.medicine_name }}" 
-                              data-form="{{m.medicine_form}}"
-                              data-duration="{{ m.medicine_duration }}"
-                              data-dosages="{{ m.medicine_dosages }}">
-                                {{ m.medicine_name }}
-                        </option>
-                        {%endfor%}
-                      </select>
-                    </div>
-                  </div>
-                 
-                  <div class="col mb-3">
-                    <div class="input-row">
-                      <label for="" style="font-size: 15px;">Days</label>
-                      <input type="number" id="medicineDuration"  type="hidden"  class="form-control" name="days" >
-                      <label for="" style="font-size: 15px;">dosage</label>
-                      <input type="text" id="medicineDosages"   type="hidden" class="form-control" name="dosage" >
-                    </div>
-
-                   
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                    <!-- {{medicine_instruction}} -->
-                    <div class="col-sm-5">
-                      <select class="form-control search form-select"  type="hidden" name="Language" required>
-                        <option  disabled selected hidden>MA</option>
-                         <!-- {% for i in medicine_instruction %}
-                        <option value="EN" name="EN"  type="hidden">{{i.instruction_language}}</option>
-                         {%endfor%} -->
-                        <!-- <option value="MA" name="MA"  type="hidden">MA</option> -->
-                        <option value="MA" name="MA"  type="hidden">EN</option>
-                        <option value="HI" name="HI"  type="hidden">HI</option>
-                      </select>
-                    </div>
-                    <div class="col-sm-7">
-                      <select class="form-control search form-select" name="Instructions" type="hidden" id="Instructions"  required>
-                        <option value="instruction"  disabled selected hidden>Instructions</option>
-                        {% for inst in medicine_instruction %}
-                        <option value="{{inst.doctor_instruction_id}}"   >{{inst.instruction_text}}</option>
-                         {%endfor%}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn" style="background-color: orange; color: white;">Submit</button>
-                </div>
-              </form>
-            </div>
-        </div>
-    </div>
-    
-
-    <!-- <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'assets/js/popper.min.js' %}"></script>
-    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'assets/js/script.js' %}"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"
-    ></script>
+    <!-- jQuery library -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-       
-     
-    </script>
-    {% if success %}
-        <script>
-            $(document).ready(function(){
-                $('#successModal').modal('show');
-                // Hide the modal
-                $('#successModal').modal('hide');
-               
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
+
+    <!-- Custom Styles -->
+
+    <!-- jQuery DateTimePicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+
+    <style>
+        .navbar-orange {
+            background-color: #008373;
+            box-shadow: 0px 4px 8px;
+        }
+
+        .navbar-brand {
+            color: white;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-left: 2%;
+            margin-right: 2%;
+            margin-bottom: 5px;
+
+        }
+
+        .label-row label {
+            font-size: 20px;
+            padding: 0px;
+            margin-bottom: 0%;
+            margin-top: 0%;
+            color: inherit;
+            text-decoration: none;
+    
+        }
+
+        .btn {
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        input[type="date"] {
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            cursor: default;
+        }
+
+        a:hover {
+            color: inherit;
+        }
+
+        .icon {
+        font-size: 50px; /* Adjust the font size as needed */
+        }
+        .data-item{
+            background-color: #b2f5ee;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-orange fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href='/DoctorCollection/dashboard/'><i class="fas fa-arrow-left"></i> Appointment</a>
+            <input type="date" id="dateInput" name="dateInput" value="">
+        </div>
+    </nav>
+
+    <div class="d-flex justify-content-between" style="margin-top: 24%;">
+        <button class="btn btn-primary filter-btn" data-status="1" style="margin-left:1%;margin-right: 1%;background-color: #008373;">Uncompleted</button>
+        <button class="btn btn-primary filter-btn" data-status="2" style="background-color: #008373;">Partially Completed</button>
+        <button class="btn btn-primary filter-btn" data-status="3" style="margin-right: 1%;margin-left: 1%;background-color: #008373;">Completed</button>
+    </div>
+    <div id="data-container">
+         
+    </div>
+     <!-- Placeholder message for no appointments -->
+     <div id="noAppointmentsMessage" style="display: none;">
+        <p style="font-size: 20px;margin-top: 20px;color: rgb(194, 198, 194); background-color: #008373;">No appointments found for Today</p>
+    </div>
+
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+             // Declare the data variable outside the event listener function
+            // Get the current date and format it as 'YYYY-MM-DD'
+            var currentDate = new Date().toISOString().split('T')[0];
+            // Set the initial value of the date input
+            document.getElementById('dateInput').value = currentDate;
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const dataContainer = document.getElementById('data-container');
+    
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const status = parseInt(this.getAttribute('data-status'));
+                    filterData(status);
+                });
             });
-        </script>
-    {% endif %}
-    <script>
-      function printPage() {
-            window.print();
-      }
+    
+            // Function to fetch data based on date
+            function fetchData(selectedDate) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/DoctorCollection/fetch_data/',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}', // Include the CSRF token
+                        selectedDate: selectedDate,
+                    },
+                    success: function (response) {
+                        // Handle the API response data
+                        updateData(response);
+                    }
+                });
+            }
+    
+            // Fetch data based on default date (today)
+            var currentDate = new Date().toISOString().split('T')[0];
+            fetchData(currentDate);
+    
+            // Event listener for date input change
+            $('#dateInput').on('change', function () {
+                var selectedDate = $(this).val();
+                fetchData(selectedDate);
+            });
+    
+            // Function to filter data based on status
+            // function filterData(status) {
+            //     const dataItems = document.querySelectorAll('.data-item');
+            //     dataItems.forEach(item => {
+            //         if (status === 0 || parseInt(item.getAttribute('data-status')) === status) {
+            //             item.style.display = 'block';
+            //         } else {
+            //             item.style.display = 'none';
+            //         }
+            //     });
+            // }
+            function filterData(status) {
+                    const dataItems = document.querySelectorAll('.data-item');
+                    let appointmentFound = false;
+
+                    dataItems.forEach(item => {
+                        if (status === 0 || parseInt(item.getAttribute('data-status')) === status || (status === 3 && (parseInt(item.getAttribute('data-status')) === 3 || parseInt(item.getAttribute('data-status')) === 4))) {
+                            item.style.display = 'block';
+                            appointmentFound = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Show "No appointments found" message if no appointments match the selected filter
+                    if (!appointmentFound) {
+                        const noAppointmentsMessage = document.getElementById('noAppointmentsMessage');
+                        noAppointmentsMessage.style.display = 'block';
+                    } else {
+                        const noAppointmentsMessage = document.getElementById('noAppointmentsMessage');
+                        noAppointmentsMessage.style.display = 'none';
+                    }
+                }
+             
+            // Function to update the data in the HTML
+            function updateData(data) {
+                if (data.length === 0) {
+                    // If no appointments are found, display the placeholder message
+                    document.getElementById('noAppointmentsMessage').style.display = 'block';
+                    // Hide the data container
+                    dataContainer.style.display = 'none';
+                } else {
+                // Assuming that data is an array of appointments
+                    const html = data.map(appointment => {
+                        return `
+                        
+                            <a href="/DoctorCollection/initial_assesment/${appointment.appointment_id}">
+                                <div class="data-item" data-status="${appointment.appointment_status}">
+                                    <input type="hidden" name="appointment_id" value="${appointment.appointment_id}" />
+                                    <hr>
+                                    <div class="label-row">
+                                        <label for="label1" id="disabledLink" class="label-link">${appointment.appointment_name}</label>
+                                        <label for="label2" id="disabledLink" class="label-link"><i class="fa-solid fa-user-group" style="color: #008373;"></i> ${appointment.appointment_token}</label>
+                                    </div>
+                                    <div class="label-row">
+                                        ${appointment.appointment_gender !== 0 ? `<label  for="label1"><i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 30px;"></i></label>` : ''}
+                                        ${appointment.appointment_gender === 0 ? `<label  for="label1"><i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i></label>` : ''}
+                                        <label for="label2" style="margin-right: 66%;">${appointment.age} years</label>
+                                    </div>
+                                    <div class="label-row">
+                                        <label for="label1"><i class="fa-solid fa-phone"></i>${appointment.appointment_mobileno}</label>
+                                        <label for="label2" style="border-radius:7px;color:white;background-color: ${
+                                            appointment.appointment_status === 1 ? 'rgb(240, 53, 56)' :
+                                            (appointment.appointment_status === 2 ? 'rgb(240, 190, 53)' :
+                                            (appointment.appointment_status === 3 ? 'green' : 'green'))}">
+                                            ${appointment.appointment_status === 1 ? 'Uncompleted' :
+                                                (appointment.appointment_status === 2 ? 'Partially Completed' :
+                                                    // (appointment.appointment_status === 3 ? 'Completed' : ''))
+                                                    (appointment.appointment_status === 3 ? 'Completed' : (appointment.appointment_status === 4 ? 'Completed and Paid' : '')))}
+                                        </label>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+                    // Set the updated HTML content
+                    dataContainer.innerHTML = html;
+                    dataContainer.style.display = 'block';
+                    // Hide the placeholder message
+                    document.getElementById('noAppointmentsMessage').style.display = 'none';
+                }
+            }
+        });
     </script>
-    <script>
-      function printPage() {
-        window.print();
-      }
-      function savePage() {
-        var printContents = document.body.innerHTML;
-        var originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-      }
-    </script>
-
-
-<script>
-  function UpdateKCOTextArea() {
-      var SelectElement = document.getElementById('kco');
-      var TextArea = document.getElementById('selectedKCOTextArea');
-      var SelectedOption = SelectElement.value;
-
-      if (SelectedOption === "clear") {
-          TextArea.value = ""; // Clear the text area
-      } else {
-          var ExistingOptions = TextArea.value.split('\n');
-          if (!ExistingOptions.includes(SelectedOption)) {
-              TextArea.value += (TextArea.value ? '\n' : '') + SelectedOption;
-          }
-      }
-  }
-</script>
-<script>
-  function updateAdviceTextArea() {
-      var ADVICEELEMENT = document.getElementById('advice');
-      var TEXTAREA = document.getElementById('selectedAdviceTextArea');
-      var SELECTDOPTION = ADVICEELEMENT.value;
-
-      if (SELECTDOPTION === "clear") {
-          TEXTAREA.value = ""; // Clear the text area
-      } else {
-          var EXISTINGOPTION = TEXTAREA.value.split('\n');
-          if (!EXISTINGOPTION.includes(SELECTDOPTION)) {
-              TEXTAREA.value += (TEXTAREA.value ? '\n' : '') + SELECTDOPTION;
-          }
-      }
-  }
-</script>
 
  
- <script>
-    const medicineForm = document.getElementById('medicineForm');
-    const medicineTableBody1 = document.getElementById('medicineTableBody1');
-    const medicineTableBody2 = document.getElementById('medicineTableBody2');
-    const Mode_input = document.getElementById('Mode_input');
-    const Medicine_input = document.getElementById('Medicine_input');
-    const Days_input = document.getElementById('Days_input');
-    const Dosage_input = document.getElementById('Dosage_input');
-    const Language_input = document.getElementById('language_input');
-    const Instructions_input = document.getElementById('Instructions_input');
-
-    const instructionsSelect = document.getElementById('Instructions');
-
-    medicineForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const formData = new FormData(this);
-
-      // Get the selected option and its text
-      const selectedOption = instructionsSelect.options[instructionsSelect.selectedIndex];
-      const instructionText = selectedOption.textContent;
-
-      const newRow1 = document.createElement('tr');
-      newRow1.innerHTML = `
-        <td>${formData.get('mode')}</td>
-        <td>${formData.get('medicine')}</td>
-        <td>${formData.get('days')}</td>
-      `;
-      medicineTableBody1.appendChild(newRow1);
-
-      const newRow2 = document.createElement('tr');
-      newRow2.innerHTML = `
-        <td>${formData.get('dosage')}</td>
-        <td>${formData.get('language')}</td>
-        <td>${instructionText}</td>
-      `;
-      medicineTableBody2.appendChild(newRow2);
-
-      // Append data to hidden fields
-      Mode_input.value += (Mode_input.value ? ',' : '') + formData.get('mode');
-      Medicine_input.value += (Medicine_input.value ? ',' : '') + formData.get('medicine');
-      Days_input.value += (Days_input.value ? ',' : '') + formData.get('days');
-      Dosage_input.value += (Dosage_input.value ? ',' : '') + formData.get('dosage');
-      Language_input.value += (Language_input.value ? ',' : '') + formData.get('language');
-      Instructions_input.value += (Instructions_input.value ? ',' : '') + selectedOption.value;
-
-      this.reset();
-    });
-
-
-  // Additional JavaScript code
-  function updateTextArea() {
-      var selectElement = document.querySelector('select[name="labOptions"]');
-      var textArea = document.getElementById('selectedOptions');
-      var selectedOption = selectElement.value;
-      if (selectedOption === "clear") {
-          textArea.value = ""; // Clear the text area
-      } else {
-          var existingText = textArea.value;
-          if (!existingText.includes(selectedOption)) {
-              if (existingText.length > 0) {
-                  // Append a newline before adding the new option
-                  textArea.value += '\n' + selectedOption;
-              } else {
-                  textArea.value += selectedOption;
-              }
-          }
-      }
-  }
-
-  function saveData() {
-      // Display loading circle on the button
-      const saveButton = document.getElementById('saveButton');
-      saveButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
-
-      // Simulate saving process (you would replace this with your actual saving logic)
-      setTimeout(function() {
-          // After saving is done, revert the button text
-          saveButton.innerHTML = 'Save';
-      }, 2000); // Assuming saving process takes 2 seconds
-  }
-
-  // Event listener for the medicine select element
-  var medicineSelect = document.getElementById('medicineSelect');
-  var medicineFormInput = document.getElementById('Form');
-  var medicineDurationInput = document.getElementById('medicineDuration');
-  var medicineDosagesInput = document.getElementById('medicineDosages');
-
-  medicineSelect.addEventListener('change', function() {
-      var selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
-      medicineDurationInput.value = selectedOption.getAttribute('data-duration');
-      medicineDosagesInput.value = selectedOption.getAttribute('data-dosages');
-      medicineFormInput.value = selectedOption.getAttribute('data-form');
-  });
-</script>
-
-
-
-   
 
 
 </body>
+
 </html>

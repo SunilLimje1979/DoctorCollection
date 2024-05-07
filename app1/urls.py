@@ -30,12 +30,17 @@ urlpatterns = [
     path("fetch_data/",fetch_data,name='fetch_data'),
     path('initial_assesment/<int:appointment_id>',initial_assesment,name='initial_assesment'),
     path('update_initial_assesment/',update_initial_assesment,name='update_initial_assesment'),
-    path('consultation/',Consultation,name='consultation'),
+    # path('consultation/',Consultation,name='consultation'),
     path("addpatient/",addPatient,name='addpatient'),
     path('get_pdf_link/', get_pdf_link, name='get_pdf_link'),
     path('clinic_pdf/', clinic_pdf, name='clinic_pdf'),
     path('prescription_setting/',prescription_setting,name='prescription_setting'),
     path('paid/', paid, name='paid'),
+    path("get_all_users/",get_all_users,name='get_all_users'),
+    path('insert_user/',insert_user ,name='insert_user'),
+    path('update_user/<int:user_id>/',update_user,name='update_user'),
+    path('consultation/<int:id>/', Consultation, name='consultation'),  # Define URL pattern with 'id' parameter
+    path('for_user/<int:id>/', for_user, name='for_user'),
     # path("consultpdf/",showpdf,name='consultpdf'),
    
      

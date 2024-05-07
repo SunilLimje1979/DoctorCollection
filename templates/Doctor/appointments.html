@@ -113,6 +113,9 @@
             document.getElementById('dateInput').value = currentDate;
             const filterButtons = document.querySelectorAll('.filter-btn');
             const dataContainer = document.getElementById('data-container');
+            const role = "{{ role }}"; // Retrieve the role value passed from Django view
+            console.log('role',role);
+
     
             filterButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -191,9 +194,10 @@
                 } else {
                 // Assuming that data is an array of appointments
                     const html = data.map(appointment => {
+                        const link = getAppointmentLink(appointment);
                         return `
                         
-                            <a href="/DoctorCollection/initial_assesment/${appointment.appointment_id}">
+                            <a href="${link}">
                                 <div class="data-item" data-status="${appointment.appointment_status}">
                                     <input type="hidden" name="appointment_id" value="${appointment.appointment_id}" />
                                     <hr>
@@ -227,6 +231,17 @@
                     dataContainer.style.display = 'block';
                     // Hide the placeholder message
                     document.getElementById('noAppointmentsMessage').style.display = 'none';
+                }
+            }
+
+            function getAppointmentLink(appointment) {
+                if (appointment.appointment_status > 1 && role === 'Doctor') {
+                    return `/DoctorCollection/consultation/${appointment.appointment_id}`;
+                } else if (appointment.appointment_status >= 3 && role !== 'Doctor') {
+                    // Add your custom link for appointment_status === 3 and role is not 'Doctor'
+                    return `/DoctorCollection/for_user/${appointment.appointment_id}` ;
+                }else {
+                    return `/DoctorCollection/initial_assesment/${appointment.appointment_id}`;
                 }
             }
         });

@@ -35,7 +35,7 @@ consultation =[]
 def opdlogin(request,token):
     print(token)
     api_data={"doctor_login_token":token}
-    # api_url="http://127.0.0.1:8000/api/get_doctor_profileby_token/"
+    #api_url=" http://127.0.0.1:8002/doctor/api/get_doctor_profileby_token/"
     api_url="http://13.233.211.102/doctor/api/get_doctor_profileby_token/"
     response=requests.post(api_url,json=api_data)
     if(response.json().get("message_code") ==999):
@@ -43,12 +43,16 @@ def opdlogin(request,token):
         request.session['token']=token
         return redirect(doctorReg)
     else:
+        print(response.text)
         doctor_id=response.json().get("message_data").get("doctor_id")
+        role=response.json().get("message_text")
+        request.session['role']=role
         api_data={"doctor_id":doctor_id}
         # api_url="http://127.0.0.1:8000/api/get_doctor_related_info/"
         api_url="http://13.233.211.102/doctor/api/get_doctor_related_info/"
         response=requests.post(api_url,json=api_data)
         all_id=response.json()
+        print(all_id)
         request.session['doctor_id']=doctor_id
         request.session['location_id']=all_id.get('doctor_location_id')
         request.session['avalibility_id']=all_id.get('last_availability_id')
@@ -494,7 +498,8 @@ def pdf_view(request):
 
 
 def dashboard(request):
-    return render(request,"Doctor/dashboard.html")
+    print("role",request.session['role'])
+    return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
 
 def no_service(request):
     return render(request, 'Doctor/no_service.html')
@@ -901,7 +906,7 @@ def delete_lab_report(request,investigation_id):
 #####################Appointments##############################
 
 def get_all_doctor_appointments(request):
-    return render(request,'Doctor/appointments.html')
+    return render(request,'Doctor/appointments.html',{'role':request.session['role']})
 
 
 @csrf_protect
@@ -1037,7 +1042,11 @@ def initial_assesment(request,appointment_id):
         
         # return render(request, 'initial_assesment.html',{"data":data.get('appointment details', {}),"vitals_id":vitals_id,"data1":data1})
         # return redirect(consultation)
-        return redirect(Consultation)
+        print('initial assessment part:',request.session['role'])
+        if(request.session['role']=='Doctor'):
+            return redirect('consultation', id=request.session['appointment_id'])
+        else:
+            return redirect(get_all_doctor_appointments)
 
 def update_initial_assesment(request):
     appointment_id=request.POST['appointment_id']
@@ -1068,12 +1077,19 @@ def update_initial_assesment(request):
     print(response.text)
     vdata=response.json().get('message_data')
     request.session['vitals_id']= vdata['patient_biometricid']
-    return  redirect(Consultation)
+    print('update assesment',request.session['role'])
+    if(request.session['role']=='Doctor'):
+        return redirect('consultation', id=request.session['appointment_id'])
+    else:
+        return redirect(get_all_doctor_appointments)
+ 
 
 
 # ####################################Consultation###########################
-def Consultation(request):
+def Consultation(request,id):
     if(request.method == "GET"):
+        print('appointent_id',id)
+        request.session['appointment_id']=id
         appointment_id= request.session['appointment_id']
         #appointment_id=1
         print("appointment_id",appointment_id)
@@ -1162,7 +1178,7 @@ def Consultation(request):
             # Get_Patient_By_Appointment_Id(requests,appointment_id)
     #######################################################################################################################
             
-        Get_Patient_Boimterics_Vitals(requests,request.session['vitals_id'])
+        Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
 
         return render(request, 'Doctor/consultation.html', {"get_patient_by_appointment_id":get_patient_by_appointment_id,
                     "get_patient_boimterics_vitals":get_patient_boimterics_vitals,"all_medicines":all_medicines,
@@ -1284,12 +1300,28 @@ def Consultation(request):
                 print(previous_name)
                 print(medicine_list)
                 unique_list=[]
+                u_index=[]
+                sum=-1
                 for name in medicine_list:
+                    sum+=1
                     if(name in previous_name):
                         continue
                     else:
+                        u_index.append(sum)
                         unique_list.append(name)
+        
                 print(unique_list)
+                print(u_index,'u_index')
+                print(sum,'sum')
+
+                updated_modelist=[ mode_list[i]  for i in u_index]
+                print("update dmode list",updated_modelist)
+                updated_dayslist=[ days_list[i]  for i in u_index]
+                print("update days list",updated_dayslist)
+                updated_instructionlist=[ instruction_list[i]  for i in u_index]
+                print("update instruction list",updated_instructionlist)
+                updated_dosagelist=[ dosage_list[i]  for i in u_index]
+                print("update dosage list",updated_dosagelist)
 
                 # med_id_list=[]
                 # for name in unique_list:
@@ -1313,12 +1345,12 @@ def Consultation(request):
                                 "prescription_id":prescription_id,
                                 "medication_datetime": "2024-02-01 12:30:00",
                                 "medicine_id": med_id_list[i],
-                                "medicine_form": mode_list[i],
+                                "medicine_form": updated_modelist[i],
                                 "medicine_name": unique_list[i],
-                                "medicine_duration":days_list[i],
-                                "medicine_doses": dosage_list[i],
+                                "medicine_duration":updated_dayslist[i],
+                                "medicine_doses": updated_dosagelist[i],
                                 "medicine_dose_interval": "8 hours",
-                                "medicine_instruction_id": instruction_list[i],
+                                "medicine_instruction_id": updated_instructionlist[i],
                                 "medicine_Category": 7,
                                 "Medicine_ExtraField1": 8,
                                 "Medicine_ExtraField2": 9
@@ -1427,7 +1459,7 @@ def Consultation(request):
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST["Patient_HeartRatePluse"],
                     "patient_bpsystolic":request.POST["Patient_BPSystolic"],
-                    "patient_bpsystolic":request.POST["Patient_BPDistolic"],
+                    "patient_bpdistolic":request.POST["Patient_BPDistolic"],
                     "patient_painscale":request.POST["Patient_PainScale"],
                     "patient_respiratoryrate":request.POST["Patient_RespiratoryRate"],
                     "patient_temparature":request.POST["Patient_Temparature"],
@@ -1445,7 +1477,7 @@ def Consultation(request):
 
 
                 #return HttpResponse("done")
-                return redirect(Consultation)
+                return redirect('consultation', id=request.session['appointment_id'])
             
             else:
 
@@ -1487,7 +1519,7 @@ def Consultation(request):
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST["Patient_HeartRatePluse"],
                     "patient_bpsystolic":request.POST["Patient_BPSystolic"],
-                    "patient_bpsystolic":request.POST["Patient_BPDistolic"],
+                    "patient_bpdistolic":request.POST["Patient_BPDistolic"],
                     "patient_painscale":request.POST["Patient_PainScale"],
                     "patient_respiratoryrate":request.POST["Patient_RespiratoryRate"],
                     "patient_temparature":request.POST["Patient_Temparature"],
@@ -1557,7 +1589,7 @@ def Consultation(request):
                 dosage = request.POST.get('dosage')
                 language = request.POST.get('Language')
                 instruction = request.POST.get('Instructions')
-                print(language,instruction,mode,medicine,days,dosage) 
+                print('language',language,'instruction',instruction,'mode',mode,'medicine',medicine,'days',days,'dosage',dosage) 
                 instruction_list= instruction.split(",")
                 mode_list=mode.split(",")
                 medicine_list=medicine.split(",")
@@ -1566,9 +1598,12 @@ def Consultation(request):
                 language_list=language.split(",")
                 med_id_list=[]
                 for name in medicine_list:
+                    print("name",name)
                     for medicine in all_medicines:
                         if(name==medicine['medicine_name']):
                             med_id_list.append(medicine['doctor_medicine_id'])
+            
+                
                 if medicine_list[0]:
                     # medication_url="http://127.0.0.1:8000/api/insert_patient_medications/"
                     medication_url="http://13.233.211.102/medicalrecord/api/insert_patient_medications/"
@@ -1593,9 +1628,10 @@ def Consultation(request):
                             }
                             response=requests.post(medication_url,json=medication_data)
                             print(response.text)
-                    print(language_list,instruction_list,mode_list,medicine_list,days_list,dosage_list,med_id_list)
+                # print(language_list,instruction_list,mode_list,medicine_list,days_list,dosage_list,med_id_list)
                 # print(all_medicines)
-                #print(med_id_list)
+                # print(med_id_list)
+                # return HttpResponse("ok")
 
                 else:
                     print("no data")
@@ -1631,7 +1667,7 @@ def Consultation(request):
                     print("no labs found")
                 
                 # return redirect(get_all_doctor_appointments)
-                return redirect(Consultation)
+                return redirect('consultation', id=request.session['appointment_id'])
 
 ##########################################Functions to fetch the required data for consultation Screen#######################
 
@@ -1677,15 +1713,19 @@ def Get_Patient_Boimterics_Vitals(requests,vitals_id):
     # id   =  request.session["biometrics_id"]
     print(id)
     
-    api_data = {"patient_biometric_id": vitals_id }
-    # api_url = 'http://127.0.0.1:8000/api/get_patientvitals_by_biometric_id/'
-    api_url  ='http://13.233.211.102/medicalrecord/api/get_patientvitals_by_biometric_id/'
-    response = requests.post(api_url, api_data)
+    # api_data = {"patient_biometric_id": vitals_id }
+    # # api_url = 'http://127.0.0.1:8000/api/get_patientvitals_by_biometric_id/'
+    # api_url  ='http://13.233.211.102/medicalrecord/api/get_patientvitals_by_biometric_id/'
+    # response = requests.post(api_url, api_data)
+    vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
+    response=requests.post(vital_url,json={"appointment_id": vitals_id})
     print(response.text)
        
     if response.status_code == 200:
         global get_patient_boimterics_vitals
-        get_patient_boimterics_vitals = response.json().get('message_data', {})  # Getting 'message_data' safely
+        data2=[]
+        data2.append(response.json().get('message_data', {}))
+        get_patient_boimterics_vitals = data2  # Getting 'message_data' safely
         # request.session["data2"] = data2 
         print("get_patient_boimterics_vitals :",get_patient_boimterics_vitals)
 #################################################################################################################
@@ -1788,7 +1828,7 @@ def get_pdf_link(request):
     print(consultstatus_response.text)
 
     consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
-    api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+    api_para={"consultation_id":request.session['consultation_id']}
     consult_response=requests.post(consultation_url,json=api_para)
     consult_data=(consult_response.json().get("message_data"))[0]
     print(consult_data)
@@ -1837,7 +1877,7 @@ def paid(request):
     print(consultstatus_response.text)
 
     consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
-    api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+    api_para={"consultation_id":request.session['consultation_id']}
     consult_response=requests.post(consultation_url,json=api_para)
     consult_data=(consult_response.json().get("message_data"))[0]
     print(consult_data)
@@ -1859,6 +1899,51 @@ def paid(request):
             return JsonResponse({'message': 'Payment successful'})
     else:
             return JsonResponse({'message': 'Payment failed'}, status=400)
+
+
+def for_user(request,id):
+    print(request.session['role'])
+    api_data = {"appointment_id":id}
+        # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    response = requests.post(api_url, json=api_data)
+
+    if response.status_code == 200:
+        data = response.json().get('message_data')
+        data1=data.get('appointment details', {})
+        request.session['appointment_details']=data1
+        print(data1)
+        patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+        api_para={"consultation_id":data1.get('consultation_id')}
+        patientlab_response=requests.post(patientlab_url,json=api_para)
+        patientlab_data=(patientlab_response.json().get("message_data"))
+        print(patientlab_response.text)
+        lab_list=[]
+        for i in patientlab_data:
+            print(i)
+            lab_list.append(i['labinvestigation_category'])
+            print("-----------------------")
+        print(lab_list)
+        #################patient Medications################
+        patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+        api_para={"consultation_id":data1.get('consultation_id')}
+        patientmedic_response=requests.post(patientmedic_url,json=api_para)
+        patientmedic_data=(patientmedic_response.json().get("message_data"))
+        medic_list=[]
+        for i in patientmedic_data:
+            print(i)
+            medic_list.append(i)
+            print("-----------------------")
+        print(medic_list)
+
+        consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+        api_para={"consultation_id":data1.get('consultation_id')}
+        consult_response=requests.post(consultation_url,json=api_para)
+        consult_data=(consult_response.json().get("message_data"))[0]
+        print(consult_data)
+        request.session['consultation_id']=data1.get('consultation_id')
+        request.session['appointment_id']=id
+    return render(request,'Doctor/for_user.html',{'data1':data1,'medic_list':medic_list,'lab_list':lab_list,'consult_data':consult_data})
 
 
 ################clinic pdf###############################
@@ -1954,5 +2039,71 @@ def prescription_setting(request):
             
              
             return HttpResponse("Prescription setting added")
+
+
+###############################Users################################
+def get_all_users(request):
+    api_data = {"location_id":request.session['location_id']}
+    api_url = 'http://13.233.211.102/doctor/api/get_all_users_by_location/'
+    response = requests.post(api_url,json=api_data)
+    all_users=response.json().get('message_data', {})
+    # print(all_users)
+    return render(request,'Doctor/get_all_users.html',{'all_users':all_users})
+  
+
+def insert_user(request):
+    if(request.method=='GET'):      
+        return render(request,'Doctor/insert_user.html')
+    
+    else:
+         
+        user_url="http://13.233.211.102/doctor/api/insert_user/"
+        user_data={
+                    "user_name":request.POST['user_name'],
+                    "user_mobileno":request.POST['user_mobileno'],
+                    "user_role":request.POST['user_role'],
+                    "location_id":request.session['location_id']  
+                }
+        user_response=requests.post(user_url,json=user_data)
+        print(user_response.text)
+        if user_response.status_code == 200:
+            messages.success(request, 'User details Added successfully!')
+            return redirect(get_all_users)
+        else:
+            return HttpResponse("user data is not submitted")
+        
+
+def update_user(request,user_id):
+    if(request.method=="GET"):
+        api_data = {"location_id":request.session['location_id']}
+        api_url = 'http://13.233.211.102/doctor/api/get_all_users_by_location/'
+        response = requests.post(api_url,json=api_data)
+        all_users=response.json().get('message_data', {})
+        # print(all_users)
+        for user in all_users:
+            if(user_id==user['user_id']):
+                print(user)
+                return render(request,'Doctor/insert_user.html',{'user':user})
+        else:
+            return HttpResponse("no data found")
+    else:
+        user_updateurl="http://13.233.211.102/doctor/api/update_user_details/"
+        user_updatedata={
+                    "user_name":request.POST['user_name'],
+                    "user_mobileno":request.POST['user_mobileno'],
+                    "user_role":request.POST['user_role'],
+                    "user_id":user_id
+                }
+        user_updateresponse=requests.post(user_updateurl,json=user_updatedata)
+        print(user_updateresponse.text)
+
+        if user_updateresponse.status_code == 200:
+            messages.success(request, 'User details Updated successfully!')
+            return redirect(get_all_users)
+        else:
+            return HttpResponse("user data not updated..")
+         
+    
+    
 
 
