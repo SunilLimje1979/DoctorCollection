@@ -1188,8 +1188,14 @@ def Consultation(request,id):
                 })
     else:          
 ########################## insert consultaions ########################################
-            patient_id=(get_patient_boimterics_vitals[0]).get("patient_id")
-            patient_status=(get_patient_boimterics_vitals[0]).get("patient_status")
+            # Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
+            # print("in consult",get_patient_boimterics_vitals)
+            vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
+            vital_response=requests.post(vital_url,json={"appointment_id": request.session['appointment_id']})
+            # print(vital_response.text)
+            vital_data=vital_response.json().get('message_data')
+            patient_id= vital_data.get("patient_id")
+            patient_status= vital_data.get("patient_status")
             print("id and status",patient_id,patient_status)
             dt = request.POST["followup_datetime"]
             print(dt)
