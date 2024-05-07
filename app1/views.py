@@ -985,6 +985,8 @@ def initial_assesment(request,appointment_id):
             print(appointment_details)
             fullname=(appointment_details['appointment_name']).split(" ")
             print(fullname)
+            if(len(fullname)<=1):
+                fullname.append('none')
             
             # patient_url="http://localhost:8000/api/insert_patient/"
             patient_url="http://13.233.211.102/pateint/api/insert_patient/"
