@@ -1098,7 +1098,7 @@ def Consultation(request,id):
             request.session['consultation_id']=get_patient_by_appointment_id.get('consultation_id')
             print("the consultation id is present",get_patient_by_appointment_id.get('consultation_id'))
             consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
-            api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+            api_para={"consultation_id":request.session['consultation_id']}
             consult_response=requests.post(consultation_url,json=api_para)
             consult_data=(consult_response.json().get("message_data"))[0]
             print(consult_data)
@@ -1113,14 +1113,14 @@ def Consultation(request,id):
             #################patient findingsymptoms################
             # finding_symptoms_url="http://localhost:8000/api/get_patient_findings_symptoms_by_consultation/"
             finding_symptoms_url="http://13.233.211.102/medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
-            api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+            api_para={"consultation_id":request.session['consultation_id']}
             symptoms_response=requests.post(finding_symptoms_url,json=api_para)
             symptoms_data=(symptoms_response.json().get("message_data"))[0]
             print(symptoms_data)
             #################patient Lab Invstigations################
             # patientlab_url="http://localhost:8000/api/get_patient_labinvestigations_by_consultation_id/"
             patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
-            api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+            api_para={"consultation_id":request.session['consultation_id']}
             patientlab_response=requests.post(patientlab_url,json=api_para)
             patientlab_data=(patientlab_response.json().get("message_data"))
             lab_list=[]
@@ -1131,7 +1131,7 @@ def Consultation(request,id):
             print(lab_list)
             #################patient Medications################
             patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
-            api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+            api_para={"consultation_id":request.session['consultation_id']}
             patientmedic_response=requests.post(patientmedic_url,json=api_para)
             patientmedic_data=(patientmedic_response.json().get("message_data"))
             medic_list=[]
@@ -1144,7 +1144,7 @@ def Consultation(request,id):
             #################patient prescription################
             # prescription_url="http://localhost:8000/api/get_prescription_details/"
             prescription_url="http://13.233.211.102/medicalrecord/api/get_prescription_details/"
-            api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+            api_para={"consultation_id":request.session['consultation_id']}
             prescription_response=requests.post(prescription_url,json=api_para)
             print(prescription_response.text)
             prescription_data=(prescription_response.json().get("message_data"))[0]
@@ -1283,7 +1283,7 @@ def Consultation(request,id):
                 language_list=language.split(",")
                 print(language_list,instruction_list,mode_list,medicine_list,days_list,dosage_list)
                 patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
-                api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+                api_para={"consultation_id":request.session['consultation_id']}
                 patientmedic_response=requests.post(patientmedic_url,json=api_para)
                 patientmedic_data=(patientmedic_response.json().get("message_data"))
                 medic_list=[]
@@ -1293,7 +1293,7 @@ def Consultation(request,id):
                     print("-----------------------")
                 print(medic_list)
                 prescription_url="http://13.233.211.102/medicalrecord/api/get_prescription_details/"
-                api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+                api_para={"consultation_id":request.session['consultation_id']}
                 prescription_response=requests.post(prescription_url,json=api_para)
                 print(prescription_response.text)
                 prescription_data=(prescription_response.json().get("message_data"))[0]
@@ -1386,7 +1386,7 @@ def Consultation(request,id):
                 labsdata_list = [labs.strip() for labs in labs.split('\n') if labs.strip()]
                 print('from screen',labsdata_list)
                 patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
-                api_para={"consultation_id":get_patient_by_appointment_id.get('consultation_id')}
+                api_para={"consultation_id":request.session['consultation_id']}
                 patientlab_response=requests.post(patientlab_url,json=api_para)
                 patientlab_data=(patientlab_response.json().get("message_data"))
                 lab_list={}
