@@ -20,8 +20,9 @@
         }
 
         .navbar-brand {
-            font-weight: bold;
+            /* font-weight: bold; */
             color: #FFFFFF;
+            font-size: 25px;
         }
 
         .form-control {
@@ -57,12 +58,23 @@
         {% csrf_token %}
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
+            <input type="hidden" name="location_id" value="{{ location_id }}">
             <div class="container-fluid pl-3">
-                <a class="navbar-brand" >
-                    <i class="fas fa-arrow-left"></i> Add Clinic
-                </a>
+                {% if location_id %}
+                    <a class="navbar-brand" href="/DoctorCollection/settingdashboard/" >
+                        <i class="fas fa-arrow-left"></i> 
+                            Clinic Profile
+                    </a>
+                {% else %}
+                    <span class="navbar-brand">Add Clinic</span>
+                {% endif %}
                 <button type="submit" value="Submit" class="btn btn-light mx-3">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i>
+                    {% if location_id %}
+                      Update
+                    {% else %}
+                      Save
+                    {% endif %}
                 </button>
             </div>
         </nav>
@@ -71,7 +83,7 @@
         <div class="row">
             <div class="col-md-6 col-12 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control"  name="clinicName" placeholder="Clinic Name" required>
+                    <input type="text" class="form-control"  name="clinicName" value="{{ data.location_title}}" placeholder="Clinic Name" required>
                     <label for="clinicName">Clinic Name</label>
                 </div>
             </div>
@@ -91,7 +103,7 @@
         <div class="row">
             <div class="col-md-6 col-12 mb-3">
                 <div class="form-floating">
-                    <textarea class="form-control" name="address" placeholder="Address" rows="3" required></textarea>
+                    <textarea class="form-control" name="address" placeholder="Address" rows="3" required>{{ data.location_address}}</textarea>
                     <label for="address">Address</label>
                 </div>
             </div>
@@ -103,7 +115,7 @@
                 <div class="form-floating">
                     <select name="country" class="form-control form-select" aria-label="Floating label select example" required>
                         <option value="" disabled selected hidden>select</option>
-                        <option value="India">India</option>
+                        <option value="India" {% if data.location_country_id == 1 %}selected{% endif %}>India</option>
                     </select>
                     <label for="country">Country</label>
                 </div>
@@ -112,7 +124,7 @@
                 <div class="form-floating">
                     <select name="state" class="form-select" aria-label="Floating label select example" required>
                         <option value="" disabled selected hidden>select</option>
-                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Maharashtra" {% if data.location_state_id == 1 %}selected{% endif %}>Maharashtra</option>
                     </select>
                     <label for="state">State</label>
                 </div>
@@ -123,13 +135,13 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="city" placeholder="City" required>
+                    <input type="text" class="form-control" name="city" value="Pune" placeholder="City" required>
                     <label for="city">City</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="pincode" pattern="[0-9]{6}" title="Please enter a valid 6-digit PIN code" placeholder="Pincode" required>
+                    <input type="text" class="form-control" name="pincode" value="{{data.location_pincode}}" pattern="[0-9]{6}" title="Please enter a valid 6-digit PIN code" placeholder="Pincode" required>
                     <label for="pincode">Pincode</label>
                 </div>
             </div>
@@ -139,13 +151,13 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="latitude" placeholder="Latitude" required>
+                    <input type="text" class="form-control" name="latitude" value="{{data.location_latitute}}" placeholder="Latitude" required>
                     <label for="latitude">Latitude</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="longitude"  placeholder="Longitude" required>
+                    <input type="text" class="form-control" name="longitude" value="{{data.location_longitute}}"  placeholder="Longitude" required>
                     <label for="longitude">Longitude</label>
                 </div>
             </div>
@@ -153,8 +165,13 @@
 
         <!-- Save Button (Bottom) -->
         <div class="text-center mt-3">
-            <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span> Save</button>
-            <input type="hidden" name="doctor_id" value="{{doctor_id}}"/>
+            <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
+                {% if location_id %}
+                   Update
+                {% else %}
+                   Save
+                {% endif %}
+            </button>
         </div>
     </form>
 

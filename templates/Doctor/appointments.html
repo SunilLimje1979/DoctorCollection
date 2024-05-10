@@ -198,6 +198,7 @@
                         return `
                         
                             <a href="${link}">
+                                 
                                 <div class="data-item" data-status="${appointment.appointment_status}">
                                     <input type="hidden" name="appointment_id" value="${appointment.appointment_id}" />
                                     <hr>
@@ -206,12 +207,23 @@
                                         <label for="label2" id="disabledLink" class="label-link"><i class="fa-solid fa-user-group" style="color: #008373;"></i> ${appointment.appointment_token}</label>
                                     </div>
                                     <div class="label-row">
-                                        ${appointment.appointment_gender !== 0 ? `<label  for="label1"><i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 30px;"></i></label>` : ''}
-                                        ${appointment.appointment_gender === 0 ? `<label  for="label1"><i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i></label>` : ''}
-                                        <label for="label2" style="margin-right: 66%;">${appointment.age} years</label>
+                                        <div>
+                                        ${appointment.appointment_gender !== 0 ? `<label  for="label1"><i class="fa-solid fa-person-dress me-2" style="color: rgb(208, 91, 110); font-size: 30px;"></i></label>` : ''}
+                                        ${appointment.appointment_gender === 0 ? `<label  for="label1"><i class="fa-solid fa-person me-2" style="color: blue; font-size: 30px;"></i></label>` : ''}
+                                        <label for="label1">${appointment.age} years</label>
+                                        </div>
+                                        <div>
+                                        <label for="label2"><i class="fa-solid fa-phone me-2"></i>${appointment.appointment_mobileno}</label>
+                                        </div>
                                     </div>
+                                    
                                     <div class="label-row">
-                                        <label for="label1"><i class="fa-solid fa-phone"></i>${appointment.appointment_mobileno}</label>
+                                        <div>
+                                        ${appointment.createdon !== null ? `
+                                            <label for="label1" id="disabledLink" class="label-link">${appointment.createdon}</label>
+                                        ` : ''}
+                                        </div>
+                                        <div>
                                         <label for="label2" style="border-radius:7px;color:white;background-color: ${
                                             appointment.appointment_status === 1 ? 'rgb(240, 53, 56)' :
                                             (appointment.appointment_status === 2 ? 'rgb(240, 190, 53)' :
@@ -221,6 +233,7 @@
                                                     // (appointment.appointment_status === 3 ? 'Completed' : ''))
                                                     (appointment.appointment_status === 3 ? 'Completed' : (appointment.appointment_status === 4 ? 'Completed and Paid' : '')))}
                                         </label>
+                                        </div>
                                     </div>
                                 </div>
                             </a>

@@ -449,14 +449,12 @@
         <div class="pt-2 ">
           <div class="col-12">
             <div class="d-flex justify-content-between mb-2">
+              <label for="followup_days" class="fw-bold times-new-roman fs-5" style="margin-right: 2%; font-size: 10px; width: 305px;">Follow-Up Days</label>
+              <input type="number" id="followup_days" class="form-control" min="1" value="">
+            </div>
+            <div class="d-flex justify-content-between mb-2">
                 <label for="" class="  fw-bold times-new-roman fs-5" style="margin-right:2% ;" style="font-size:20px;">FollowUp</label>
-                <input type="datetime-local" name="followup_datetime" value="{{consult_data.followup_datetime}}" class="form-control">
-                 <!-- <select class="form-control search form-select" name="shopId" required >
-                  <option value="" disabled selected hidden>None</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select> --> 
+                <input type="datetime-local" id="followup_datetime" name="followup_datetime" value="{{consult_data.followup_datetime}}" class="form-control">
             </div>
             
           </div>
@@ -837,6 +835,37 @@
     });
  
 </script>
+
+<script>
+  // Get the input elements
+  const daysInput = document.getElementById('followup_days');
+  const datetimeInput = document.getElementById('followup_datetime');
+
+  // Add an event listener to the days input
+  daysInput.addEventListener('input', () => {
+      const days = parseInt(daysInput.value) || 0; // Get the number of days, default to 0 if empty or invalid
+      if (days >= 0) {
+          // Calculate the follow-up date by adding the specified days to the current date
+          const currentDate = new Date();
+          const followupDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000); // Calculate future date
+
+          // Format the follow-up date for the datetime-local input
+          const formattedDate = followupDate.toISOString().slice(0, 16); // Format: "YYYY-MM-DDTHH:mm"
+
+          // Set the value of the datetime input
+          datetimeInput.value = formattedDate;
+          datetimeInput.disabled = false; // Enable the input once a valid date is calculated
+      } else {
+          // If days input is invalid, disable datetime input
+          datetimeInput.value = '';
+          datetimeInput.disabled = true;
+      }
+  });
+</script>
+
+
+
+
 
 </body>
 </html>

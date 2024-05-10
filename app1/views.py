@@ -9,6 +9,13 @@ from django.views.decorators.csrf import csrf_protect
 from datetime import timedelta
 from django.utils import timezone
 
+from io import BytesIO
+from time import time
+import random
+import string
+import os
+import uuid
+
 # Now you can use timezone in your code
 
 
@@ -162,12 +169,87 @@ def doctorReg(request):
 
 
 
+# def addClinic(request):
+#     if(request.method=='GET'):
+#         # request.session['location_id'] =5
+#         # location_id=request.session['location_id']
+#         # doctor_id=request.session['doctor_id']
+#         # print(location_id)
+#         if 'location_id' in request.session:
+#             location_id=request.session['location_id']
+#             print(location_id)
+#             api_data={"doctor_location_id":location_id}
+#             # api_url="http://127.0.0.1:8000/api/get_all_doctor_location/"
+#             api_url="http://13.233.211.102/doctor/api/get_all_doctor_location/"
+#             response=requests.post(api_url,json=api_data)
+#             data=response.json().get("message_data",{})
+#             # print(data)
+#             return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id})
+#         else:
+#             request.session['location_id']=None
+#             return render(request,"Doctor/clinicaddandupdate.html",{"location_id":None})
+    
+#     else:
+#         clinicname=request.POST['clinicName']
+#         pincode=request.POST["pincode"]
+#         city=request.POST["city"]
+#         state=request.POST["state"]
+#         country=request.POST["country"]
+#         address=request.POST["address"]
+#         latitude=request.POST['latitude']
+#         longitude=request.POST['longitude']
+#         location_id=request.session['location_id']
+        
+#         api_data={
+#                 "location_title":clinicname,
+#                 "location_type": 1,  #for now bydefault 1 means clinic
+#                 "location_address": address,
+#                 "location_latitute": latitude,
+#                 "location_longitute": longitude,
+#                 "location_city_id": 1,
+#                 "location_state_id": 1,
+#                 "location_country_id": 1,
+#                 "location_pincode":pincode,
+#                 "location_status": 1,  #bydefault 1 means active
+#                 # "isdeleted":0 #bydefault put 0 later update the api.
+#             }
+        
+#         if location_id is not None :
+#             api_data['doctor_location_id']=location_id
+#             # api_url="http://127.0.0.1:8000/api/update_doctor_location/"
+#             api_url="http://13.233.211.102/doctor/api/update_doctor_location/"
+#             response=requests.post(api_url,json=api_data)
+#             messages.success(request, 'Clinic Details updated successfully!')
+#             return redirect(settingdashboard)
+        
+#         else:
+#             api_data['doctor_id']=request.session['doctor_id']
+#             print(api_data['doctor_id'])
+#             # api_url = "http://127.0.0.1:8000/api/insert_doctor_location/"
+#             api_url = "http://13.233.211.102/doctor/api/insert_doctor_location/"
+
+#             response = requests.post(api_url, json=api_data)
+#             api_response = response.json()
+#             print(api_response)
+#             # Extract location id from the response
+#             location_id = api_response.get("message_data", {}).get("doctor_location_id")
+#             request.session['location_id'] =location_id
+#             request.session.save()
+
+#             if response.status_code == 200:
+#                 # return HttpResponse(f"Data successfully stored in the Database. API response: {response.text}")
+#                 # return render(request,"Doctor/Clinic.html",{"doctor_id":doctor_id})
+#                 return redirect(addSlot)
+#             else:
+#                 return HttpResponse(f"Failed to store data in the Database. API response: {response.text}")
 def addClinic(request):
     if(request.method=='GET'):
         # request.session['location_id'] =5
         # location_id=request.session['location_id']
         # doctor_id=request.session['doctor_id']
         # print(location_id)
+        # request.session['location_id']=20
+        # del request.session['location_id']
         if 'location_id' in request.session:
             location_id=request.session['location_id']
             print(location_id)
@@ -176,8 +258,19 @@ def addClinic(request):
             api_url="http://13.233.211.102/doctor/api/get_all_doctor_location/"
             response=requests.post(api_url,json=api_data)
             data=response.json().get("message_data",{})
-            # print(data)
-            return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id})
+            print(data)
+            link=(data[0]).get('location_image')
+            print(link)
+            if(link is None):
+                link="/staticfiles/media/location_images/cliniclogo2.jpg"
+            # Replace '/staticfiles/' with '/static/'
+            updated_link = link.replace('/staticfiles/', '/static/')
+            print("Updated link:", updated_link)
+            timestamp = int(time())
+
+            # Update the value in 'data' dictionary
+            data[0]['location_image'] = "http://13.233.211.102/doctor"+updated_link
+            return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id,"timestamp": timestamp})
         else:
             request.session['location_id']=None
             return render(request,"Doctor/clinicaddandupdate.html",{"location_id":None})
@@ -192,6 +285,10 @@ def addClinic(request):
         latitude=request.POST['latitude']
         longitude=request.POST['longitude']
         location_id=request.session['location_id']
+        clinic_logo = request.FILES.get('clinicLogo')
+        print(clinic_logo)
+        print(location_id)
+        print(longitude)
         
         api_data={
                 "location_title":clinicname,
@@ -208,20 +305,49 @@ def addClinic(request):
             }
         
         if location_id is not None :
+            print("new Logo: ",clinic_logo)
             api_data['doctor_location_id']=location_id
-            # api_url="http://127.0.0.1:8000/api/update_doctor_location/"
-            api_url="http://13.233.211.102/doctor/api/update_doctor_location/"
-            response=requests.post(api_url,json=api_data)
+            detail_url="http://13.233.211.102/doctor/api/update_location_details/"
+            detail_response=requests.post(detail_url,json=api_data)
+            print(detail_response.text)
+            if(clinic_logo):
+                image_url="http://13.233.211.102/doctor/api/update_location_image/"
+                image_response=requests.post(image_url,data={"doctor_location_id":location_id},files={'location_image': clinic_logo})
+                print(image_response.text)
             messages.success(request, 'Clinic Details updated successfully!')
             return redirect(settingdashboard)
+            # return HttpResponse("Updated Successfully..")
         
         else:
+            if clinic_logo:
+                try:
+                    # Generate a new unique filename for the renamed file
+                    unique_id = str(uuid.uuid4())[:8]  # Use a portion of the UUID as a short identifier
+                    file_extension = os.path.splitext(clinic_logo.name)[-1]
+                    new_filename = f"{unique_id}{file_extension}"
+                    print(new_filename)
+
+                    # Create a BytesIO object to hold the file data in memory
+                    renamed_file = BytesIO()
+                    for chunk in clinic_logo.chunks():
+                        renamed_file.write(chunk)
+
+                    # Reset the file pointer to the start of the BytesIO buffer
+                    renamed_file.seek(0)
+
+
+                except Exception as e:
+                    return HttpResponse(f"Error: {str(e)}")
+
+            else:
+                return HttpResponse("No file uploaded.")
             api_data['doctor_id']=request.session['doctor_id']
             print(api_data['doctor_id'])
             # api_url = "http://127.0.0.1:8000/api/insert_doctor_location/"
             api_url = "http://13.233.211.102/doctor/api/insert_doctor_location/"
 
-            response = requests.post(api_url, json=api_data)
+            response = requests.post(api_url, data=api_data, files={'location_image': (new_filename, renamed_file)})
+            print(response.text)
             api_response = response.json()
             print(api_response)
             # Extract location id from the response
@@ -235,6 +361,7 @@ def addClinic(request):
                 return redirect(addSlot)
             else:
                 return HttpResponse(f"Failed to store data in the Database. API response: {response.text}")
+
 
 
 def addSlot(request):
@@ -931,7 +1058,12 @@ def fetch_data(request):
         api_response = response.json()
         data = api_response.get("message_data", [])
         print(data)
-
+        for detail in data:
+            if(detail['createdon'] is not None):
+                formatted_date=datetime.datetime.fromtimestamp(detail['createdon']).strftime( "%d-%m-%Y")
+                print(formatted_date)
+                detail['createdon']=formatted_date
+        print('updated',data)
         return JsonResponse(data, safe=False) 
     
     return HttpResponse('hi')
@@ -984,6 +1116,8 @@ def initial_assesment(request,appointment_id):
             appointment_details=request.session['appointment_details']
             print(appointment_details)
             fullname=(appointment_details['appointment_name']).split(" ")
+            print(fullname)
+            fullname=[item for item in fullname if item != '']
             print(fullname)
             if(len(fullname)<=1):
                 fullname.append('none')
@@ -1212,6 +1346,9 @@ def Consultation(request,id):
             # Format the datetime object as the required string format
             formatted_datetime = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
             print("required:",formatted_datetime)
+            followup_datetime_epoch = datetime.datetime.strptime(formatted_datetime, '%Y-%m-%d %H:%M:%S')
+            followup_datetime = int(followup_datetime_epoch.timestamp())
+            print(followup_datetime,'fd')
             consultation_datetime=int(request.POST["Consultation_DateTime"])
             print(consultation_datetime)
             consultation_datetime = datetime.datetime.fromtimestamp(consultation_datetime).strftime("%Y-%m-%d %H:%M:%S")
@@ -1232,7 +1369,7 @@ def Consultation(request,id):
                     "consultation_fees":request.POST["Fess"],
                     "referred_to_doctor":request.POST["referred_to_doctor"],
                     "referred_by_doctor":request.POST["referred_by_doctor"],
-                    "Followup_DateTime":formatted_datetime,
+                    "followup_datetime":followup_datetime,
                     "appointment_id":request.session['appointment_id'],
                     "further_assited": 1,
                     "consultation_datetime":current_epoch_time, 

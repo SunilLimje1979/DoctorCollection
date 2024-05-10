@@ -54,7 +54,7 @@
 <body>
 
     <!-- Doctor Registration Form with Navigation Bar -->
-    <form class="container form-container" method="POST">
+    <form class="container form-container" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
@@ -162,7 +162,24 @@
                 </div>
             </div>
         </div>
-
+        <!-- Add Image Upload Field -->
+        <div class="row">
+            <div class="col-md-6 col-12 mb-3">
+                <div class="form-group">
+                    <label for="clinicLogo">{% if data %}Update Clinic Logo {%else%} Add Clinic Logo {% endif %}</label>
+                    <input type="file" class="form-control" id="clinicLogo" name="clinicLogo" accept="image/jpeg, image/png">
+                </div>
+            </div>
+        </div>
+        {% if data %}
+        <div  class="text-center mt-3">
+            <div class="col-md-6 col-12" >
+                <!-- <img src="http://127.0.0.1:8000{{data.location_image}}" alt="Clinic Logo"  style="max-width: 50%; height: auto; margin-top: 10px;"> -->
+                <img src="{{ data.location_image }}?t={{ timestamp }}" alt="Clinic Logo"  style="max-width: 50%; height: auto; margin-top: 10px;">
+                <input type="hidden" name="logoname" value="{{data.location_image}}">
+            </div>
+        </div>
+        {% endif %}
         <!-- Save Button (Bottom) -->
         <div class="text-center mt-3">
             <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
