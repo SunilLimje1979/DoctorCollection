@@ -42,6 +42,7 @@ urlpatterns = [
     path('consultation/<int:id>/', Consultation, name='consultation'),  # Define URL pattern with 'id' parameter
     path('for_user/<int:id>/', for_user, name='for_user'),
     # path("consultpdf/",showpdf,name='consultpdf'),
+    path("patient_history/<int:id>",patient_history,name='patient_history'),
    
      
 ]

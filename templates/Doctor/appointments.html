@@ -78,6 +78,20 @@
             background-color: #b2f5ee;
             border-radius: 10px;
         }
+         /* Custom CSS for Appointment Statistics */
+        .card-body {
+            padding: 1rem; /* Adjust padding as needed */
+        }
+
+        .card-body p {
+            font-size: 16px; /* Adjust font size as needed */
+            margin-bottom: 0; /* Remove bottom margin to align with card layout */
+        }
+
+        .card-body span {
+            font-weight: bold; /* Optionally apply bold font weight to statistic values */
+            color: #008373; /* Customize text color */
+        }
     </style>
 </head>
 
@@ -95,9 +109,42 @@
         <button class="btn btn-primary filter-btn" data-status="2" style="background-color: #008373;">Partially Completed</button>
         <button class="btn btn-primary filter-btn" data-status="3" style="margin-right: 1%;margin-left: 1%;background-color: #008373;">Completed</button>
     </div>
+    <!-- Add a new card block to display appointment stats -->
+    <div class="card mt-1">
+        <div class="card-body" style="padding-top: 0;padding-bottom: 0;padding-left: 0;">
+            <h5 class="card-title" style="display: inline-block;">Appointments: </h5> <span id="totalAppointments"></span>
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Display Appointment Statistics in a Single Line -->
+                    <p> 
+                       Pending: <span id="pendingAppointments"></span> &nbsp;&nbsp;
+                       Partially: <span id="partiallyCompletedAppointments"></span> &nbsp;&nbsp;
+                       Paid: <span id="paidAppointments"></span> &nbsp;
+                       Unpaid: <span id="completedAppointments"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if role == 'Doctor' %}
+    <div class="card mt-2">
+        <div class="card-body" style="padding-top: 0;padding-bottom: 0;padding-left: 0;">
+            <h5 class="card-title" style="display: inline-block;">Collection: </h5> <span id="totalAmount"></span>
+            <div class="row"> 
+                <div class="col-md-12">
+                    <p>
+                        Paid: <span id="paidAmount"></span>&nbsp;&nbsp;
+                        Unpaid: <span id="unpaidAmount"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endif%}
     <div id="data-container">
          
     </div>
+     
      <!-- Placeholder message for no appointments -->
      <div id="noAppointmentsMessage" style="display: none;">
         <p style="font-size: 20px;margin-top: 20px;color: rgb(194, 198, 194); background-color: #008373;">No appointments found for Today</p>
@@ -195,6 +242,7 @@
                 // Assuming that data is an array of appointments
                     const html = data.map(appointment => {
                         const link = getAppointmentLink(appointment);
+                        
                         return `
                         
                             <a href="${link}">
@@ -203,8 +251,9 @@
                                     <input type="hidden" name="appointment_id" value="${appointment.appointment_id}" />
                                     <hr>
                                     <div class="label-row">
-                                        <label for="label1" id="disabledLink" class="label-link">${appointment.appointment_name}</label>
+                                        <label for="label1" id="disabledLink" class="label-link"><i class="fa-solid fa-circle-info me-1" style=" font-size: 20px;cursor: pointer;" onclick="handleInfoIconClick(event)" data-appointment-id="${appointment.appointment_id}"></i>${appointment.appointment_name}</label>
                                         <label for="label2" id="disabledLink" class="label-link"><i class="fa-solid fa-user-group" style="color: #008373;"></i> ${appointment.appointment_token}</label>
+                                         
                                     </div>
                                     <div class="label-row">
                                         <div>
@@ -238,6 +287,7 @@
                                 </div>
                             </a>
                         `;
+                         
                     }).join('');
                     // Set the updated HTML content
                     dataContainer.innerHTML = html;
@@ -246,6 +296,7 @@
                     document.getElementById('noAppointmentsMessage').style.display = 'none';
                 }
             }
+             
 
             function getAppointmentLink(appointment) {
                 if (appointment.appointment_status > 1 && role === 'Doctor') {
@@ -258,7 +309,165 @@
                 }
             }
         });
+        // Define handleInfoIconClick function in a global scope
+        const handleInfoIconClick = (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                const appointmentId = event.target.dataset.appointmentId; // Get appointment_id from the clicked element's dataset
+                console.log(appointmentId);
+
+                // Implement custom logic for the info icon click here (e.g., redirect to another page)
+                window.location.href = `/DoctorCollection/patient_history/${appointmentId}`; // Example: Navigate to another screen
+            };
     </script>
+
+<!-- <script>
+    // Function to calculate and update appointment statistics
+    function updateAppointmentStats(data) {
+        const totalAppointments = data.length;
+        const completedAppointments = data.filter(appointment => appointment.appointment_status === 3).length;
+        const paidAppointments = data.filter(appointment => appointment.appointment_status === 4).length;
+        const pendingAppointments = data.filter(appointment => appointment.appointment_status === 1).length;
+        const partiallyCompletedAppointments = data.filter(appointment => appointment.appointment_status === 2).length;
+
+        // Update the HTML content with the calculated values
+        document.getElementById('totalAppointments').textContent = totalAppointments;
+        document.getElementById('completedAppointments').textContent = completedAppointments;
+        document.getElementById('paidAppointments').textContent = paidAppointments;
+        document.getElementById('pendingAppointments').textContent = pendingAppointments;
+        document.getElementById('partiallyCompletedAppointments').textContent = partiallyCompletedAppointments;
+    }
+
+    // Function to fetch data based on selected date
+    function fetchData(selectedDate) {
+        $.ajax({
+            type: 'POST',
+            url: '/DoctorCollection/fetch_data/',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                selectedDate: selectedDate,
+            },
+            success: function (response) {
+                //updateData(response); // Update appointment list
+                updateAppointmentStats(response); // Update appointment stats
+            }
+        });
+    }
+
+    // Event listener for date input change
+    $('#dateInput').on('change', function () {
+        var selectedDate = $(this).val();
+        fetchData(selectedDate);
+    });
+
+    // Initial fetch for current date on page load
+    var currentDate = new Date().toISOString().split('T')[0];
+    fetchData(currentDate);
+</script> -->
+
+<script>
+    // Function to calculate and update appointment and collection statistics
+    function updateStats(data) {
+        const totalAppointments = data.length;
+        const completedAppointments = data.filter(appointment => appointment.appointment_status === 3).length;
+        const paidAppointments = data.filter(appointment => appointment.appointment_status === 4).length;
+        const pendingAppointments = data.filter(appointment => appointment.appointment_status === 1).length;
+        const partiallyCompletedAppointments = data.filter(appointment => appointment.appointment_status === 2).length;
+
+        // Update appointment statistics in the HTML
+        document.getElementById('totalAppointments').textContent = totalAppointments;
+        document.getElementById('completedAppointments').textContent = completedAppointments;
+        document.getElementById('paidAppointments').textContent = paidAppointments;
+        document.getElementById('pendingAppointments').textContent = pendingAppointments;
+        document.getElementById('partiallyCompletedAppointments').textContent = partiallyCompletedAppointments;
+        const role = "{{ role }}";
+        if (role === 'Doctor') {
+            // Calculate collection-related statistics
+                const totalAmount = data.reduce((total, appointment) => {
+                    if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
+                        return total + parseFloat(appointment.consult_fee);
+                    } else {
+                        return total;
+                    }
+                }, 0);
+
+                const paidAmount = data.reduce((total, appointment) => {
+                    if (appointment.appointment_status === 4) {
+                        return total + parseFloat(appointment.consult_fee);
+                    } else {
+                        return total;
+                    }
+                }, 0);
+
+                const unpaidAmount = data.reduce((total, appointment) => {
+                    if (appointment.appointment_status === 3) {
+                        return total + parseFloat(appointment.consult_fee);
+                    } else {
+                        return total;
+                    }
+                }, 0);
+
+                // Update collection statistics in the HTML
+                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
+                document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
+                document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
+
+        }
+        // // Calculate collection-related statistics
+        // const totalAmount = data.reduce((total, appointment) => {
+        //     if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
+        //         return total + parseFloat(appointment.consult_fee);
+        //     } else {
+        //         return total;
+        //     }
+        // }, 0);
+
+        // const paidAmount = data.reduce((total, appointment) => {
+        //     if (appointment.appointment_status === 4) {
+        //         return total + parseFloat(appointment.consult_fee);
+        //     } else {
+        //         return total;
+        //     }
+        // }, 0);
+
+        // const unpaidAmount = data.reduce((total, appointment) => {
+        //     if (appointment.appointment_status === 3) {
+        //         return total + parseFloat(appointment.consult_fee);
+        //     } else {
+        //         return total;
+        //     }
+        // }, 0);
+
+        // // Update collection statistics in the HTML
+        // document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
+        // document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
+        // document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
+    }
+
+    // Function to fetch data based on selected date
+    function fetchData(selectedDate) {
+        $.ajax({
+            type: 'POST',
+            url: '/DoctorCollection/fetch_data/',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                selectedDate: selectedDate,
+            },
+            success: function (response) {
+                updateStats(response); // Update appointment and collection stats
+            }
+        });
+    }
+
+    // Event listener for date input change
+    $('#dateInput').on('change', function () {
+        var selectedDate = $(this).val();
+        fetchData(selectedDate);
+    });
+
+    // Initial fetch for current date on page load
+    var currentDate = new Date().toISOString().split('T')[0];
+    fetchData(currentDate);
+</script>
 
  
 

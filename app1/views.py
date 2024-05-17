@@ -1057,13 +1057,23 @@ def fetch_data(request):
         # print(response.text)
         api_response = response.json()
         data = api_response.get("message_data", [])
-        print(data)
+        # print(data)
+        for appointment in data:
+            if(appointment['consultation_id'] is not None):
+                consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+                api_para={"consultation_id":appointment['consultation_id']}
+                consult_response=requests.post(consultation_url,json=api_para)
+                consult_data=(consult_response.json().get("message_data"))[0]
+                # print(consult_data['consultation_fees'])
+                appointment['consult_fee']= float(consult_data['consultation_fees'])
+                 
+            
         for detail in data:
             if(detail['createdon'] is not None):
                 formatted_date=datetime.datetime.fromtimestamp(detail['createdon']).strftime( "%d-%m-%Y")
                 print(formatted_date)
                 detail['createdon']=formatted_date
-        print('updated',data)
+        # print('updated',data)
         return JsonResponse(data, safe=False) 
     
     return HttpResponse('hi')
@@ -1094,9 +1104,9 @@ def initial_assesment(request,appointment_id):
         vital_data=vital_response.json().get('message_data')
         if(vital_response.json().get('message_code')==1000):
             # print("vitals_data: ",vital_data)
-            return render(request, 'Doctor/initial_assesment.html',{"data1":data1,"vital_data":vital_data})
+            return render(request, 'Doctor/initial_assesment.html',{"data1":data1,"vital_data":vital_data,'pain_scale_range': range(1, 11)})
         else:
-            return render(request, 'Doctor/initial_assesment.html',{"data1":data1})
+            return render(request, 'Doctor/initial_assesment.html',{"data1":data1,'pain_scale_range': range(1, 11)})
 
 
 
@@ -1289,6 +1299,7 @@ def Consultation(request,id):
             print(prescription_response.text)
             prescription_data=(prescription_response.json().get("message_data"))[0]
             print(prescription_data)
+            default_fees=0
             #return HttpResponse("Update consultation details")
         else:
            symptoms_data=0
@@ -1299,6 +1310,13 @@ def Consultation(request,id):
            if('consultation_id' in request.session):
               del request.session['consultation_id']
            print("not present",get_patient_by_appointment_id.get('consultation_id'))
+           consult_id=request.session['consult_id']-1
+           api_consultdata={"consultation_fee_id":consult_id}
+           consult_url="http://13.233.211.102/doctor/api/get_consultation_fee_details/"
+           response=requests.post(consult_url,json=api_consultdata)
+           fees=response.json().get("message_data",{})
+           default_fees=fees['first_visit_fee']
+           print(default_fees,'fees')
         
         All_medicines(requests,request.session['doctor_id'])
     ############################################# KCO for for fetch the values########################
@@ -1325,6 +1343,7 @@ def Consultation(request,id):
                     "kco":kco,"advice":advice,"lab_investigation_report":lab_investigation_report,
                     "medicine_instruction":medicine_instruction,'consult_data':consult_data,'symptoms_data':symptoms_data,
                     'lab_list':lab_list,'medic_list':medic_list,'prescription':prescription_data['prescription_details'],
+                    'default_fees':default_fees,'pain_scale_range': range(1, 11),
                 })
     else:          
 ########################## insert consultaions ########################################
@@ -1606,15 +1625,17 @@ def Consultation(request,id):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse":request.POST["Patient_HeartRatePluse"],
-                    "patient_bpsystolic":request.POST["Patient_BPSystolic"],
-                    "patient_bpdistolic":request.POST["Patient_BPDistolic"],
-                    "patient_painscale":request.POST["Patient_PainScale"],
-                    "patient_respiratoryrate":request.POST["Patient_RespiratoryRate"],
-                    "patient_temparature":request.POST["Patient_Temparature"],
-                    "patient_chest":request.POST["Patient_Chest"],
-                    "patient_ecg":request.POST["Patient_ECG"],
+                    "patient_heartratepluse": request.POST['heart_rate'],
+                    "patient_bpsystolic": request.POST['bp_s'],
+                    "patient_bpdistolic": request.POST['bp_d'],
+                    "patient_painscale": request.POST['pain_scale'],
+                    "patient_respiratoryrate": request.POST['respiratory_rate'],
+                    "patient_temparature": request.POST['temp'],
+                    "patient_chest": request.POST['chest'],
+                    "patient_ecg": request.POST['ecg'],
                     "weight":request.POST['weight'],
+                    "height":request.POST['height'],
+                    "bmi":request.POST['bmi'],
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":request.session['consultation_id']  
@@ -1666,15 +1687,17 @@ def Consultation(request,id):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse":request.POST["Patient_HeartRatePluse"],
-                    "patient_bpsystolic":request.POST["Patient_BPSystolic"],
-                    "patient_bpdistolic":request.POST["Patient_BPDistolic"],
-                    "patient_painscale":request.POST["Patient_PainScale"],
-                    "patient_respiratoryrate":request.POST["Patient_RespiratoryRate"],
-                    "patient_temparature":request.POST["Patient_Temparature"],
-                    "patient_chest":request.POST["Patient_Chest"],
-                    "patient_ecg":request.POST["Patient_ECG"],
+                    "patient_heartratepluse": request.POST['heart_rate'],
+                    "patient_bpsystolic": request.POST['bp_s'],
+                    "patient_bpdistolic": request.POST['bp_d'],
+                    "patient_painscale": request.POST['pain_scale'],
+                    "patient_respiratoryrate": request.POST['respiratory_rate'],
+                    "patient_temparature": request.POST['temp'],
+                    "patient_chest": request.POST['chest'],
+                    "patient_ecg": request.POST['ecg'],
                     "weight":request.POST['weight'],
+                    "height":request.POST['height'],
+                    "bmi":request.POST['bmi'],
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":consultation_id   
@@ -2252,6 +2275,99 @@ def update_user(request,user_id):
             return redirect(get_all_users)
         else:
             return HttpResponse("user data not updated..")
+        
+
+
+#############################Patient History################################
+def patient_history(request,id):
+    print("appointment id",id)
+    api_data = {"appointment_id":id}
+        # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    response = requests.post(api_url, json=api_data)
+
+    if response.status_code == 200:
+        data = response.json().get('message_data')
+        data1=data.get('appointment details', {})
+        request.session['appointment_details']=data1
+        print(data1)
+        patient_url="http://13.233.211.102/pateint/api/get_patient_details_by_phone/"
+        api_data={"phone_number": data1['appointment_mobileno']}
+        patient_response=requests.post(patient_url,api_data)
+        print(patient_response.text)
+        if(patient_response.json().get('message_code')==1000):
+            patient_data=patient_response.json().get("message_data")
+            # print(patient_data)
+            patient_id=patient_data['patient_id']
+            print("if pateint_id",patient_id)
+            consult_url="http://13.233.211.102/medicalrecord/api/get_consultations_by_patient_id/"
+            consult_res=requests.post(consult_url,{"patient_id":patient_id})
+            if(consult_res.json().get('message_code')==1000):
+
+                all_data=consult_res.json().get("message_data")
+                # print(all_data)
+
+                for data in all_data:
+                    formatted_date=datetime.datetime.fromtimestamp(data['consultation_datetime']).strftime( "%d-%m-%Y")
+                    print(formatted_date,'consult date')
+                    data['consultation_datetime']=formatted_date
+                
+                    patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+                    api_para={"consultation_id":data.get('consultation_id')}
+                    patientlab_response=requests.post(patientlab_url,json=api_para)
+                    patientlab_data=(patientlab_response.json().get("message_data"))
+                    # print(patientlab_response.text)
+                    lab_list=[]
+                    for i in patientlab_data:
+                        lab_list.append(i['labinvestigation_category'])
+
+                    # print(lab_list)
+                    data['labs']=lab_list
+                    #################patient Medications################
+                    patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+                    api_para={"consultation_id":data.get('consultation_id')}
+                    patientmedic_response=requests.post(patientmedic_url,json=api_para)
+                    patientmedic_data=(patientmedic_response.json().get("message_data"))
+                    medic_list=[]
+                    for i in patientmedic_data:
+                        #data.update(i)
+                        medic_list.append(i)
+                    data['medicines']=medic_list 
+
+                    finding_symptoms_url="http://13.233.211.102/medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
+                    api_para={"consultation_id":data.get('consultation_id')}
+                    symptoms_response=requests.post(finding_symptoms_url,json=api_para)
+                    symptoms_data=(symptoms_response.json().get("message_data"))[0]
+                    print(symptoms_data) 
+                    data['symptoms_data']=symptoms_data
+
+                print(all_data)
+            
+            else:
+                all_data=[]
+
+
+        else:
+            data1=[]
+            all_data=[]
+            print("no patient details")
+    return render(request,'Doctor/patient_history.html',{'data1':data1,'all_data':all_data})
+
+
+##############select patient #####################
+# def patientselect(request):
+#     api_data = {"appointment_id":121}
+#         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+#     api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+#     response = requests.post(api_url, json=api_data)
+
+#     if response.status_code == 200:
+#         data = response.json().get('message_data')
+#         data1=data.get('appointment details', {})
+#         request.session['appointment_details']=data1
+#         print(data1)
+#     return render(request,'Doctor/patientselect.html',{'data1':data1})
+
          
     
     

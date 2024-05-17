@@ -91,16 +91,41 @@
                 <div class="row">
                   <input type="hidden" name="appointment_id" value={{data1.appointment_id}} />
                   <div class="label-row">
-                    <label for="label1" style="font-size: 20px;">{{ data1.appointment_name }}</label>
+                    <label for="label1" style="font-size: 20px;">Patient: {{ data1.appointment_name }}</label>
                     <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color: #008373;"></i> {{data1.appointment_token}}</label>
                   </div>
                   <div class="label-row">
-                          <label for="label1"style="font-size: 20px;">{% if data1.appointment_gender is 0%}<i class="fa-solid fa-person" style="color: blue; font-size: 30px;"></i>{%else%}<i class="fa-solid fa-person-dress" style="color: rgb(208, 91, 110); font-size: 25px;"></i>{%endif%}</label>
-                          <label for="label2" style="margin-right: 70%;font-size:20px;">{{data1.age}} years</label>
+                    <div style="font-size: 20px;">
+                        {% if data1.appointment_gender == 0 %}
+                            SEX: M
+                        {% else %}
+                            SEX: F
+                        {% endif %}
+                    </div>
+                  </div>
+                
+                  <div class="label-row">
+                      <div style="font-size: 20px;">
+                        {% if data1.age %}
+                          Age: {{ data1.age }}
+                        {% else %}
+                          Age:  
+                        {% endif %}
+                      </div>
                   </div>
                   <div class="label-row">
-                          <label for="label1"style="font-size: 20px;"><i class="fa-solid fa-phone"></i>{{data1.appointment_mobileno}}</label>
-                          <label for="label2" style="font-size: 20px;"><i class="fa-solid fa-circle-user"></i> {{data1.appointment_status}}</label>
+                          <label for="label1"style="font-size: 20px;">Mobile: {{data1.appointment_mobileno}}</label>
+                          <!-- <label for="label2" style="font-size: 20px;"><i class="fa-solid fa-circle-user"></i> {{data1.appointment_status}}</label> -->
+                          <label for="label2" style="font-size: 20px;">
+                            <i class="fa-solid fa-circle-user"></i>
+                            {% if data1.appointment_status == 1 %}
+                                Open
+                            {% elif data1.appointment_status == 2 %}
+                                In Process
+                            {% elif data1.appointment_status >= 3 %}
+                                Completed
+                            {% endif %}
+                          </label>
                   </div>  
             </div>
         </div>
