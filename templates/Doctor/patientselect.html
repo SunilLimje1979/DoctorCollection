@@ -1,93 +1,265 @@
+<!--  
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Selection</title>
-    
 
-    <!-- !-- Bootstrap CSS --> 
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons CSS -->
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         .navbar-orange {
-          background-color:#008373;
-          box-shadow: 0px 4px 8px;
+            background-color: #008373;
+            box-shadow: 0px 4px 8px;
         }
-        .navbar-brand{
+        .navbar-brand {
             color: #ffffff;
         }
-        .btn1{
-            color:#000000 ;
+        .btn1 {
+            color: #000000;
             background-color: #ffffff;
-
         }
-
         .label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      /* .input-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: center;
-        color: inherit;
-        text-decoration: none;
-        margin-bottom:5px ;
-      }
-
-      .input-row label {
-        flex: 1;
-        text-align: center;
-        padding-right: 0px;
-        font-size: 20px;
-        text-decoration: none;
-        
-      }
-
-      .input-row input {
-        flex: 2;
-        width: 100%;
-        margin: 5px;
-        padding: 5px;
-        box-sizing: border-box;
-      } */
-
-      .row {
-        display: flex;
-        align-items: right;
-      }
-
-      .form-control{
-        border-color: #000000;
-      }
-        
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            align-items: right;
+        }
+        .form-control {
+            border-color: #000000;
+        }
     </style>
-  </head>
-  <body>
-    <form  method="post">
+</head>
+<body>
+    <form method="post">
         {% csrf_token %}
         <nav class="navbar navbar-orange fixed-top">
             <div class="container-fluid">
-              
-              <a class="navbar-brand"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Patient Selection</a>     
-              <!-- <button type="submit" class="btn btn-primary mx-3" style="background-color:#ffffff;color: #000000;">
-                <i class="fas fa-save"></i> 
-                 
-              </button> -->
+                <a class="navbar-brand" href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Patient Selection</a>
             </div>
-          </nav>
+        </nav>
+
+        <div class="table-responsive mb-2" style="margin-top: 80px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Mobile no.</th>
+                        <th>Name</th>
+                        <th>Use</th>
+                    </tr>
+                </thead>
+                <tbody id="medicineTableBody">
+             
+                    {% for data in data1 %}
+                    <tr>
+                        <td>{{ data.patient_mobileno }}</td>
+                        <td>{{ data.patient_firstname }} {{ data.patient_lastname }}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm useBtn">Use</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <p>Mobile no.: <span id="mobileNumber">{{ data2.appointment_mobileno }}</span>  Name: <span id="patientName">{{ data2.appointment_name }}</span></p>
+            <button type="button" id="addMemberBtn" class="btn btn-primary">Add Member</button>
+        </div>
     </form>
+
+    <script>
+        document.getElementById('addMemberBtn').addEventListener('click', function() {
+            const mobileNumber = document.getElementById('mobileNumber').textContent;
+            const patientName = document.getElementById('patientName').textContent;
+            const tableBody = document.getElementById('medicineTableBody');
+
+            // Check if the row already exists
+            if (document.getElementById('newRow')) {
+                return; // Row already exists, so do nothing
+            }
+
+            // Create a new table row
+            const newRow = document.createElement('tr');
+            newRow.id = 'newRow'; // Set an ID for the new row
+
+            // Create cells for the new row
+            const mobileCell = document.createElement('td');
+            mobileCell.textContent = mobileNumber;
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = patientName;
+
+            const actionCell = document.createElement('td');
+            const useButton = document.createElement('button');
+            useButton.textContent = 'Use';
+            useButton.classList.add('btn', 'btn-danger', 'btn-sm', 'useBtn');
+            actionCell.appendChild(useButton);
+
+            // Append cells to the new row
+            newRow.appendChild(mobileCell);
+            newRow.appendChild(nameCell);
+            newRow.appendChild(actionCell);
+
+            // Append the new row to the table body
+            tableBody.appendChild(newRow);
+
+            // Disable the "Add Member" button
+            document.getElementById('addMemberBtn').disabled = true;
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Selection</title>
+
+    <!-- Bootstrap CSS --> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .navbar-orange {
+            background-color: #008373;
+            box-shadow: 0px 4px 8px;
+        }
+        .navbar-brand {
+            color: #ffffff;
+        }
+        .btn1 {
+            color: #000000;
+            background-color: #ffffff;
+        }
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            align-items: right;
+        }
+        .form-control {
+            border-color: #000000;
+        }
+    </style>
+</head>
+<body>
+        <nav class="navbar navbar-orange fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Patient Selection</a>
+            </div>
+        </nav>
+
+        <div class="table-responsive mb-2" style="margin-top: 80px;">
+            <p>Please select the assosciate patient with the phone no.: <strong>{{ data2.appointment_mobileno }}</strong></p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <!-- <th>Mobile no.</th> -->
+                        <th>Name</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+                <tbody id="medicineTableBody">
+                    <!-- Dynamically populated rows will go here -->
+                    {% for data in data1 %}
+                    <tr>
+                        <!-- <td>{{ data.patient_mobileno }}</td> -->
+                        <td>{{ data.patient_firstname }} {{ data.patient_lastname }}</td>
+                        <td>
+                            <!-- <button type="button" class="btn btn-danger btn-sm useBtn">Select</button> -->
+                            <form action="{% url  'initial_assesment' data2.appointment_id %}" method="Get" class="select-form">
+                                {% csrf_token %}
+                                <!-- <input type="hidden" name="appointment_id" value="{{ data2.appointment_id }}"> -->
+                                <input type="hidden" name="patient_id" value="{{ data.patient_id }}">
+                                <button type="submit" class="btn btn-danger btn-sm useBtn">Select</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- <div class="mt-4">
+            <p>Current appointment details</p>
+            <p>Mobile no.: <span id="mobileNumber">{{ data2.appointment_mobileno }}</span>  Name: <span id="patientName">{{ data2.appointment_name }}</span></p>
+            <button type="button" id="addMemberBtn" class="btn btn-primary">Add Member</button>
+        </div> -->
+        <div class="mt-4">
+            <p>Current appointment details</p>
+            <p>Mobile no.: <span id="mobileNumber">{{ data2.appointment_mobileno }}</span>  Name: <span id="patientName">{{ data2.appointment_name }}</span></p>
+            
+            <!-- Hidden form for the "Add Member" button -->
+            <form action="{% url 'add_member' %}" method="post" id="addMemberForm">
+                {% csrf_token %}
+                <input type="hidden" name="appointment_id" value="{{ data2.appointment_id }}">
+                <button type="submit" class="btn btn-primary">Add Member</button>
+            </form>
+        </div>
+   
+
+    <!-- <script>
+        document.getElementById('addMemberBtn').addEventListener('click', function() {
+            const mobileNumber = document.getElementById('mobileNumber').textContent;
+            const patientName = document.getElementById('patientName').textContent;
+            const tableBody = document.getElementById('medicineTableBody');
+
+            // Check if the row already exists
+            if (document.getElementById('newRow')) {
+                return; // Row already exists, so do nothing
+            }
+
+            // Create a new table row
+            const newRow = document.createElement('tr');
+            newRow.id = 'newRow'; // Set an ID for the new row
+
+            // Create cells for the new row
+            // const mobileCell = document.createElement('td');
+            // mobileCell.textContent = mobileNumber;
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = patientName;
+
+            const actionCell = document.createElement('td');
+            const useButton = document.createElement('button');
+            useButton.textContent = 'Select';
+            useButton.classList.add('btn', 'btn-danger', 'btn-sm', 'useBtn');
+            actionCell.appendChild(useButton);
+
+            // Append cells to the new row
+            // newRow.appendChild(mobileCell);
+            newRow.appendChild(nameCell);
+            newRow.appendChild(actionCell);
+
+            // Append the new row to the table body
+            tableBody.appendChild(newRow);
+
+            // Hide the "Add Member" button
+            document.getElementById('addMemberBtn').style.display = 'none';
+        });
+    </script> -->
+    
+</body>
+</html>
+

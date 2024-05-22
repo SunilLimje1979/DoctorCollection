@@ -304,8 +304,12 @@
                 } else if (appointment.appointment_status >= 3 && role !== 'Doctor') {
                     // Add your custom link for appointment_status === 3 and role is not 'Doctor'
                     return `/DoctorCollection/for_user/${appointment.appointment_id}` ;
-                }else {
+                }else if (appointment.appointment_status === 2 && role !== 'Doctor') {
                     return `/DoctorCollection/initial_assesment/${appointment.appointment_id}`;
+                    
+                }else {
+                    // return `/DoctorCollection/initial_assesment/${appointment.appointment_id}`;
+                    return `/DoctorCollection/patientselect/${appointment.appointment_id}`;
                 }
             }
         });

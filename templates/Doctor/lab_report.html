@@ -138,6 +138,11 @@
         </script>
         {% endif %}
 
+        <!-- Search Bar -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by Investigation Name">
+        </div>
+
         <!-- Lab Report Cards -->
         {% for i in lab_reports %}
         <div class="medicine-card">
@@ -172,6 +177,20 @@
                 window.location.href = "/DoctorCollection/delete_lab_report/" + itemId + "/";
             }
         }
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const labReports = document.querySelectorAll('.medicine-card');
+
+            labReports.forEach(function (report) {
+                const investigationName = report.querySelector('.medicine-label').textContent.toLowerCase();
+                if (investigationName.includes(searchValue)) {
+                    report.style.display = 'flex';
+                } else {
+                    report.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 

@@ -1096,6 +1096,7 @@ def initial_assesment(request,appointment_id):
             data1=data.get('appointment details', {})
             request.session['appointment_details']=data1
             print(data1)
+            data1['patient_id']=request.GET.get('patient_id')
         
         # vital_url="http://localhost:8000/api/get_patientvitals_by_appointment_id/"
         vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
@@ -1103,7 +1104,7 @@ def initial_assesment(request,appointment_id):
         # print(vital_response.text)
         vital_data=vital_response.json().get('message_data')
         if(vital_response.json().get('message_code')==1000):
-            # print("vitals_data: ",vital_data)
+            print("vitals_data: ",vital_data)
             return render(request, 'Doctor/initial_assesment.html',{"data1":data1,"vital_data":vital_data,'pain_scale_range': range(1, 11)})
         else:
             return render(request, 'Doctor/initial_assesment.html',{"data1":data1,'pain_scale_range': range(1, 11)})
@@ -1112,49 +1113,11 @@ def initial_assesment(request,appointment_id):
 
     else:
         print(request.POST['phoneno'])
-        # patient_url="http://localhost:8000/api/get_patient_details_by_phone/"
-        patient_url="http://13.233.211.102/pateint/api/get_patient_details_by_phone/"
-        api_data={"phone_number":request.POST['phoneno']}
-        patient_response=requests.post(patient_url,api_data)
-        print(patient_response.text)
-        if(patient_response.json().get('message_code')==1000):
-            patient_data=patient_response.json().get("message_data")
-            print(patient_data)
-            patient_id=patient_data['patient_id']
-            print("if pateint_id",patient_id)
-        else:
-            appointment_details=request.session['appointment_details']
-            print(appointment_details)
-            fullname=(appointment_details['appointment_name']).split(" ")
-            print(fullname)
-            fullname=[item for item in fullname if item != '']
-            print(fullname)
-            if(len(fullname)<=1):
-                fullname.append('none')
-            
-            # patient_url="http://localhost:8000/api/insert_patient/"
-            patient_url="http://13.233.211.102/pateint/api/insert_patient/"
-            patient_apidata={
-                "patient_mobileno": appointment_details['appointment_mobileno'],
-                "patient_firstname": fullname[0],
-                "patient_lastname": fullname[1],
-                # "patient_fateherhusbandname": "vijay",
-                "patient_gender":appointment_details['appointment_gender'],
-                "patient_dateofbirth": "2023-12-15",
-                "patient_maritalstatus": 1,
-                "patient_aadharnumber": "1234567890123456",
-                "patient_universalhealthid": 123456,
-                "patient_bloodgroup": 1,
-                "patient_emergencycontact": "9876543210",
-                "patient_address": "123 Main Street",
-                "patient_cityid": 1,
-                "patient_stateid": 1,
-                "patient_countryid": 1
-            }
-            patientdata_response=requests.post(patient_url,json=patient_apidata)
-            print(patientdata_response.text)
-            patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
-            print("else patient_id",patient_id)
+        print(request.POST['patient_id'])
+        patient_id=request.POST['patient_id']
+
+        # return HttpResponse("else initial assesement")
+         
 
         patient_data = {
             "patient_id":patient_id,
@@ -1194,7 +1157,7 @@ def initial_assesment(request,appointment_id):
         # return redirect(consultation)
         print('initial assessment part:',request.session['role'])
         if(request.session['role']=='Doctor'):
-            return redirect('consultation', id=request.session['appointment_id'])
+            return redirect('consultation', id=appointment_id)
         else:
             return redirect(get_all_doctor_appointments)
 
@@ -2289,16 +2252,29 @@ def patient_history(request,id):
     if response.status_code == 200:
         data = response.json().get('message_data')
         data1=data.get('appointment details', {})
-        request.session['appointment_details']=data1
         print(data1)
-        patient_url="http://13.233.211.102/pateint/api/get_patient_details_by_phone/"
-        api_data={"phone_number": data1['appointment_mobileno']}
+        fullname=(data1['appointment_name']).split(" ")
+        print(fullname)
+        fullname=[item for item in fullname if item != '']
+        print(fullname)
+        if(len(fullname)<=1):
+            fullname.append('none')
+        # patient_url="http://13.233.211.102/pateint/api/get_patient_details_by_phone/"
+        # patient_url="http://127.0.0.1:8000/pateint/api/get_patient_details_by_phone/"
+        patient_url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
+        api_data={"mobile_number": data1['appointment_mobileno']}
         patient_response=requests.post(patient_url,api_data)
         print(patient_response.text)
         if(patient_response.json().get('message_code')==1000):
-            patient_data=patient_response.json().get("message_data")
-            # print(patient_data)
-            patient_id=patient_data['patient_id']
+            # patient_data=patient_response.json().get("message_data")
+            patient_data=patient_response.json().get('patients_data')
+            print(patient_data)
+            patient_id=0
+            for patient in patient_data:
+                if(patient['patient_firstname']==fullname[0] and patient['patient_lastname']==fullname[1]):
+                    patient_id=patient['patient_id']
+                    break
+             
             print("if pateint_id",patient_id)
             consult_url="http://13.233.211.102/medicalrecord/api/get_consultations_by_patient_id/"
             consult_res=requests.post(consult_url,{"patient_id":patient_id})
@@ -2355,18 +2331,114 @@ def patient_history(request,id):
 
 
 ##############select patient #####################
-# def patientselect(request):
-#     api_data = {"appointment_id":121}
-#         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-#     api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
-#     response = requests.post(api_url, json=api_data)
+def patientselect(request,id):  
+    api_data = {"appointment_id":id}
+        # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    response = requests.post(api_url, json=api_data)
 
-#     if response.status_code == 200:
-#         data = response.json().get('message_data')
-#         data1=data.get('appointment details', {})
-#         request.session['appointment_details']=data1
-#         print(data1)
-#     return render(request,'Doctor/patientselect.html',{'data1':data1})
+    if response.status_code == 200:
+        data = response.json().get('message_data')
+        data2=data.get('appointment details', {})
+        request.session['appointment_details']=data2
+        print(data2)
+        
+    url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
+    # res=requests.post(url,json={"mobile_number":9876564532})
+    res=requests.post(url,json={"mobile_number": data2['appointment_mobileno']})
+    if(res.json().get('message_code')==1000):
+        data1=res.json().get('patients_data')
+        print(data1)
+    else:
+        print("no patient avaliable for current phone number")
+        appointment_details=request.session['appointment_details']
+        print(appointment_details)
+        fullname=(appointment_details['appointment_name']).split(" ")
+        print(fullname)
+        fullname=[item for item in fullname if item != '']
+        print(fullname)
+        if(len(fullname)<=1):
+            fullname.append('none')
+        
+        # patient_url="http://localhost:8000/pateint/api/insert_patient/"
+        patient_url="http://13.233.211.102/pateint/api/insert_patient/"
+        patient_apidata={
+            "patient_mobileno": appointment_details['appointment_mobileno'],
+            "patient_firstname": fullname[0],
+            "patient_lastname": fullname[1],
+            # "patient_fateherhusbandname": "vijay",
+            "patient_gender":appointment_details['appointment_gender'],
+            "patient_dateofbirth": "2023-12-15",
+            "patient_maritalstatus": 1,
+            "patient_aadharnumber": "1234567890123456",
+            "patient_universalhealthid": 123456,
+            "patient_bloodgroup": 1,
+            "patient_emergencycontact": "9876543210",
+            "patient_address": "123 Main Street",
+            "patient_cityid": 1,
+            "patient_stateid": 1,
+            "patient_countryid": 1
+        }
+        patientdata_response=requests.post(patient_url,json=patient_apidata)
+        print(patientdata_response.text)
+        patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
+        print("else patient_id",patient_id)
+        data2['patient_id']=patient_id
+        data1=[]
+        return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
+         
+
+    return render(request,'Doctor/patientselect.html',{'data1':data1,'data2':data2})
+
+
+def add_member(request):
+    appointment_id = request.POST.get('appointment_id')
+    print(appointment_id)
+    api_data = {"appointment_id":appointment_id}
+        # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    response = requests.post(api_url, json=api_data)
+
+    if response.status_code == 200:
+        data = response.json().get('message_data')
+        data2=data.get('appointment details', {})
+        request.session['appointment_details']=data2
+        print(data2)
+        appointment_details=request.session['appointment_details']
+        print(appointment_details)
+        fullname=(appointment_details['appointment_name']).split(" ")
+        print(fullname)
+        fullname=[item for item in fullname if item != '']
+        print(fullname)
+        if(len(fullname)<=1):
+            fullname.append('none')
+        
+        # patient_url="http://localhost:8000/pateint/api/insert_patient/"
+        patient_url="http://13.233.211.102/pateint/api/insert_patient/"
+        patient_apidata={
+            "patient_mobileno": appointment_details['appointment_mobileno'],
+            "patient_firstname": fullname[0],
+            "patient_lastname": fullname[1],
+            # "patient_fateherhusbandname": "vijay",
+            "patient_gender":appointment_details['appointment_gender'],
+            "patient_dateofbirth": "2023-12-15",
+            "patient_maritalstatus": 1,
+            "patient_aadharnumber": "1234567890123456",
+            "patient_universalhealthid": 123456,
+            "patient_bloodgroup": 1,
+            "patient_emergencycontact": "9876543210",
+            "patient_address": "123 Main Street",
+            "patient_cityid": 1,
+            "patient_stateid": 1,
+            "patient_countryid": 1
+        }
+        patientdata_response=requests.post(patient_url,json=patient_apidata)
+        print(patientdata_response.text)
+        patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
+        print("else patient_id",patient_id)
+        data2['patient_id']=patient_id
+        return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
+    # return redirect('patientselect', id=appointment_id)
 
          
     

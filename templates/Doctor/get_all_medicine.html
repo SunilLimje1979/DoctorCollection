@@ -143,6 +143,11 @@
         </script>
         {% endif %}
 
+        <!-- Search Bar -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by Medicine Name">
+        </div>
+
         <!-- Medicine Cards -->
         {% for i in all_medicines %}
         <div class="medicine-card">
@@ -199,6 +204,20 @@
         window.location.href = "/DoctorCollection/delete_medicine/" + itemId + "/";
     }
     }
+
+    document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const medicineCards = document.querySelectorAll('.medicine-card');
+
+            medicineCards.forEach(function (card) {
+                const medicineName = card.querySelector('.medicine-label').textContent.toLowerCase();
+                if (medicineName.includes(searchValue)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
 </script>
 </body>
 
