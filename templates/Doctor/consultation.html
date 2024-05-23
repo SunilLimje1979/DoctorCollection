@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}"/>
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" /> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <style>
       .navbar-orange {
           background-color:#008373;
@@ -88,6 +89,31 @@
           .navbar, #title {
             display: none;
           }
+        }
+
+          /* Custom CSS for select2 */
+        .select2-container--default .select2-selection--single {
+          border: 1px solid #ced4da;
+          border-radius: .25rem;
+          height: calc(2.50rem + 2px);
+          background-color: #fff;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: calc(1.65rem + 2px);
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: calc(2.50rem + 2px);
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #000 transparent transparent transparent;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 6px;
+            right: 8px;
+        }
+        .select2-container--default .select2-dropdown {
+            max-height: 750px; /* Adjust the maximum height as needed */
+            overflow-y: auto; /* Enable vertical scrollbar if needed */
         }
         
     </style>
@@ -393,7 +419,7 @@
             <!-- Form for adding medicine details -->
             <div class="mb-3">
                 <!-- Search input for the dropdown -->
-                <input type="text" id="dropdownMedicineSearch" class="form-control mb-2" placeholder="Search medicine name">
+                <!-- <input type="text" id="dropdownMedicineSearch" class="form-control mb-2" placeholder="Search medicine name"> -->
                 <!-- <label for="medicineSelect" class="form-label">Medicine</label> -->
                 <select class="form-select" id="medicineSelect" size="1">
                     <option value="" disabled selected hidden>Select Medicine</option>
@@ -509,11 +535,11 @@
             </div> 
             <div class="form-group">
                <!-- Search input for the dropdown -->
-              <input type="text" id="dropdownSearch" class="form-control mb-2" placeholder="Search lab name">
+              <!-- <input type="text" id="dropdownSearch" class="form-control mb-2" placeholder="Search lab name"> -->
 
                <!-- {{lab_investigation_report}}  -->
               <select class="form-control search form-select" name="labOptions"   onchange="updateTextArea()" id="labDropdown" size="1">
-                <option value="" disabled selected hidden>None</option>
+                <option value="" disabled selected hidden>Select Lab</option>
                 <option value="clear">Clear Selection</option>
             
                 {% for lab in lab_investigation_report  %}
@@ -699,35 +725,35 @@
           }
       }
       // Reset the search input and dropdown
-      var searchInput = document.getElementById('dropdownSearch');
-      searchInput.value = '';
-      const options = selectElement.querySelectorAll('option');
-      options.forEach(option => option.style.display = '');
-      selectElement.size = 1; // Close the dropdown
+      // var searchInput = document.getElementById('dropdownSearch');
+      // searchInput.value = '';
+      // const options = selectElement.querySelectorAll('option');
+      // options.forEach(option => option.style.display = '');
+      // selectElement.size = 1; // Close the dropdown
   }
 
-  document.getElementById('dropdownSearch').addEventListener('input', function () {
-      const searchValue = this.value.toLowerCase();
-      const dropdown = document.getElementById('labDropdown');
-      const options = dropdown.querySelectorAll('option');
+  // document.getElementById('dropdownSearch').addEventListener('input', function () {
+  //     const searchValue = this.value.toLowerCase();
+  //     const dropdown = document.getElementById('labDropdown');
+  //     const options = dropdown.querySelectorAll('option');
 
-      if (searchValue === '') {
-          options.forEach(option => option.style.display = '');
-          dropdown.size = 1; // Close the dropdown if search is cleared
-      } else {
-          options.forEach(function (option) {
-              if (option.value.toLowerCase().includes(searchValue) || option.value === "" || option.value === "clear") {
-                  option.style.display = '';
-              } else {
-                  option.style.display = 'none';
-              }
-          });
+  //     if (searchValue === '') {
+  //         options.forEach(option => option.style.display = '');
+  //         dropdown.size = 1; // Close the dropdown if search is cleared
+  //     } else {
+  //         options.forEach(function (option) {
+  //             if (option.value.toLowerCase().includes(searchValue) || option.value === "" || option.value === "clear") {
+  //                 option.style.display = '';
+  //             } else {
+  //                 option.style.display = 'none';
+  //             }
+  //         });
 
-          // Open the dropdown by setting size based on filtered options
-          const visibleOptions = Array.from(options).filter(option => option.style.display === '');
-          dropdown.size = visibleOptions.length > 1 ? visibleOptions.length : 2;
-      }
-  });
+  //         // Open the dropdown by setting size based on filtered options
+  //         const visibleOptions = Array.from(options).filter(option => option.style.display === '');
+  //         dropdown.size = visibleOptions.length > 1 ? visibleOptions.length : 2;
+  //     }
+  // });
 
   function saveData() {
       // Display loading circle on the button
@@ -981,6 +1007,14 @@
     });
  
 </script> -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#labDropdown').select2();
+        });
+</script>
+<!--
 <script>
   document.addEventListener('DOMContentLoaded', () => {
       const medicineSelect = document.getElementById('medicineSelect');
@@ -1163,7 +1197,156 @@
       }
   });
 </script>
+ -->
+ <script>
+  // Initialize Select2
+  $(document).ready(function() {
+      $('#medicineSelect').select2();
+  });
 
+  document.addEventListener('DOMContentLoaded', () => {
+      const medicineSelect = document.getElementById('medicineSelect');
+      const modeField = document.getElementById('modeField');
+      const daysField = document.getElementById('daysField');
+      const dosagesField = document.getElementById('dosagesField');
+      const languageSelect = document.getElementById('languageSelect');
+      const instructionsSelect = document.getElementById('instructionsSelect');
+      const addMedicineBtn = document.getElementById('addMedicineBtn');
+      const medicineTableBody = document.getElementById('medicineTableBody');
+      const Medicine_input = document.getElementById('Medicine_input');
+      const Mode_input = document.getElementById('Mode_input');
+      const Days_input = document.getElementById('Days_input');
+      const Dosage_input = document.getElementById('Dosage_input');
+      const Language_input = document.getElementById('Language_input');
+      const Instructions_input = document.getElementById('Instructions_input');
+
+      // Initialize hidden fields with existing medicine list data
+      updateHiddenInputValues();
+
+      // Event listener for when a medicine is selected
+      $('#medicineSelect').on('change', function() {
+          const selectedOption = this.options[this.selectedIndex];
+          const form = selectedOption.getAttribute('data-form');
+          const duration = selectedOption.getAttribute('data-duration');
+          const dosages = selectedOption.getAttribute('data-dosages');
+
+          // Update fields in the form based on selected medicine
+          modeField.value = getModeLabel(form);
+          daysField.value = duration;
+          dosagesField.value = dosages;
+      });
+
+      // Event listener for adding medicine
+      addMedicineBtn.addEventListener('click', (event) => {
+          event.preventDefault(); // Prevent default form submission behavior
+
+          const selectedMedicine = medicineSelect.value;
+          const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+          const mode = selectedOption.getAttribute('data-form'); // Get mode from selected option
+          const days = daysField.value;
+          const dosage = dosagesField.value;
+          const instructions = instructionsSelect.value;
+          const instructionsText = instructionsSelect.options[instructionsSelect.selectedIndex].text;
+          const language = languageSelect.value;
+
+          // Add row to the medicine table
+          const newRow = medicineTableBody.insertRow();
+          newRow.innerHTML = `
+              <td>${selectedMedicine}</td>
+              <td>${getModeLabel(mode)}</td>
+              <td>${days}</td>
+              <td>${dosage}</td>
+              <td>${instructionsText}</td>
+              <td><button class="btn btn-danger btn-sm removeBtn">Remove</button></td>
+          `;
+
+          // Update hidden input values after adding medicine
+          updateHiddenInputValues();
+
+          // Clear the form fields after adding medicine
+          resetForm();
+      });
+
+      // Event delegation to handle remove button clicks
+      medicineTableBody.addEventListener('click', (event) => {
+          if (event.target.classList.contains('removeBtn')) {
+              const row = event.target.closest('tr');
+              medicineTableBody.removeChild(row);
+
+              // Update hidden input values after removal
+              updateHiddenInputValues();
+          }
+      });
+
+      // Function to update hidden input values after adding/removing a row
+      function updateHiddenInputValues() {
+          const medicineRows = Array.from(medicineTableBody.getElementsByTagName('tr'));
+          const medicines = [];
+          const modes = [];
+          const days = [];
+          const dosages = [];
+          const instructions = [];
+          const languages = [];
+
+          medicineRows.forEach(row => {
+              const cells = row.cells;
+              medicines.push(cells[0].textContent);
+              modes.push(getModeValue(cells[1].textContent));
+              days.push(cells[2].textContent);
+              dosages.push(cells[3].textContent);
+              instructions.push(instructionsSelect.value); // Get instructions from the 5th cell
+              languages.push(languageSelect.value); // Store language for each row (assuming language is static per selection)
+          });
+
+          // Join arrays into comma-separated strings for hidden input values
+          Medicine_input.value = medicines.join(',');
+          Mode_input.value = modes.join(',');
+          Days_input.value = days.join(',');
+          Dosage_input.value = dosages.join(',');
+          Instructions_input.value = instructions.join(',');
+          Language_input.value = languages.join(',');
+      }
+
+      // Function to get mode label based on mode value
+      function getModeLabel(value) {
+          switch (value) {
+              case '1':
+                  return 'Tab';
+              case '2':
+                  return 'Syp';
+              case '3':
+                  return 'Pwd';
+              default:
+                  return 'Unknown';
+          }
+      }
+
+      // Function to get mode value based on mode label
+      function getModeValue(label) {
+          label = label.trim(); // Trim whitespace from the label
+          switch (label) {
+              case 'Tab':
+                  return 1;
+              case 'Syp':
+                  return 2;
+              case 'Pwd':
+                  return 3;
+              default:
+                  return 0;
+          }
+      }
+
+      // Function to reset the form fields
+      function resetForm() {
+          medicineSelect.selectedIndex = 0;
+          modeField.value = '';
+          daysField.value = '';
+          dosagesField.value = '';
+          languageSelect.selectedIndex = 0;
+          instructionsSelect.selectedIndex = 0;
+      }
+  });
+</script>
 
 <script>
   // Get the input elements
@@ -1255,6 +1438,13 @@ document.getElementById('dropdownSearch').addEventListener('input', function () 
   }
 });
 </script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#medicineSelect').select2();
+        });
+</script>
 
 </body>
 </html>
