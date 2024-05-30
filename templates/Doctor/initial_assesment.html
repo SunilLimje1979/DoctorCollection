@@ -105,28 +105,43 @@
                   <!-- {{data}} -->
                    <!-- {{vitals_id }}  -->
                 <input type="hidden" name="appointment_id" value={{data1.appointment_id}} />
-                <div class="label-row">
-                  <label for="label1" style="font-size: 20px;">Patient: {{ data1.appointment_name }}</label>
-                  <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color: #008373;"></i> {{data1.appointment_token}}</label>
+                <div class="label-row d-flex flex-start">
+                  <label for="label1" style="font-size: 20px;">Patient:  </label>
+                  <input type="text" class="form-control form-control-sm me-4 ms-1" style="font-size: 16px;"  id="patient_name" name="patient_name" value="{% if data1 %}{{ data1.appointment_name }}{% endif %}">
+                  <i class="fa-solid fa-user-group" style="color: #008373;font-size: 20px;"></i>
+                  <label for="label2"style="font-size: 20px; ">  {{data1.appointment_token}}</label>
                 </div>
-                <div class="label-row">
-                  <div style="font-size: 20px;">
+                <div class="label-row mt-2">
+                  <!-- <div style="font-size: 20px;">
                       {% if data1.appointment_gender == 0 %}
                           SEX: M
                       {% else %}
                           SEX: F
                       {% endif %}
-                  </div>
+                  </div> -->
+                  <label for="sex" class="form-label" style="font-size: 20px;">Sex:
+                     <select class="form-select-sm" style="margin-left: 30px; width: 50px; font-size: 16px;" id="sex" name="sex">
+                              <option value="0" {% if data1.appointment_gender == 0 %}selected{% endif %}>M</option>
+                              <option value="1" {% if data1.appointment_gender == 1 %}selected{% endif %}>F</option>
+                      </select>
+                  </label>
+                   
+
                 </div>
               
-                <div class="label-row">
-                    <div style="font-size: 20px;">
+                <div class="label-row d-flex flex-start">
+                    <!-- <div style="font-size: 20px;">
                       {% if data1.age %}
                         Age: {{ data1.age }}
                       {% else %}
                         Age:  
                       {% endif %}
-                    </div>
+                    </div> -->
+                    <!-- <label for="age" class="form-label" style="font-size: 20px;">Age:  </label>
+                    <input type="number" class="form-control form-control-sm" id="age" name="age" style="margin-left: 30px;margin-right: 204px; font-size: 16px;" value="{% if data1.age %}{{ data1.age }}{% endif %}"> -->
+                    <label for="Dob" class="form-label" style="font-size: 20px;">DOB:  </label>
+                    <input type="date" class="form-control form-control-sm" style="margin-left: 26px;margin-right: 120px;" id="dob" name="dob" value="{% if data1.dob %}{{ data1.dob }}{% endif %}" required>
+                     
                 </div>
                 <div class="label-row">
                         <label for="label1"style="font-size: 20px;">Mobile: {{data1.appointment_mobileno}}</label>
@@ -211,6 +226,15 @@
                   <div class="d-flex flex-start mt-2">
                     <label for="" class="col-5" style="font-size: 18px;">ECG</label>
                     <textarea id="inputField" class="form-control form-control-sm me-2" name="ecg" placeholder=" " required style="margin-right: 1%; font-size: 16px; height: 50px;">{{ vital_data.patient_ecg }}</textarea>
+                  </div>
+                  <div class="d-flex flex-start mt-2">
+                    <label for="" class="col-5" style="font-size: 18px;">Aadhar No.</label>
+                    <input type="text" class="form-control form-control-sm me-2" name="aadharNumber" value="{% if data1.aadharnumber %}{{data1.aadharnumber}}{% endif %}" pattern="[0-9]{12}" title="Please enter a valid 12-digit Aadhar number" placeholder="Aadhar Number">
+                  </div>
+                  <div class="d-flex flex-start mt-2">
+                    <label for="" class="col-5" style="font-size: 18px;">Health Id</label>
+                    <input type="number" id="inputField" class="form-control form-control-sm me-2" name="health_id" value="{% if data1.health_id %}{{data1.health_id}}{% endif %}" placeholder=" "  style="margin-right:01% ; font-size: 16px;" >
+                   
                   </div>
                   <!-- <div class="d-flex flex-start mt-2">
                     <label for="" class="col-5" style="font-size: 18px;">ECG</label>

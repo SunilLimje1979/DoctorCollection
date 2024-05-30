@@ -44,7 +44,18 @@ urlpatterns = [
     # path("consultpdf/",showpdf,name='consultpdf'),
     path("patient_history/<int:id>",patient_history,name='patient_history'),
     path("patientselect/<int:id>",patientselect,name='patientselect'),
-    path("add_member/",add_member,name='add_member')
+    path("add_member/",add_member,name='add_member'),
+    path("all_diseases/",all_diseases,name='all_diseases'),
+    path("insert_disease/",insert_disease,name='insert_disease'),
+    path("all_allergy/",all_allergy,name='all_allergy'),
+    path("insert_allergy/",insert_allergy,name='insert_allergy'),
+    path("all_kco/",all_kco,name='all_kco'),
+    path("insert_kco/",insert_kco,name='insert_kco'),
+    path("all_advice/",all_advice,name='all_advice'),
+    path("insert_advice/",insert_advice,name='insert_advice'),
+    path("update_kco/<int:id>",update_kco,name='update_kco'),
+    path("update_advice/<int:id>",update_advice,name='update_advice'),
+
    
      
 ]

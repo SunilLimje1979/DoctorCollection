@@ -1097,6 +1097,22 @@ def initial_assesment(request,appointment_id):
             request.session['appointment_details']=data1
             print(data1)
             data1['patient_id']=request.GET.get('patient_id')
+            print('pateint_id',request.GET.get('patient_id'))
+            if(request.GET.get('patient_id') is not None):
+                api_url="http://13.233.211.102/pateint/api/get_patient_byid/"
+                response=requests.post(api_url,json={"patient_id":request.GET.get('patient_id')})
+                print(response.text)
+                data=response.json().get("message_data",{})
+                print(data)
+                # Convert epoch timestamp to formatted date
+                epoch_timestamp = data.get('patient_dateofbirth', 0)
+                print(epoch_timestamp)
+                # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
+                formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
+                # print(formatted_date)
+                data1['dob'] = formatted_date
+                data1['aadharnumber']=data.get('patient_aadharnumber', 0)
+                data1['health_id']=data.get('patient_universalhealthid', 0)
         
         # vital_url="http://localhost:8000/api/get_patientvitals_by_appointment_id/"
         vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
@@ -1105,6 +1121,21 @@ def initial_assesment(request,appointment_id):
         vital_data=vital_response.json().get('message_data')
         if(vital_response.json().get('message_code')==1000):
             print("vitals_data: ",vital_data)
+            api_url="http://13.233.211.102/pateint/api/get_patient_byid/"
+            response=requests.post(api_url,json={"patient_id":vital_data['patient_id']})
+            print(response.text)
+            data=response.json().get("message_data",{})
+            print(data)
+            # Convert epoch timestamp to formatted date
+            epoch_timestamp = data.get('patient_dateofbirth', 0)
+            print(epoch_timestamp)
+            # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
+            formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
+            # print(formatted_date)
+            data1['dob'] = formatted_date
+            data1['aadharnumber']=data.get('patient_aadharnumber', 0)
+            data1['health_id']=data.get('patient_universalhealthid', 0)
+            data1['patient_id']=vital_data['patient_id']
             return render(request, 'Doctor/initial_assesment.html',{"data1":data1,"vital_data":vital_data,'pain_scale_range': range(1, 11)})
         else:
             return render(request, 'Doctor/initial_assesment.html',{"data1":data1,'pain_scale_range': range(1, 11)})
@@ -1115,10 +1146,47 @@ def initial_assesment(request,appointment_id):
         print(request.POST['phoneno'])
         print(request.POST['patient_id'])
         patient_id=request.POST['patient_id']
+        sex=request.POST['sex']
+        # age=request.POST['age']
+        dob=request.POST['dob']
+        aadharno=request.POST['aadharNumber']
+        health_id=request.POST['health_id']
+        pname=request.POST['patient_name']
+        print(sex,dob,pname,aadharno,health_id)
+        # Convert the DOB string to a date object
+        dob = datetime.datetime.strptime(dob, '%Y-%m-%d').date()   
+        # Calculate the age
+        today = datetime.datetime.today().date()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        print(age)
+        # appointment_update="http://127.0.0.1:8002/appointment/api/update_appointment_by_id/"
+        appointment_update="http://13.233.211.102/appointment/api/update_appointment_by_id/"
+        appointment_data={"appointment_id":appointment_id,"age":age,"appointment_gender":sex,"appointment_name":pname}
+        appointment_res=requests.post(appointment_update,json=appointment_data)
+        print(appointment_res.text)
+
+        fullname=(pname.split(" "))
+        print(fullname)
+        fullname=[item for item in fullname if item != '']
+        print(fullname)
+        if(len(fullname)<=1):
+            fullname.append('none')
+        
+
+        # patient_update="http://127.0.0.1:8000/pateint/api/update_patient_by_id/"
+        patient_update="http://13.233.211.102/pateint/api/update_patient_by_id/"
+        p_data={"patient_id":patient_id,"patient_gender":sex,"patient_firstname":fullname[0],"patient_lastname":fullname[1],"patient_dateofbirth":request.POST['dob']}
+        if aadharno:
+            p_data['patient_aadharnumber']=aadharno
+        if health_id:
+            p_data['patient_universalhealthid']=health_id
+             
+        patient_res=requests.post(patient_update,json=p_data)
+        print(patient_res.text)
+         
 
         # return HttpResponse("else initial assesement")
          
-
         patient_data = {
             "patient_id":patient_id,
             "doctor_id": request.session['doctor_id'],
@@ -1164,6 +1232,45 @@ def initial_assesment(request,appointment_id):
 def update_initial_assesment(request):
     appointment_id=request.POST['appointment_id']
     request.session['appointment_id']=appointment_id
+    print(request.POST['patient_id'])
+    patient_id=request.POST['patient_id']
+    sex=request.POST['sex']
+    # age=request.POST['age']
+    dob=request.POST['dob']
+    aadharno=request.POST['aadharNumber']
+    health_id=request.POST['health_id']
+    pname=request.POST['patient_name']
+    print(sex,dob,pname,aadharno,health_id)
+    # Convert the DOB string to a date object
+    dob = datetime.datetime.strptime(dob, '%Y-%m-%d').date()   
+    # Calculate the age
+    today = datetime.datetime.today().date()
+    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    print(age)
+    # appointment_update="http://127.0.0.1:8002/appointment/api/update_appointment_by_id/"
+    appointment_update="http://13.233.211.102/appointment/api/update_appointment_by_id/"
+    appointment_data={"appointment_id":appointment_id,"age":age,"appointment_gender":sex,"appointment_name":pname}
+    appointment_res=requests.post(appointment_update,json=appointment_data)
+    print(appointment_res.text)
+
+    fullname=(pname.split(" "))
+    print(fullname)
+    fullname=[item for item in fullname if item != '']
+    print(fullname)
+    if(len(fullname)<=1):
+        fullname.append('none')
+    
+
+    # patient_update="http://127.0.0.1:8000/pateint/api/update_patient_by_id/"
+    patient_update="http://13.233.211.102/pateint/api/update_patient_by_id/"
+    p_data={"patient_id":patient_id,"patient_gender":sex,"patient_firstname":fullname[0],"patient_lastname":fullname[1],"patient_dateofbirth":request.POST['dob']}
+    if aadharno:
+        p_data['patient_aadharnumber']=aadharno
+    if health_id:
+        p_data['patient_universalhealthid']=health_id
+            
+    patient_res=requests.post(patient_update,json=p_data)
+    print(patient_res.text)
     api_data = {
             # "patient_id":request.POST['patient_id'],
             # "patient_id":1,
@@ -1283,11 +1390,11 @@ def Consultation(request,id):
         
         All_medicines(requests,request.session['doctor_id'])
     ############################################# KCO for for fetch the values########################
-        KCO(requests)
+        KCO(requests,request.session['doctor_id'])
             
         
     ############################################# ADVICE for for fetch the values########################
-        ADVICE(requests)
+        ADVICE(requests,request.session['doctor_id'])
                         
     #################################################################################################################    
         get_labinvestigation(requests,request.session['doctor_id'])   # function call get_labinvestigation
@@ -1881,9 +1988,9 @@ def All_medicines(requests,doctor_id):
         # request.session['doctor_medicine_id'] = medicine_id 
 
 
-def ADVICE(requests):
-    advice_data = {"DataCodeName":"ADVICE"}
-    advice_url ='http://13.233.211.102/masters/api/get_datacodemaster_byname'
+def ADVICE(requests,did):
+    advice_url="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    advice_data={"datacodename": "ADVICE","doctor_id":did}
 
     advice_response = requests.post(advice_url,json=advice_data)
         # print(kco_response.text)
@@ -1892,9 +1999,11 @@ def ADVICE(requests):
     print(advice)
 
 
-def KCO(requests):
-    kco_data = {"DataCodeName":"KCO"}
-    kco_url ='http://13.233.211.102/masters/api/get_datacodemaster_byname'
+def KCO(requests,did):
+    # kco_data = {"DataCodeName":"KCO"}
+    # kco_url ='http://13.233.211.102/masters/api/get_datacodemaster_byname'
+    kco_url="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    kco_data={"datacodename": "KCO","doctor_id": did}
 
     kco_response = requests.post(kco_url,json=kco_data)
     # print(kco_response.text)
@@ -2370,8 +2479,8 @@ def patientselect(request,id):
             "patient_gender":appointment_details['appointment_gender'],
             "patient_dateofbirth": "2023-12-15",
             "patient_maritalstatus": 1,
-            "patient_aadharnumber": "1234567890123456",
-            "patient_universalhealthid": 123456,
+            # "patient_aadharnumber": "1234567890123456",
+            "patient_universalhealthid": 0,
             "patient_bloodgroup": 1,
             "patient_emergencycontact": "9876543210",
             "patient_address": "123 Main Street",
@@ -2423,8 +2532,8 @@ def add_member(request):
             "patient_gender":appointment_details['appointment_gender'],
             "patient_dateofbirth": "2023-12-15",
             "patient_maritalstatus": 1,
-            "patient_aadharnumber": "1234567890123456",
-            "patient_universalhealthid": 123456,
+            # "patient_aadharnumber": "1234567890123456",
+            "patient_universalhealthid": 0,
             "patient_bloodgroup": 1,
             "patient_emergencycontact": "9876543210",
             "patient_address": "123 Main Street",
@@ -2440,8 +2549,165 @@ def add_member(request):
         return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
     # return redirect('patientselect', id=appointment_id)
 
-         
+
+################################Disease#####################
+def all_diseases(request):
+    return render(request,'Doctor/all_diseases.html')
+
+def insert_disease(request):
+    if(request.method=='GET'):
+     return render(request,'Doctor/insert_disease.html')
     
+    else:
+        print(request.POST['disease_name'])
+        print(request.POST['disease_type'])
+        return HttpResponse("disease data inserted.......")
+         
+
+######################Allergy###############################
+def all_allergy(request):
+    return render(request,'Doctor/all_allergy.html')
+
+def insert_allergy(request):
+    if(request.method=='GET'):
+     return render(request,'Doctor/insert_allergy.html')
+    
+    else:
+        print(request.POST['allergy_name'])
+        print(request.POST['allergy_type'])
+        return HttpResponse("allergy data inserted.......")
+
+
+
+#############################KCO########################
+def all_kco(request):
+    api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    api_data={"datacodename": "KCO","doctor_id": request.session['doctor_id']}
+    api_res=requests.post(api,json=api_data)
+    print(api_res.text)
+    if(api_res.json().get('message_code')==1000):
+        all_data=api_res.json().get("message_data")
+        return render(request,'Doctor/all_kco.html',{"all_data":all_data})
+    else:
+           messages.error(request, 'KCO details Not found add the details..')
+           return render(request,'Doctor/all_kco.html')
+
+def insert_kco(request):
+    if(request.method=='GET'):
+     return render(request,'Doctor/insert_kco.html')
+    
+    else:
+        datacodevalue=request.POST['datacodevalue']
+        datacodedescription=request.POST['datacodedescription']
+        kco_api="http://13.233.211.102/masters/api/insert_datacodemaster"
+        kco_data={"datacodename": "KCO","datacodevalue":datacodevalue,"datacodedescription":datacodedescription,"doctor_id": request.session['doctor_id']}
+        print(kco_data)
+        kco_res=requests.post(kco_api,json=kco_data)
+        if(kco_res.json().get('message_code')==1000):
+            messages.success(request, 'KCO details Added successfully!')
+            print(kco_res.text)
+            # print(datacodevalue,datacodedescription,request.session['doctor_id'])
+            return redirect(all_kco)
+        
+def update_kco(request,id):
+    if(request.method=="GET"):
+        api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+        api_data={"datacodename": "KCO","doctor_id": request.session['doctor_id']}
+        api_res=requests.post(api,json=api_data)
+        all_data=api_res.json().get("message_data")
+        # print(all_users)
+        for kco in all_data:
+            if(id==kco['datacodeid']):
+                print(kco)
+                return render(request,'Doctor/insert_kco.html',{'kco':kco})
+        else:
+            return HttpResponse("no data found")
+    else:
+        # return HttpResponse("update kco ...")
+        kco_updateurl="http://13.233.211.102/masters/api/update_datacodemaster_byid/"
+        kco_updatedata={
+                    "datacodeid":id,
+                    "datacodename":"KCO",
+                    "datacodevalue":request.POST['datacodevalue'],
+                    "datacodedescription":request.POST['datacodedescription']
+                }
+        kco_updateresponse=requests.post(kco_updateurl,json=kco_updatedata)
+        print(kco_updateresponse.text)
+
+        if kco_updateresponse.json().get('message_code') == 1000:
+            messages.success(request, 'KCO details Updated successfully!')
+            return redirect(all_kco)
+        else:
+            return HttpResponse("user data not updated..")
+        
+
+
+
+##############################Advice######################
+def all_advice(request):
+    api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    api_data={"datacodename": "ADVICE","doctor_id": request.session['doctor_id']}
+    api_res=requests.post(api,json=api_data)
+    print(api_res.text)
+    if(api_res.json().get('message_code')==1000):
+        all_data=api_res.json().get("message_data")
+        return render(request,'Doctor/all_advice.html',{"all_data":all_data})
+    else:
+           messages.error(request, 'Advice details Not found add the details..')
+           return render(request,'Doctor/all_advice.html')
+     
+
+def insert_advice(request):
+    if(request.method=='GET'):
+     return render(request,'Doctor/insert_advice.html')
+    
+    else:
+        datacodevalue=request.POST['datacodevalue']
+        datacodedescription=request.POST['datacodedescription']
+        advice_api="http://13.233.211.102/masters/api/insert_datacodemaster"
+        advice_data={"datacodename": "ADVICE","datacodevalue":datacodevalue,"datacodedescription":datacodedescription,"doctor_id": request.session['doctor_id']}
+        print(advice_data)
+        advice_res=requests.post(advice_api,json=advice_data)
+        if(advice_res.json().get('message_code')==1000):
+            messages.success(request, 'Advice details Added successfully!')
+            print(advice_res.text)
+            # print(datacodevalue,datacodedescription,request.session['doctor_id'])
+            return redirect(all_advice)
+        
+
+def update_advice(request,id):
+    if(request.method=="GET"):
+        api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+        api_data={"datacodename": "ADVICE","doctor_id": request.session['doctor_id']}
+        api_res=requests.post(api,json=api_data)
+        all_data=api_res.json().get("message_data")
+        # print(all_users)
+        for advice in all_data:
+            if(id==advice['datacodeid']):
+                print(advice)
+                return render(request,'Doctor/insert_advice.html',{'advice':advice})
+        else:
+            return HttpResponse("no data found")
+    else:
+        # return HttpResponse("update kco ...")
+        advice_updateurl="http://13.233.211.102/masters/api/update_datacodemaster_byid/"
+        advice_updatedata={
+                    "datacodeid":id,
+                    "datacodename":"ADVICE",
+                    "datacodevalue":request.POST['datacodevalue'],
+                    "datacodedescription":request.POST['datacodedescription']
+                }
+        advice_updateresponse=requests.post(advice_updateurl,json=advice_updatedata)
+        print(advice_updateresponse.text)
+
+        if advice_updateresponse.json().get('message_code') == 1000:
+            messages.success(request, 'Advice details Updated successfully!')
+            return redirect(all_advice)
+        else:
+            return HttpResponse("user data not updated..")
+
+
+
     
 
 
