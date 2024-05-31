@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Role Screen</title>
+    <title>payment Process Screen</title>
     
 
     <!-- !-- Bootstrap CSS --> 
@@ -161,7 +161,18 @@
                         </td>
                         <td>{{ i.medicine_duration }}</td>
                         <td>{{ i.medicine_doses }}</td>
-                        <td>{{ i.medicine_instruction_id }}</td>
+                        <!-- <td>{{ i.medicine_instruction_id }}</td> -->
+                        <td>
+                          {% if i.medicine_instruction_id == 1 %}
+                              After meal
+                          {% elif i.medicine_instruction_id == 6 %}
+                              Before meal
+                          {% elif i.medicine_instruction_id == 7 %}
+                              Empty Stomach
+                          {% else %}
+                              {{ i.medicine_instruction_id }}
+                          {% endif %}
+                      </td>
                     </tr>
                     {% endfor %}
                 </tbody>
