@@ -8,6 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_protect
 from datetime import timedelta
 from django.utils import timezone
+from googletrans import Translator
 
 from io import BytesIO
 from time import time
@@ -1356,10 +1357,18 @@ def Consultation(request,id):
             patientmedic_data=(patientmedic_response.json().get("message_data"))
             medic_list=[]
             for i in patientmedic_data:
-                print(i)
+                # print(i)
                 medic_list.append(i)
-                print("-----------------------")
-            print(medic_list)
+                # print("-----------------------")
+         
+            if medic_list:
+                for i in medic_list:
+                    instuct_res=requests.post("http://13.233.211.102/masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
+                    i['instruction_text']=(instuct_res.json().get('message_data'))[0].get('instruction_text')
+
+                print(medic_list)
+            else:
+                print('no data in medic list')
 
             #################patient prescription################
             # prescription_url="http://localhost:8000/api/get_prescription_details/"
@@ -1399,7 +1408,7 @@ def Consultation(request,id):
     #################################################################################################################    
         get_labinvestigation(requests,request.session['doctor_id'])   # function call get_labinvestigation
     #######################################################################################################        
-        get_instruction(requests)  # function call get_labinvestigatio
+        get_instruction(requests,request.session['doctor_id'])  # function call get_labinvestigatio
 
     ################################################################################################################       
         
@@ -2011,8 +2020,8 @@ def KCO(requests,did):
     kco = kco_response.json().get('message_data')
     print(kco)
 
-def get_instruction(requests):
-        doctor_id ={ "Doctor_Id":"1"}
+def get_instruction(requests,did):
+        doctor_id ={ "Doctor_Id":did}
         url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instructionsbydoctorId'
 
         medicine_instruction_response = requests.post(url_instruction, json = doctor_id)
@@ -2176,10 +2185,19 @@ def for_user(request,id):
         patientmedic_data=(patientmedic_response.json().get("message_data"))
         medic_list=[]
         for i in patientmedic_data:
-            print(i)
+            # print(i)
             medic_list.append(i)
-            print("-----------------------")
-        print(medic_list)
+            # print("-----------------------")
+        #print(medic_list)
+
+        if medic_list:
+            for i in medic_list:
+                instuct_res=requests.post("http://13.233.211.102/masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
+                i['instruction_text']=(instuct_res.json().get('message_data'))[0].get('instruction_text')
+
+            print(medic_list)
+        else:
+            print('no data in medic list')
 
         consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
         api_para={"consultation_id":data1.get('consultation_id')}
@@ -2705,6 +2723,76 @@ def update_advice(request,id):
             return redirect(all_advice)
         else:
             return HttpResponse("user data not updated..")
+        
+
+#################Instructions###########################
+def all_instruction(request):
+    url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instructionsbydoctorId'
+    all_res=requests.post(url_instruction,json={"Doctor_Id":request.session['doctor_id']})
+    all_data=all_res.json().get("message_data")
+    print(all_data)
+    return render(request,'Doctor/all_instruction.html',{'all_data':all_data})
+
+
+def insert_instruction(request):
+    if(request.method=='GET'):
+        return render(request,'Doctor/insert_instruction.html')
+
+    else:
+        instruction=request.POST['instruction_text']
+        language=request.POST['instruction_language']
+        # Translate the instruction text based on the selected language
+        # translator = Translator()
+        # if language == 'MA':
+        #     translation = translator.translate(instruction, dest='mr')
+        # elif language == 'HI':
+        #     translation = translator.translate(instruction, dest='hi')
+        # else:
+        #     translation = instruction  # No translation needed if the language is English or other
+
+        # translated_instruction = translation.text if hasattr(translation, 'text') else translation
+        # print(translated_instruction)
+        # return HttpResponse("ok")
+
+        # print(instruction,language)
+        instruct_api="http://13.233.211.102/masters/api/insert_medicine_instruction"
+        instruct_data={"Doctor_Id":request.session['doctor_id'],"Instruction_Language":language,"Instruction_Text":instruction}
+        #print(instruct_data)
+        instruct_res=requests.post(instruct_api,json=instruct_data)
+        print(instruct_res.text)
+        if(instruct_res.json().get('message_code')==1000):
+            messages.success(request, 'Instruction details Added successfully!')
+            print(instruct_res.text)
+            return redirect(all_instruction)
+        else:
+            return redirect(all_instruction)
+
+
+def update_instruction(request,id):
+    if(request.method=='GET'):
+        print('instruction id',id)
+        url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instruction'
+        res=requests.post(url_instruction,json={"Doctor_Instruction_Id":id})
+        instuction=res.json().get('message_data')[0]
+        print(instuction)
+        return render(request,'Doctor/insert_instruction.html',{'instruction':instuction})
+    
+    else:
+        instruction=request.POST['instruction_text']
+        language=request.POST['instruction_language']
+        # print(instruction,language)
+        instruct_api="http://13.233.211.102/masters/api/update_medicine_instruction"
+        instruct_data={"Doctor_Instruction_Id":id,"Doctor_Id":request.session['doctor_id'],"Instruction_Language":language,"Instruction_Text":instruction}
+        #print(instruct_data)
+        instruct_res=requests.post(instruct_api,json=instruct_data)
+        print(instruct_res.text)
+
+        if instruct_res.json().get('message_code') == 1000:
+            messages.success(request, 'Instruction details Updated successfully!')
+            return redirect(all_instruction)
+        else:
+            return HttpResponse("user data not updated..")
+        
 
 
 

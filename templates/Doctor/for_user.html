@@ -161,18 +161,8 @@
                         </td>
                         <td>{{ i.medicine_duration }}</td>
                         <td>{{ i.medicine_doses }}</td>
-                        <!-- <td>{{ i.medicine_instruction_id }}</td> -->
-                        <td>
-                          {% if i.medicine_instruction_id == 1 %}
-                              After meal
-                          {% elif i.medicine_instruction_id == 6 %}
-                              Before meal
-                          {% elif i.medicine_instruction_id == 7 %}
-                              Empty Stomach
-                          {% else %}
-                              {{ i.medicine_instruction_id }}
-                          {% endif %}
-                      </td>
+                        <td>{{ i.instruction_text}}</td>
+                         
                     </tr>
                     {% endfor %}
                 </tbody>

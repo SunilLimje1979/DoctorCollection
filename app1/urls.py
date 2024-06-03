@@ -55,6 +55,9 @@ urlpatterns = [
     path("insert_advice/",insert_advice,name='insert_advice'),
     path("update_kco/<int:id>",update_kco,name='update_kco'),
     path("update_advice/<int:id>",update_advice,name='update_advice'),
+    path("all_instruction/",all_instruction,name='all_instruction'),
+    path("insert_instruction/",insert_instruction,name='insert_instruction'),
+    path("update_instruction/<int:id>",update_instruction,name='update_instruction'),
 
    
      
