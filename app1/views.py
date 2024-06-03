@@ -8,7 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_protect
 from datetime import timedelta
 from django.utils import timezone
-from googletrans import Translator
+# from googletrans import Translator
 
 from io import BytesIO
 from time import time
