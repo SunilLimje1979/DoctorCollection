@@ -2570,30 +2570,119 @@ def add_member(request):
 
 ################################Disease#####################
 def all_diseases(request):
-    return render(request,'Doctor/all_diseases.html')
+    api="http://13.233.211.102/pateint/api/get_diseases_by_doctorid/"
+    api_data={"doctor_id": request.session['doctor_id']}
+    api_res=requests.post(api,json=api_data)
+    print(api_res.text)
+    if(api_res.json().get('message_code')==1000):
+        all_data=api_res.json().get("message_data")
+        return render(request,'Doctor/all_diseases.html',{"all_data":all_data})
+    else:
+           messages.error(request, 'Disease details Not found add the details..')
+           return render(request,'Doctor/all_diseases.html')
+    
 
 def insert_disease(request):
     if(request.method=='GET'):
      return render(request,'Doctor/insert_disease.html')
     
     else:
-        print(request.POST['disease_name'])
-        print(request.POST['disease_type'])
-        return HttpResponse("disease data inserted.......")
+        disease_name=request.POST['disease_name']
+        disease_type=request.POST['disease_type']
+        disease_api="http://13.233.211.102/pateint/api/insert_disease/"
+        disease_data={"doctor_id":request.session['doctor_id'],"disease_name":disease_name,"disease_type":disease_type}
+        disease_res=requests.post(disease_api,json=disease_data)
+        if(disease_res.json().get('message_code')==1000):
+            messages.success(request, 'Disease details Added successfully!')
+            print(disease_res.text)
+            return redirect(all_diseases)
+
+        else:
+            return HttpResponse("Not added..")
+        
+def update_disease(request,id):
+    if(request.method=='GET'):
+        print('disease id',id)
+        url_disease = 'http://13.233.211.102/pateint/api/get_diseases_by_diseaseid/'
+        res=requests.post(url_disease,json={"disease_id":id})
+        disease=res.json().get('message_data')[0]
+        print(disease)
+        return render(request,'Doctor/insert_disease.html',{'disease':disease})
+    
+    else:
+        disease_name=request.POST['disease_name']
+        disease_type=request.POST['disease_type']
+ 
+        disease_api="http://13.233.211.102/pateint/api/update_disease_by_diseaseid/"
+        disease_data={"disease_id":id,"disease_name":disease_name,"disease_type":disease_type}
+        disease_res=requests.post(disease_api,json=disease_data)
+        print(disease_res.text)
+
+        if disease_res.json().get('message_code') == 1000:
+            messages.success(request, 'Disease details Updated successfully!')
+            return redirect(all_diseases)
+        else:
+            return HttpResponse("disease data not updated..")
+
+
          
 
 ######################Allergy###############################
 def all_allergy(request):
-    return render(request,'Doctor/all_allergy.html')
+    api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
+    api_data={"doctor_id": request.session['doctor_id']}
+    api_res=requests.post(api,json=api_data)
+    print(api_res.text)
+    if(api_res.json().get('message_code')==1000):
+        all_data=api_res.json().get("message_data")
+        return render(request,'Doctor/all_allergy.html',{"all_data":all_data})
+    else:
+           messages.error(request, 'Allergy details Not found add the details..')
+           return render(request,'Doctor/all_allergy.html')
 
 def insert_allergy(request):
     if(request.method=='GET'):
      return render(request,'Doctor/insert_allergy.html')
     
     else:
-        print(request.POST['allergy_name'])
-        print(request.POST['allergy_type'])
-        return HttpResponse("allergy data inserted.......")
+     
+        allergy_name=request.POST['allergy_name']
+        allergy_type=request.POST['allergy_type']
+        allergy_api="http://13.233.211.102/pateint/api/insert_allergy/"
+        allergy_data={"doctor_id":request.session['doctor_id'],"allergy_name":allergy_name,"allergy_type":allergy_type}
+        allergy_res=requests.post(allergy_api,json=allergy_data)
+        if(allergy_res.json().get('message_code')==1000):
+            messages.success(request, 'Allergy details Added successfully!')
+            print(allergy_res.text)
+            return redirect(all_allergy)
+
+        else:
+            return HttpResponse("Not added..")
+        
+def update_allergy(request,id):
+    if(request.method=='GET'):
+        print('allergy id',id)
+        url_allergy = 'http://13.233.211.102/pateint/api/get_allergy_by_allergyid/'
+        res=requests.post(url_allergy,json={"allergy_id":id})
+        allergy=res.json().get('message_data')
+        print(allergy)
+        return render(request,'Doctor/insert_allergy.html',{'allergy':allergy})
+    
+    else:
+        allergy_name=request.POST['allergy_name']
+        allergy_type=request.POST['allergy_type']
+ 
+        allergy_api="http://13.233.211.102/pateint/api/update_allergy_by_allergyid/"
+        allergy_data={"allergy_id":id,"allergy_name":allergy_name,"allergy_type":allergy_type}
+        allergy_res=requests.post(allergy_api,json=allergy_data)
+        print(allergy_res.text)
+
+        if allergy_res.json().get('message_code') == 1000:
+            messages.success(request, 'Allergy details Updated successfully!')
+            return redirect(all_allergy)
+        else:
+            return HttpResponse("Allergy data not updated..")
+
 
 
 
@@ -2792,6 +2881,8 @@ def update_instruction(request,id):
             return redirect(all_instruction)
         else:
             return HttpResponse("user data not updated..")
+
+
         
 
 

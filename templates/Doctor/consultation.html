@@ -311,7 +311,7 @@
                       <div class="d-flex justify-content-between mb-2">
                           <label for="" class="fw-bold times-new-roman" style="margin-right:2%;font-size: 20px;">KCO</label>
                           <select class="form-control search form-select" id="kco" required  onchange="UpdateKCOTextArea()">
-                              <option value="" disabled selected hidden>None</option>
+                              <option value="Kco" disabled selected hidden>None</option>
                               <option value="clear">Clear</option>
                              
                               {% for i in kco %}
@@ -357,7 +357,7 @@
                 <div class="d-flex justify-content-between mb-2">
                   <label for="" class="  fw-bold times-new-roman" style="margin-right:2% ;font-size: 20px;">Advice</label>
                   <select class="form-control search form-select" name="advice" id="advice"  required  onchange="updateAdviceTextArea()" >
-                    <option value="" disabled selected hidden>Advice</option>
+                    <option value="Adv" disabled selected hidden>Advice</option>
                     <option value="clear">Clear</option>
                     {% for a in advice %}
                     <option value="{{a.datacodevalue}}">{{a.datacodedescription}}</option>
@@ -629,7 +629,7 @@
               Save 
             {%endif%}        
         </button>
-        <button id="backToAppointmentBtn" onclick="location.href='/DoctorCollection/get_all_doctor_appointments'" class="btn btn-primary" style="display: none;background-color: #008373;"><i class="fa-solid fa-circle-arrow-left"></i> Appointment</button>
+        <button id="backToAppointmentBtn"  class="btn btn-primary" style="display: none;background-color: #008373;"><i class="fa-solid fa-circle-arrow-left"></i> Appointment</button>
         <!-- <button class="btn btn-success" onclick="printPage()">Print & save</button>
         <button class="btn btn-primary" onclick="savePage()">Print</button> -->
         {%if consult_data%}
@@ -771,8 +771,15 @@
 
 
   <script>
+
+    document.getElementById('backToAppointmentBtn').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default action
+        location.href = '/DoctorCollection/get_all_doctor_appointments'; // Navigate to the specified URL
+    });
+
     document.getElementById('completeBtn').addEventListener('click', function() {
         // Send AJAX request to backend API to fetch the PDF link
+        event.preventDefault(); 
         fetch('/DoctorCollection/get_pdf_link/')
         .then(response => response.json())
         .then(data => {
@@ -807,6 +814,7 @@
     
     document.getElementById('printBtn').addEventListener('click', function() {
         // Open the PDF link in a new tab for printing
+        event.preventDefault(); 
         const pdfLink = this.dataset.pdfLink;
         if (pdfLink) {
             window.open(pdfLink, '_blank');
@@ -817,6 +825,7 @@
 
     document.getElementById('paidBtn').addEventListener('click', function() {
        // Send AJAX request to backend API to fetch the PDF link
+       event.preventDefault(); 
        fetch('/DoctorCollection/paid/')
         .then(response => response.json())
         .then(data => {

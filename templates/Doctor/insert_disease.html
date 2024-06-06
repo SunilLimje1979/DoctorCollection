@@ -45,7 +45,7 @@
 <body>
 
     <!-- insert user details -->
-    <form class="container form-container" {% if all_disease%}action="{% url 'update_user' user.user_id %}"{% else %}action="{% url 'insert_disease' %}"{% endif %} method="post">
+    <form class="container form-container" {% if disease%}action="{% url 'update_disease' disease.disease_id %}"{% else %}action="{% url 'insert_disease' %}"{% endif %} method="post">
         {% csrf_token %}
         <!-- Navigation Bar -->
 
@@ -53,15 +53,15 @@
             <div class="container-fluid pl-3">
                 <a class="navbar-brand" href="/DoctorCollection/all_diseases/">
                     <i class="fas fa-arrow-left"></i>
-                        {% if all_disease %}
-                          Update Disease Details
+                        {% if disease %}
+                          Update Disease 
                        {% else %}
                           Add Disease
                        {% endif %}
                 </a>
                 <button type="submit" value="Submit" class="btn btn-light mx-3" id="saveButton">
                     <i class="fas fa-save"></i>
-                        {% if all_disease%}
+                        {% if disease%}
                            Update
                         {% else %}
                            Save
@@ -73,7 +73,7 @@
         <div class="row">
             <div class="col-md-6 col-12 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" value=""  name="disease_name" placeholder="" required>
+                    <input type="text" class="form-control" value="{{disease.disease_name}}"  name="disease_name" placeholder="" required>
                     <label for="disease_name">Disease Name</label>
                 </div>
             </div>
@@ -83,9 +83,9 @@
                 <div class="form-floating">
                     <select class="form-select" id="typeSelect" name="disease_type" aria-label="Floating label select example" required>
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="1">Skin</option>
-                        <option value="2">Food</option>
-                        <option value="3">Air</option>
+                        <option value="1"{% if disease.disease_type == 1 %}selected{% endif %}>Skin</option>
+                        <option value="2" {% if disease.disease_type == 2 %}selected{% endif %}>Food</option>
+                        <option value="3" {% if disease.disease_type == 3 %}selected{% endif %}>Air</option>
                     </select>
                     <label for="disease_type">Disease Type</label>
                 </div>
@@ -97,7 +97,7 @@
         <div class="text-center mt-3">
             <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span
                     class="fas fa-save" style="color: #FFFFFF;"></span>
-                    {% if all_disease %}
+                    {% if disease %}
                       Update
                     {% else %}
                       Save
