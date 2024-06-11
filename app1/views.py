@@ -2403,7 +2403,7 @@ def patient_history(request,id):
             print(patient_data)
             patient_id=0
             for patient in patient_data:
-                if(patient['patient_firstname']==fullname[0] and patient['patient_lastname']==fullname[1]):
+                if(patient['patient_firstname'].lower() ==fullname[0].lower()  and patient['patient_lastname'].lower() ==fullname[1].lower() ):
                     patient_id=patient['patient_id']
                     break
              
