@@ -60,6 +60,8 @@ urlpatterns = [
     path("all_instruction/",all_instruction,name='all_instruction'),
     path("insert_instruction/",insert_instruction,name='insert_instruction'),
     path("update_instruction/<int:id>",update_instruction,name='update_instruction'),
+    path("all_patient/",all_patient,name='all_patient'),
+    path("update_patient/<int:id>",update_patient,name='update_patient'),
 
    
      

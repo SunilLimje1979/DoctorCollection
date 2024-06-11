@@ -59,15 +59,15 @@
 
 <body>
 
-    <!-- Patient Form with Navigation Bar -->
+  
     <form class="container form-container" method="Post">
         {% csrf_token %}
-        <!-- Navigation Bar -->
+        
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
-            <input type="hidden" name="doctor_id" value="{{ doctor_id }}">
+           
             <div class="container-fluid pl-3">
-                {% if doctor_id %}
-                    <a class="navbar-brand" href="" >
+                {% if patient %}
+                    <a class="navbar-brand" href="{% url 'all_patient' %}" >
                         <i class="fas fa-arrow-left"></i> 
                             Patient Profile
                     </a>
@@ -79,7 +79,7 @@
                 {% endif %}
                 <button type="submit" value="Submit" class="btn btn-light mx-3">
                     <i class="fas fa-save"></i> 
-                    {% if doctor_id %}
+                    {% if patient %}
                       Update
                     {% else %}
                       Save
@@ -88,123 +88,142 @@
             </div>
         </nav>
 
-        <!-- Personal Information -->
+     
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="floatingfirstname" name="firstName" value="{{data.doctor_firstname}}" placeholder="First Name" required>
+                    <input type="text" class="form-control" id="floatingfirstname" name="patient_firstname" value="{{patient.patient_firstname}}" placeholder="First Name">
                     <label for="floatingfirstname">First Name</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="floatinglastname" name="lastName" value="{{data.doctor_lastname}}" placeholder="Last Name" required>
+                    <input type="text" class="form-control" id="floatinglastname" name="patient_lastname" value="{{patient.patient_lastname}}" placeholder="Last Name">
                     <label for="floatinglastname">Last Name</label>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Number and Email -->
+        
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="middlename" value="{{data.doctor_email}}" placeholder="Email" required>
-                    <label for="middlename">Middle Name</label>
+                    <input type="text" class="form-control" name="patient_fateherhusbandname" {% if patient.patient_fateherhusbandname is not None %}  value="{{ patient.patient_fateherhusbandname }}" {% endif %}  placeholder="Middle Name">
+                    <label for="patient_fateherhusbandname">Middle Name</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="mobileNumber" value="{{data.doctor_mobileno}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" required>
-                    <label for="mobileNumber">Mobile Number</label>
+                    <input type="text" class="form-control" name="patient_mobileno" value="{{patient.patient_mobileno}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" readonly>
+                    <label for="patient_mobileno">Mobile Number</label>
                 </div>
             </div>
              
         </div>
 
-        <!-- Gender and Marital Status -->
+     
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <select class="form-select" name="gender" aria-label="Floating label select example" required>
+                    <select class="form-select" name="patient_gender" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="1" {% if data.doctor_gender == 1 %}selected{% endif %}>Male</option>
-                        <option value="2" {% if data.doctor_gender == 2 %}selected{% endif %}>Female</option>
+                        <option value="0" {% if patient.patient_gender == 0 %}selected{% endif %}>Male</option>
+                        <option value="1" {% if patient.patient_gender == 1 %}selected{% endif %}>Female</option>
                     </select>
-                    <label for="gender">Gender</label>
+                    <label for="patient_gender">Gender</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <select name="maritalStatus" class="form-select" aria-label="Floating label select example" required>
+                    <select name="patient_maritalstatus" class="form-select" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="1" {% if data.doctor_maritalstatus == 1 %}selected{% endif %}>Single</option>
-                        <option value="2" {% if data.doctor_maritalstatus == 2 %}selected{% endif %}>Married</option>
+                        <option value="1" {% if patient.patient_maritalstatus == 1 %}selected{% endif %}>Single</option>
+                        <option value="2" {% if patient.patient_maritalstatus == 2 %}selected{% endif %}>Married</option>
                     </select>
-                    <label for="maritalStatus">Marital Status</label>
+                    <label for="patient_maritalstatus">Marital Status</label>
                 </div>
             </div>
         </div>
 
-        <!-- Date of Birth and Address Information -->
+      
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="date" class="form-control" name="dob" value="{{ data.doctor_dateofbirth}}" required>
+                    <input type="date" class="form-control" name="dob" value="{{ patient.dob}}">
                     <label for="dob">Date of Birth</label>
                 </div>
             </div>
+            <div class="col-md-6 col-6 mb-3">
+                <div class="form-floating">
+                    <select class="form-control" name="patient_bloodgroup">
+                        <option value="" disabled selected hidden>Select</option>
+                        <option value="1" {% if patient.patient_bloodgroup == 1 %}selected{% endif %}>A+</option>
+                        <option value="2" {% if patient.patient_bloodgroup == 2 %}selected{% endif %}>A-</option>
+                        <option value="3" {% if patient.patient_bloodgroup == 3 %}selected{% endif %}>B+</option>
+                        <option value="4" {% if patient.patient_bloodgroup == 4 %}selected{% endif %}>B-</option>
+                        <option value="5" {% if patient.patient_bloodgroup == 5 %}selected{% endif %}>AB+</option>
+                        <option value="6" {% if patient.patient_bloodgroup == 6 %}selected{% endif %}>AB-</option>
+                        <option value="7" {% if patient.patient_bloodgroup == 7 %}selected{% endif %}>O+</option>
+                        <option value="8" {% if patient.patient_bloodgroup == 8 %}selected{% endif %}>O-</option>
+                    </select>
+                    <label for="patient_bloodgroup">Blood Group</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-6 col-12 mb-3">
                 <div class="form-floating">
-                    <textarea class="form-control" name="address"  placeholder="Address" rows="3" required>{{ data.doctor_address }}</textarea>
-                    <label for="address">Address</label>
+                    <textarea class="form-control" name="patient_address"  placeholder="Address" rows="3">{{ patient.patient_address }}</textarea>
+                    <label for="patient_address">Address</label>
                 </div>
             </div>
         </div>
 
-        <!-- Country and State -->
+       
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <select name="country" class="form-control form-select" aria-label="Floating label select example" required>
+                    <select name="patient_countryid" class="form-control form-select" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="India" {% if data.doctor_countryid == 1 %}selected{% endif %}>India</option>
+                        <option value="India" {% if patient.patient_countryid == 1 %}selected{% endif %}>India</option>
                     </select>
-                    <label for="country">Country</label>
+                    <label for="patient_countryid">Country</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <select name="state" class="form-select" aria-label="Floating label select example" required>
+                    <select name="patient_stateid" class="form-select" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="Maharashtra" {% if data.doctor_stateid == 1 %}selected{% endif %}>Maharashtra</option>
+                        <option value="Maharashtra" {% if patient.patient_stateid == 1 %}selected{% endif %}>Maharashtra</option>
                     </select>
-                    <label for="state">State</label>
+                    <label for="patient_stateid">State</label>
                 </div>
             </div>
         </div>
 
-        <!-- City and Pincode -->
+ 
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="city" value="Pune" placeholder="City" required>
-                    <label for="city">City</label>
+                    <input type="text" class="form-control" name="patient_cityid" value="Pune" placeholder="City">
+                    <label for="patient_cityid">City</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="pincode" value="{{data.doctor_pincode}}" pattern="[0-9]{6}" title="Please enter a valid 6-digit PIN code" placeholder="Pincode" required>
-                    <label for="pincode">Pincode</label>
+                    <input type="number" class="form-control" name="patient_universalhealthid" {% if patient.patient_universalhealthid != 0 %} value="{{ patient.patient_universalhealthid }}" {% endif %}   placeholder="healthid">
+                    <label for="patient_universalhealthid">Health Id</label>
                 </div>
             </div>
         </div>
 
-        <!-- Aadhar Number and Upload (Optional) -->
+       
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="aadharNumber" value="{{data.doctor_aadharnumber}}" pattern="[0-9]{12}" title="Please enter a valid 12-digit Aadhar number" placeholder="Aadhar Number" required>
-                    <label for="aadharNumber">Aadhar Number</label>
+                    <input type="text" class="form-control" name="patient_aadharnumber" {% if patient.patient_aadharnumber is not None %} value="{{ patient.patient_aadharnumber }}" {% endif %}  pattern="[0-9]{12}" title="Please enter a valid 12-digit Aadhar number" placeholder="Aadhar Number" >
+                    <label for="patient_aadharnumber">Aadhar Number</label>
                 </div>
             </div>
             <div class="col-md-3 col-6 mb-3">
@@ -213,10 +232,122 @@
             </div>
         </div>
 
-        <!-- Save Button (Bottom) -->
+        <div class="row">
+            <div class="col-md-6 col-12 mb-3">
+                <div class="form-floating">
+                    <textarea class="form-control" name="remark" placeholder="Remark" rows="3">{% if patient.remark %}{{ patient.remark }}{% endif %}</textarea>
+                    <label for="remark">Remark</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-6 mb-3">
+                <div class="form-floating">
+                    <input type="text" class="form-control" name="patient_emergencycontact" value="{{patient.patient_emergencycontact}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number">
+                    <label for="patient_emergencycontact">Emergency Contact</label>
+                </div>
+            </div>
+        </div>
+         
+     
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="allergySelect" class="form-label">Select Allergy</label>
+                <select id="allergySelect" class="form-select" name="allergy">
+                    <option value="" disabled selected hidden>Select</option>
+                    {% for allergy in allergy_data %}
+                        <option value="{{ allergy.allergy_id }}">{{ allergy.allergy_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="allergyDescription">Description</label>
+                <input type="text" id="allergyDescription" class="form-control" name="allergy_description">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" onclick="addAllergy()">Add Allergy</button>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <table class="table" id="allergyTable">
+                    <thead>
+                        <tr>
+                            <th>Allergy</th>
+                            <th>Description</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for allergy in allergy_list %}
+                        <tr>
+                            <td>{{ allergy.allergy_name }}</td>
+                            <td>{{ allergy.allergy_details }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this, '{{ allergy.patient_allergy_id }}', true)">Remove</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="diseaseSelect" class="form-label">Select Disease</label>
+                <select id="diseaseSelect" class="form-select" name="disease">
+                    <option value="" disabled selected hidden>Select</option>
+                    {% for disease in disease_data %}
+                        <option value="{{ disease.disease_id }}">{{ disease.disease_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="diseaseDescription" class="form-label">Description</label>
+                <input type="text" id="diseaseDescription" class="form-control" name="disease_description">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" onclick="addDisease()">Add Disease</button>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <table class="table" id="diseaseTable">
+                    <thead>
+                        <tr>
+                            <th>Disease</th>
+                            <th>Description</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for disease in disease_list %}
+                        <tr>
+                            <td>{{ disease.disease_name }}</td>
+                            <td>{{ disease.disease_details }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this, '{{ disease.patient_disease_id }}', false)">Remove</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <input type="hidden" id="removedAllergies" name="removed_allergies" value="">
+        <input type="hidden" id="removedDiseases" name="removed_diseases" value="">
+
         <div class="text-center mt-3">
             <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
-                {% if doctor_id %}
+                {% if patient %}
                    Update
                 {% else %}
                    Save
@@ -226,7 +357,92 @@
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+     <script>
+        // Function to remove a row from the table and update hidden fields
+        function removeRow(button, patientId, isAllergy) {
+            const row = button.parentNode.parentNode;
+            const hiddenField = isAllergy ? document.getElementById('removedAllergies') : document.getElementById('removedDiseases');
+    
+            hiddenField.value += patientId + ',';
+    
+            row.parentNode.removeChild(row);
+        }
+    
+        // Function to add a row to the allergy table
+        function addAllergy() {
+            const allergySelect = document.getElementById('allergySelect');
+            const allergyDescription = document.getElementById('allergyDescription');
+            const selectedAllergy = allergySelect.options[allergySelect.selectedIndex];
+            const allergyId = selectedAllergy.value;
+            const allergyName = selectedAllergy.text;
+    
+            if (!allergyId) {
+                alert('Please select an allergy.');
+                return;
+            }
+    
+            const allergyTable = document.getElementById('allergyTable');
+            const row = allergyTable.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
+    
+            cell1.innerText = allergyName;
+            cell2.innerText = allergyDescription.value;
+            cell3.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this, '${allergyId}', true)">Remove</button>`;
+    
+            // Add hidden inputs for allergy details
+            const hiddenAllergyId = document.createElement('input');
+            hiddenAllergyId.type = 'hidden';
+            hiddenAllergyId.name = 'allergies[]';
+            hiddenAllergyId.value = JSON.stringify({allergy_id: allergyId, allergy_description: allergyDescription.value});
+            row.appendChild(hiddenAllergyId);
+    
+            // Reset the select and textarea
+            allergySelect.selectedIndex = 0;
+            allergyDescription.value = '';
+        }
+    
+        // Function to add a row to the disease table
+        function addDisease() {
+            const diseaseSelect = document.getElementById('diseaseSelect');
+            const diseaseDescription = document.getElementById('diseaseDescription');
+            const selectedDisease = diseaseSelect.options[diseaseSelect.selectedIndex];
+            const diseaseId = selectedDisease.value;
+            const diseaseName = selectedDisease.text;
+    
+            if (!diseaseId) {
+                alert('Please select a disease.');
+                return;
+            }
+    
+            const diseaseTable = document.getElementById('diseaseTable');
+            const row = diseaseTable.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
+    
+            cell1.innerText = diseaseName;
+            cell2.innerText = diseaseDescription.value;
+            cell3.innerHTML = `<button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this, '${diseaseId}', false)">Remove</button>`;
+    
+            // Add hidden inputs for disease details
+            const hiddenDiseaseId = document.createElement('input');
+            hiddenDiseaseId.type = 'hidden';
+            hiddenDiseaseId.name = 'diseases[]';
+            hiddenDiseaseId.value = JSON.stringify({disease_id: diseaseId, disease_description: diseaseDescription.value});
+            row.appendChild(hiddenDiseaseId);
+    
+            // Reset the select and textarea
+            diseaseSelect.selectedIndex = 0;
+            diseaseDescription.value = '';
+        }
+    </script>
+
 
 </body>
 
-</html>
+</html> 
+
+ 
