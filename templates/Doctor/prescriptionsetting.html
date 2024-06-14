@@ -58,20 +58,17 @@
 <body>
 
     <!-- Doctor Registration Form with Navigation Bar -->
-    <form class="container form-container" method="POST" action="{% url 'prescription_setting' %}" enctype="multipart/form-data">
+    <form class="container form-container" method="POST" {%if prescription_settings %} action="{% url 'update_prescription_setting' %}" {%else%} action="{% url 'prescription_setting' %}" {%endif%} enctype="multipart/form-data">
         {% csrf_token %}
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
             <input type="hidden" name="prescription_id" value="{{ prescription_id }}">
             <div class="container-fluid pl-3">
-                {% if prescription_settings %}
                     <a class="navbar-brand" href="/DoctorCollection/settingdashboard/" >
                         <i class="fas fa-arrow-left"></i> 
                             Print Format
                     </a>
-                {% else %}
-                    <span class="navbar-brand">Print Settings</span>
-                {% endif %}
+
                 <button type="submit" value="Submit" class="btn btn-light mx-3">
                     <i class="fas fa-save"></i>
                     {% if prescription_settings %}
@@ -86,7 +83,7 @@
         <!-- Paper Size Dropdown -->
         <div class="form-group">
             <label for="paperSize">Paper Size</label>
-            <select class="form-select" id="paperSize" name="paperSize">
+            <select class="form-select" id="paperSize" name="paperSize" required>
                 <option value="" disabled selected hidden>Select</option>
                 <option value="1" {% if prescription_settings.paper_size == 1 %}selected{% endif %}>A4 Portrait</option>
                 <option value="2" {% if prescription_settings.paper_size == 2 %}selected{% endif %}>A4/2 Landscape</option>
@@ -96,7 +93,7 @@
         <!-- Logo Alignment Dropdown -->
         <div class="form-group">
             <label for="logoAlignment"> Clinic Logo Alignment</label>
-            <select class="form-select" id="logoAlignment" name="logoAlignment">
+            <select class="form-select" id="logoAlignment" name="logoAlignment" required>
                 <option value="" disabled selected hidden>Select</option>
                 <option value="1" {% if prescription_settings.clinic_logo_alignment == 1 %}selected{% endif %}>Left</option>
                 <option value="2" {% if prescription_settings.clinic_logo_alignment == 2 %}selected{% endif %}>Center</option>
@@ -107,7 +104,7 @@
         <!-- Header Type Dropdown -->
         <div class="form-group">
             <label for="headerType">Header Type</label>
-            <select class="form-select" id="headerType" name="headerType">
+            <select class="form-select" id="headerType" name="headerType" required>
                 <option value="" disabled selected hidden>Select</option>
                 <option value="1" {% if prescription_settings.header_type == 1 %}selected{% endif %}>Auto Header</option>
                 <option value="2" {% if prescription_settings.header_type == 2 %}selected{% endif %}>Header Image</option>
@@ -128,18 +125,29 @@
         </div> -->
         <!-- Image Upload Field -->
         <div class="form-group image-upload" id="imageUploadField" {% if prescription_settings.header_type != 2 %}style="display:none;"{% endif %}>
-            <label for="headerImage">Upload Header Image</label>
-            <input type="file" class="form-control" id="headerImage" name="headerImage">
+            <label for="headerImage">{% if prescription_settings %}Update Header Image {%else%}Upload Header Image {%endif%}</label>
+            <input type="file" class="form-control" id="headerImage" name="headerImage" accept="image/jpeg, image/png">
             {% if prescription_settings.header_image %}
-                <img src="http://localhost:8000{{ prescription_settings.header_image }}" alt="Header Image" style="max-width: 100%; height: auto; margin-top: 10px;">
+                <img src="http://13.233.211.102/doctor{{ prescription_settings.header_image }}?t={{ timestamp }}" alt="Header Image" style="max-width: 100%; height: auto; margin-top: 10px;">
             {% endif %}
         </div>
 
         <!-- Height Field -->
-        <div class="form-group height-field" id="heightField" {% if prescription_settings.header_type != 3 %}style="display:none;"{% endif %}>
-            <label for="headerHeight">Header Top Margin</label>
-            <input type="text" class="form-control" id="headerHeight" name="headerHeight" value="{{ prescription_settings.header_top_margin }}">
+        <!-- <div class="form-group height-field" id="heightField" {% if prescription_settings.header_type != 3 %}style="display:none;"{% endif %}>
+            <label for="headerHeight" id="headerHeightLabel">Header Top Margin</label>
+            <input type="text" class="form-control" id="headerHeight" name="headerHeight" value="{{ prescription_settings.header_top_margin|default_if_none:'' }}">
+        </div> -->
+        <div class="form-group height-field" id="heightField" {% if prescription_settings.header_type != 2 and prescription_settings.header_type != 3 %}style="display:none;"{% endif %}>
+            <label for="headerHeight" id="headerHeightLabel">
+                {% if prescription_settings.header_type == 2 %}
+                    Height (inches)
+                {% else %}
+                    Header Top Margin (inches)
+                {% endif %}
+            </label>
+            <input type="text" class="form-control" id="headerHeight" name="headerHeight" value="{{ prescription_settings.header_top_margin|default_if_none:'' }}">
         </div>
+        
 
          <!-- Auto Header Options Container (Initially Hidden) -->
         <!-- <div id="autoHeaderOptionsContainer" style="display: none;">
@@ -348,13 +356,16 @@
         document.getElementById('headerType').addEventListener('change', function() {
             var imageUploadField = document.getElementById('imageUploadField');
             var heightField = document.getElementById('heightField');
+            var headerHeightLabel = document.getElementById('headerHeightLabel');
 
             if (this.value === '2') {
                 imageUploadField.style.display = 'block';
-                heightField.style.display = 'none';
+                heightField.style.display = 'block';
+                headerHeightLabel.textContent = 'Height (inches)';
             } else if (this.value === '3') {
                 imageUploadField.style.display = 'none';
                 heightField.style.display = 'block';
+                headerHeightLabel.textContent = 'Header Top Margin (inches)';
             } else {
                 imageUploadField.style.display = 'none';
                 heightField.style.display = 'none';

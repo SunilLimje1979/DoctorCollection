@@ -2234,13 +2234,25 @@ def clinic_pdf(request):
 ##################Prescription Settings#########################
 def prescription_setting(request):
     if(request.method=='GET'):
-        detail_url="http://localhost:8000/api/get_prescription_settings_by_doctor/"
-        detail_response=requests.post(detail_url,json={'doctor_id':2})
+        detail_url="http://13.233.211.102/doctor/api/get_prescription_settings_by_doctor/"
+        detail_response=requests.post(detail_url,json={'doctor_id':request.session['doctor_id']})
         print(detail_response.text)
-        prescription_settings=(detail_response.json()).get('message_data')
-        print(prescription_settings)
-        # prescription_settings=0
-        return render(request,'Doctor/prescriptionsetting.html',{'prescription_settings':prescription_settings})
+        if(detail_response.json().get('message_code')==1000):
+            prescription_settings=(detail_response.json()).get('message_data')
+            print(prescription_settings)
+            link=prescription_settings['header_image']
+            if(link is not None):
+                # Replace '/staticfiles/' with '/static/'
+                updated_link = link.replace('/staticfiles/', '/static/')
+                print("Updated link:", updated_link)
+                prescription_settings['header_image']=updated_link
+
+             
+        else:
+            print(detail_response.json().get('message_code'))
+            prescription_settings=0
+        timestamp = int(time())
+        return render(request,'Doctor/prescriptionsetting.html',{'prescription_settings':prescription_settings,"timestamp": timestamp})
     else:
          # Extract form data from POST request
             paper_size = request.POST.get('paperSize')
@@ -2271,27 +2283,50 @@ def prescription_setting(request):
                             break
                    
                 print(api_data)
-                insert_url="http://127.0.0.1:8000/api/insert_prescription_settings/"
+                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
                 response = requests.post(insert_url, data=api_data)
                 print(response.text)
 
 
             
             elif(header_type=='2'):
-                insert_url="http://127.0.0.1:8000/api/insert_prescription_settings/"
+                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
                 api_data={
                     "doctor_id": request.session['doctor_id'],
                     "location_id":request.session['location_id'],
                     "paper_size": int(paper_size),
                     "clinic_logo_alignment": int(logo_alignment),
                     "header_type":int(header_type),
+                    'header_top_margin':header_top_margin, 
                 }
-                response = requests.post(insert_url, data=api_data, files={'header_image': header_image})
+                if header_image:
+                    try:
+                        # Generate a new unique filename for the renamed file
+                        unique_id = str(uuid.uuid4())[:8]  # Use a portion of the UUID as a short identifier
+                        file_extension = os.path.splitext(header_image.name)[-1]
+                        new_filename = f"{unique_id}{file_extension}"
+                        print(new_filename)
+
+                        # Create a BytesIO object to hold the file data in memory
+                        renamed_file = BytesIO()
+                        for chunk in header_image.chunks():
+                            renamed_file.write(chunk)
+
+                        # Reset the file pointer to the start of the BytesIO buffer
+                        renamed_file.seek(0)
+
+
+                    except Exception as e:
+                        return HttpResponse(f"Error: {str(e)}")
+
+                else:
+                    return HttpResponse("No file uploaded.")
+                response = requests.post(insert_url, data=api_data, files={'header_image': (new_filename, renamed_file)})
                 print(response.text)
-                print(header_image)
+                # print(header_image)
             
             else:
-                insert_url="http://127.0.0.1:8000/api/insert_prescription_settings/"
+                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
                 api_data={
                     "doctor_id": request.session['doctor_id'],
                     "location_id":request.session['location_id'],
@@ -2304,9 +2339,92 @@ def prescription_setting(request):
                 print(response.text)
                 print(header_top_margin)
 
-            
+            if response.json().get('message_code') == 1000:
+                messages.success(request, 'Prescription Format Added successfully!')
+                return redirect(settingdashboard)
+            else:
+                return HttpResponse("prescription data not Added..")
              
-            return HttpResponse("Prescription setting added")
+
+    
+def update_prescription_setting(request):
+    paper_size = request.POST.get('paperSize')
+    logo_alignment = request.POST.get('logoAlignment')
+    header_type = request.POST.get('headerType')
+    header_image = request.FILES.get('headerImage')
+    header_top_margin = request.POST.get('headerHeight')
+    print(paper_size,'\n',logo_alignment,'\n',header_type,'\n',header_image,'\n',header_top_margin)
+    print("update prescription settings..")
+    if(header_type=='1'):
+                # Extract selected auto header options
+                auto_header_options = request.POST.getlist('autoHeaderOptions')
+                print(auto_header_options)
+                options=['clinic_name','clinic_address','doctor_name','doctor_degree','doctor_speciality','doctor_availability','clinic_services','clinic_logo','clinic_mobile_number']
+                api_data={
+                    "doctor_id": request.session['doctor_id'],
+                    "paper_size": int(paper_size),
+                    "clinic_logo_alignment": int(logo_alignment),
+                    "header_type":int(header_type),
+                }
+
+                for checkedoption in auto_header_options:
+                    for option in options:
+                        if(checkedoption==option):
+                            api_data[option]=1 # 1 means true if the option is checked and default value is 0 means not selected.
+                            print(checkedoption)
+                            break 
+                # print(api_data)
+                for option in options:
+                    if(option not in api_data):
+                        api_data[option]=0
+                        
+                print(api_data)
+                    
+                update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+                response = requests.post(update_url, data=api_data)
+                print(response.text)
+            
+    elif(header_type=='2'):
+        update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+        api_data={
+            "doctor_id": request.session['doctor_id'],
+            "paper_size": int(paper_size),
+            "clinic_logo_alignment": int(logo_alignment),
+            "header_type":int(header_type),
+            'header_top_margin':header_top_margin, 
+        }
+         
+        response = requests.post(update_url, data=api_data)
+        print(response.text)
+        # print(header_image)
+        if(header_image):
+                image_url="http://13.233.211.102/doctor/api/update_header_image/"
+                image_response=requests.post(image_url,data={"doctor_id":request.session['doctor_id']},files={'header_image':header_image})
+                print(image_response.text)
+        else:
+            print("no image uploaded")
+            # return HttpResponse("no image uploaded")
+    
+    else:
+        update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+        api_data={
+            "doctor_id": request.session['doctor_id'],
+            "paper_size": int(paper_size),
+            "clinic_logo_alignment": int(logo_alignment),
+            "header_type":int(header_type),
+            'header_top_margin':header_top_margin,    
+        }
+        response = requests.post(update_url, data=api_data)
+        print(response.text)
+        print(header_top_margin)
+    
+    if response.json().get('message_code') == 1000:
+            messages.success(request, 'Prescription Format Updated successfully!')
+            return redirect(settingdashboard)
+    else:
+        return HttpResponse("prescription data not updated..")
+ 
+    
 
 
 ###############################Users################################

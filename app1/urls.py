@@ -35,6 +35,7 @@ urlpatterns = [
     path('get_pdf_link/', get_pdf_link, name='get_pdf_link'),
     path('clinic_pdf/', clinic_pdf, name='clinic_pdf'),
     path('prescription_setting/',prescription_setting,name='prescription_setting'),
+    path("update_prescription_setting/",update_prescription_setting,name='update_prescription_setting'),
     path('paid/', paid, name='paid'),
     path("get_all_users/",get_all_users,name='get_all_users'),
     path('insert_user/',insert_user ,name='insert_user'),
