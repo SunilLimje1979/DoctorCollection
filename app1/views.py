@@ -270,7 +270,7 @@ def addClinic(request):
             timestamp = int(time())
 
             # Update the value in 'data' dictionary
-            data[0]['location_image'] = "http://13.233.211.102/doctor"+updated_link
+            data[0]['location_image'] = "https://www.drishtis.app/doctor"+updated_link
             return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id,"timestamp": timestamp})
         else:
             request.session['location_id']=None
@@ -2119,7 +2119,8 @@ def get_pdf_link(request):
     print(response.text)
     pdfurl=((response.json().get("message_data"))[0]).get("pdf_url")
     print(pdfurl)
-    pdf_link =  pdfurl
+    pdf_link = pdfurl.replace("http://13.233.211.102", "https://www.drishtis.app")
+    print(pdf_link)
 
     if pdf_link:
         return JsonResponse({'pdf_link': pdf_link})
@@ -2224,6 +2225,7 @@ def clinic_pdf(request):
         pdf_url = data.get("message_data")[0].get("pdf_url")
         
         if pdf_url:
+            pdf_url = pdf_url.replace("http://13.233.211.102", "https://www.drishtis.app")
             return JsonResponse({'pdf_url': pdf_url})
         else:
             return JsonResponse({'error': 'Failed to fetch PDF URL.'}, status=500)
