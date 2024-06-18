@@ -2049,34 +2049,6 @@ def get_labinvestigation(requests,doctor_id):
     print("lab_investigation_report:", lab_investigation_report)
 
 
-###############################Patient flow########################################
-def addPatient(request):
-    if(request.method=="GET"):
-        return render(request,'Doctor/addandupdatepatient.html')
-    
-    # else:
-    #     patient_url="http://13.233.211.102/pateint/api/insert_patient/"
-    #     patient_apidata={
-    #             "patient_mobileno": request.POST['mobileNumber'],
-    #             "patient_firstname": fullname[0],
-    #             "patient_lastname": fullname[1],
-    #             "patient_fateherhusbandname": "vijay",
-    #             "patient_gender":appointment_details['appointment_gender'],
-    #             "patient_dateofbirth": "2023-12-15",
-    #             "patient_maritalstatus": 1,
-    #             "patient_aadharnumber": "1234567890123456",
-    #             "patient_universalhealthid": 123456,
-    #             "patient_bloodgroup": 1,
-    #             "patient_emergencycontact": "9876543210",
-    #             "patient_address": "123 Main Street",
-    #             "patient_cityid": 1,
-    #             "patient_stateid": 1,
-    #             "patient_countryid": 1
-    #         }
-    #     patientdata_response=requests.post(patient_url,json=patient_apidata)
-    #     print(patientdata_response.text)
-    #     return HttpResponse("ok")
-
 def get_pdf_link(request):
     update_appstatus_url="http://13.233.211.102/appointment/api/update_appointment_status"
     appstatus_response=requests.post(update_appstatus_url,json={"appointment_id":request.session['appointment_id'],"appointment_status":3})
@@ -3015,13 +2987,208 @@ def update_instruction(request,id):
             return redirect(all_instruction)
         else:
             return HttpResponse("user data not updated..")
-        
+
+###############################Patient Tab flow########################################       
 def all_patient(request):
     patient_url="http://13.233.211.102/pateint/api/get_patients_by_doctor_id/"
     patient_res=requests.post(patient_url,json={"doctor_id":request.session['doctor_id']})
-    print(patient_res.text)
+    # print(patient_res.text)
     all_data=patient_res.json().get('message_data')
     return render(request,'Doctor/all_patient.html',{'all_data':all_data})
+
+
+def addPatient(request):
+    if(request.method=="GET"):
+        allergy_api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
+        allergy_data={"doctor_id": request.session['doctor_id']}
+        allergy_res=requests.post(allergy_api,json=allergy_data)
+        # print(allergy_res.text)
+        allergy_data=[]
+        disease_data=[]
+        if(allergy_res.json().get('message_code')==1000):
+            allergy_data=allergy_res.json().get("message_data")
+        
+        disease_api="http://13.233.211.102/pateint/api/get_diseases_by_doctorid/"
+        disease_data={"doctor_id": request.session['doctor_id']}
+        disease_res=requests.post(disease_api,json=disease_data)
+        # print(disease_res.text)
+        if(disease_res.json().get('message_code')==1000):
+            disease_data=disease_res.json().get("message_data")
+        return render(request,'Doctor/addandupdatepatient.html',{'disease_data':disease_data,'allergy_data':allergy_data})
+    
+    else:
+        form_data=request.POST
+        print(form_data)
+        non_empty_fields = [key for key, value in form_data.items() if value]
+        # Print the non-empty fields
+        print("Non-empty fields:", non_empty_fields)
+      
+        patient_apidata = {}
+        if 'patient_mobileno' in non_empty_fields:
+            patient_apidata["patient_mobileno"] = form_data['patient_mobileno']
+        if 'patient_firstname' in non_empty_fields:
+            patient_apidata["patient_firstname"] = form_data['patient_firstname']
+        if 'patient_lastname' in non_empty_fields:
+            patient_apidata["patient_lastname"] = form_data['patient_lastname']
+        if 'patient_fateherhusbandname' in non_empty_fields:
+            patient_apidata["patient_fateherhusbandname"] = form_data['patient_fateherhusbandname']
+        if 'patient_gender' in non_empty_fields:
+            patient_apidata["patient_gender"] = form_data['patient_gender']
+        if 'patient_maritalstatus' in non_empty_fields:
+            patient_apidata["patient_maritalstatus"] = form_data['patient_maritalstatus']
+        else:
+            patient_apidata["patient_maritalstatus"]=0
+
+        if 'dob' in non_empty_fields:
+            patient_apidata["patient_dateofbirth"] = form_data['dob']
+        if 'patient_bloodgroup' in non_empty_fields:
+            patient_apidata["patient_bloodgroup"] = form_data['patient_bloodgroup']
+        else:
+            patient_apidata["patient_bloodgroup"]=0
+
+        if 'patient_address' in non_empty_fields:
+            patient_apidata["patient_address"] = form_data['patient_address']
+        if 'patient_aadharnumber' in non_empty_fields:
+            patient_apidata["patient_aadharnumber"] = form_data['patient_aadharnumber']
+        
+        if 'patient_universalhealthid' in non_empty_fields:
+            patient_apidata["patient_universalhealthid"] = form_data['patient_universalhealthid']
+        else:
+            patient_apidata["patient_universalhealthid"]=0
+
+        if 'patient_countryid' in non_empty_fields:
+            patient_apidata["patient_countryid"] = form_data['patient_countryid']
+        else:
+            patient_apidata["patient_countryid"]=1
+
+        if 'patient_stateid' in non_empty_fields:
+            patient_apidata["patient_stateid"] = form_data['patient_stateid']
+        # if 'city' in non_empty_fields:
+        #     patient_apidata["patient_cityid"] = form_data['city']
+        if 'patient_emergencycontact' in non_empty_fields:
+            patient_apidata["patient_emergencycontact"] = form_data['patient_emergencycontact']
+        else:
+            patient_apidata["patient_emergencycontact"]=0
+
+
+        res=requests.post("http://13.233.211.102/pateint/api/insert_patient/",json=patient_apidata)
+        print(res.text)
+        patient_id=((res.json().get("message_data"))[0]).get("Patient_Id")
+
+        pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+        pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
+        pdlink_res=requests.post(pdlink_url,json=pdlink_data)
+        print("patient doctor link",pdlink_res.text)
+
+        if 'remark' in non_empty_fields:
+            pdlink_res= requests.post("http://13.233.211.102/pateint/api/update_patient_doctor_link_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":patient_id,"remark":form_data['remark']})
+            print(pdlink_res.text)
+            # print(form_data['remark'])
+        
+        diseases = request.POST.getlist('diseases[]')
+        # allergies = request.POST.getlist('allergies[]')
+        # print(diseases)
+        # print(allergies)
+    
+        for disease_json in diseases:
+            disease_data = json.loads(disease_json)
+            disease_id = disease_data.get('disease_id')
+            disease_description = disease_data.get('disease_description')
+            disease_apidata={"patient_id":patient_id,"disease_id":disease_id}
+            if not disease_description:
+                print(disease_id,"no description")
+            else:
+                disease_apidata["disease_details"]=disease_description
+                print(disease_id,disease_description)
+            
+            dis_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_diseases/",json=disease_apidata)
+            print(dis_res.text)
+            print("---------------------------")
+        
+        # Extract allergy data from form
+        allergies = request.POST.getlist('allergies[]')
+        # print(allergies)
+        for allergy_json in allergies:
+            allergy_data = json.loads(allergy_json)
+            allergy_id = allergy_data.get('allergy_id')
+            allergy_description = allergy_data.get('allergy_description')
+            allergy_apidata={"patient_id":patient_id,"allergy_id":allergy_id}
+            if not allergy_description:
+                print(allergy_id,"no description")
+            else:
+                allergy_apidata["allergy_details"]=allergy_description
+                print(allergy_id,allergy_description)
+            
+            allergy_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_allergies/",json=allergy_apidata)
+            print(allergy_res.text)
+            print("------------------------------")
+
+        book_appointment = request.POST.get('bookAppointment')
+        if(book_appointment):
+            # Extract the names from the form data
+            first_name = form_data.get('patient_firstname', '').strip()
+            middle_name = form_data.get('patient_fateherhusbandname', '').strip()
+            last_name = form_data.get('patient_lastname', '').strip()
+
+            # Combine the names, handling the case where middle_name may be empty
+            full_name = ' '.join(part for part in [first_name, middle_name, last_name] if part)
+            print(full_name)
+            dob = datetime.datetime.strptime(request.POST['dob'], '%Y-%m-%d').date()   
+            # Calculate the age
+            today = datetime.datetime.today().date()
+            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            print(age)
+            # Get the current date and time
+            current_datetime = datetime.datetime.now()
+            # Format the date and time as "YYYY-MM-DD HH:MM:SS"
+            date_time_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            print(date_time_str)
+            if(int(request.POST['patient_gender'])==0):
+                gender='Male'
+            else:
+                gender='Female'
+
+            appointment_data = {
+                        'doctor_id': request.session['doctor_id'],
+                        'appointment_mobileno':request.POST['patient_mobileno'],
+                        'appointment_name': full_name,
+                        'appointment_datetime': date_time_str,
+                        'appointment_status': 1,
+                        'appointment_gender':gender,
+                        'age':age
+                    }
+            api_url="http://13.233.211.102/appointment/api/insert_appointment_data/"
+            appointment_response=requests.post(api_url,json=appointment_data)
+            print(appointment_response.text)
+
+         
+        if res.json().get('message_code') == 1000:
+            if(book_appointment):
+                appointment_id=(appointment_response.json().get('message_data')).get('appointment_id')
+                print(appointment_id)
+                api_data = {"appointment_id":appointment_id}
+                api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+                response = requests.post(api_url, json=api_data)
+
+                if response.json().get('message_code') == 1000:
+                    data = response.json().get('message_data')
+                    data2=data.get('appointment details', {})
+                    data2['patient_id']=patient_id
+                    data2['dob'] = form_data['dob']
+                    data2['aadharnumber']=form_data.get('patient_aadharnumber', 0)
+                    data2['health_id']=form_data.get('patient_universalhealthid', 0)
+                    print(data2)
+                    return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
+        
+            else:
+                messages.success(request, 'Patient details Added successfully!')
+                return redirect(all_patient)
+        else:
+            return HttpResponse("patient data not added..")
+        
+
+
+
 
 def update_patient(request,id):
     if(request.method=='GET'):
@@ -3159,8 +3326,8 @@ def update_patient(request,id):
             patient_apidata["patient_universalhealthid"] = form_data['patient_universalhealthid']
         # if 'patient_countryid' in non_empty_fields:
         #     patient_apidata["patient_countryid"] = form_data['patient_countryid']
-        # if 'patient_stateid' in non_empty_fields:
-        #     patient_apidata["patient_stateid"] = form_data['patient_stateid']
+        if 'patient_stateid' in non_empty_fields:
+            patient_apidata["patient_stateid"] = form_data['patient_stateid']
         # if 'city' in non_empty_fields:
         #     patient_apidata["patient_cityid"] = form_data['city']
         if 'patient_emergencycontact' in non_empty_fields:

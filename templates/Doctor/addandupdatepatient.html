@@ -54,6 +54,19 @@
         .custom-file-input {
             padding: 0.01rem 0.01rem;
         }
+
+        /* Style for the checkbox */
+    .form-check-input {
+        border: 2px solid #000; /* Dark border */
+        width: 20px; /* Increase the size of the checkbox */
+        height: 20px; /* Increase the size of the checkbox */
+    }
+
+    /* Style for the label */
+    .form-check-label {
+        font-weight: bold; /* Bold text */
+        font-size: 0.9em; /* Increase the font size */
+    }
     </style>
 </head>
 
@@ -66,17 +79,15 @@
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
            
             <div class="container-fluid pl-3">
-                {% if patient %}
                     <a class="navbar-brand" href="{% url 'all_patient' %}" >
                         <i class="fas fa-arrow-left"></i> 
+                        {% if patient %}
                             Patient Profile
-                    </a>
-                {% else %}
-                    <a class="navbar-brand" href="" >
-                        <i class="fas fa-arrow-left"></i> 
+                        {%else%}
                             Add Patient
+                        {%endif%}
                     </a>
-                {% endif %}
+
                 <button type="submit" value="Submit" class="btn btn-light mx-3">
                     <i class="fas fa-save"></i> 
                     {% if patient %}
@@ -92,13 +103,13 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="floatingfirstname" name="patient_firstname" value="{{patient.patient_firstname}}" placeholder="First Name">
+                    <input type="text" class="form-control" id="floatingfirstname" name="patient_firstname" value="{{patient.patient_firstname}}" placeholder="First Name" {%if not patient%} required {%endif%}>
                     <label for="floatingfirstname">First Name</label>
                 </div>
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="floatinglastname" name="patient_lastname" value="{{patient.patient_lastname}}" placeholder="Last Name">
+                    <input type="text" class="form-control" id="floatinglastname" name="patient_lastname" value="{{patient.patient_lastname}}" placeholder="Last Name" {%if not patient%} required {%endif%}>
                     <label for="floatinglastname">Last Name</label>
                 </div>
             </div>
@@ -114,7 +125,7 @@
             </div>
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="patient_mobileno" value="{{patient.patient_mobileno}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" readonly>
+                    <input type="text" class="form-control" name="patient_mobileno" value="{{patient.patient_mobileno}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number" {%if patient%} readonly {%else%} required {%endif%}>
                     <label for="patient_mobileno">Mobile Number</label>
                 </div>
             </div>
@@ -125,7 +136,7 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <select class="form-select" name="patient_gender" aria-label="Floating label select example">
+                    <select class="form-select" name="patient_gender" aria-label="Floating label select example" {%if not patient%} required {%endif%}>
                         <option value="" disabled selected hidden>Select</option>
                         <option value="0" {% if patient.patient_gender == 0 %}selected{% endif %}>Male</option>
                         <option value="1" {% if patient.patient_gender == 1 %}selected{% endif %}>Female</option>
@@ -149,7 +160,7 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="date" class="form-control" name="dob" value="{{ patient.dob}}">
+                    <input type="date" class="form-control" name="dob" value="{{ patient.dob}}" {%if not patient%} required {%endif%}>
                     <label for="dob">Date of Birth</label>
                 </div>
             </div>
@@ -174,7 +185,7 @@
         <div class="row">
             <div class="col-md-6 col-12 mb-3">
                 <div class="form-floating">
-                    <textarea class="form-control" name="patient_address"  placeholder="Address" rows="3">{{ patient.patient_address }}</textarea>
+                    <textarea class="form-control" name="patient_address"  placeholder="Address" rows="3">{%if patient.patient_address %} {{ patient.patient_address }} {%endif%}</textarea>
                     <label for="patient_address">Address</label>
                 </div>
             </div>
@@ -186,7 +197,7 @@
                 <div class="form-floating">
                     <select name="patient_countryid" class="form-control form-select" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="India" {% if patient.patient_countryid == 1 %}selected{% endif %}>India</option>
+                        <option value="1" {% if patient.patient_countryid == 1 %}selected{% endif %}>India</option>
                     </select>
                     <label for="patient_countryid">Country</label>
                 </div>
@@ -195,7 +206,7 @@
                 <div class="form-floating">
                     <select name="patient_stateid" class="form-select" aria-label="Floating label select example">
                         <option value="" disabled selected hidden>Select</option>
-                        <option value="Maharashtra" {% if patient.patient_stateid == 1 %}selected{% endif %}>Maharashtra</option>
+                        <option value="1" {% if patient.patient_stateid == 1 %}selected{% endif %}>Maharashtra</option>
                     </select>
                     <label for="patient_stateid">State</label>
                 </div>
@@ -243,10 +254,20 @@
         <div class="row">
             <div class="col-md-6 col-6 mb-3">
                 <div class="form-floating">
-                    <input type="text" class="form-control" name="patient_emergencycontact" value="{{patient.patient_emergencycontact}}"  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number">
+                    <input type="text" class="form-control" name="patient_emergencycontact" {% if patient.patient_emergencycontact != '0' %}value="{{ patient.patient_emergencycontact }}"{% endif %}  placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a valid 10-digit mobile number">
                     <label for="patient_emergencycontact">Emergency Contact</label>
                 </div>
             </div>
+            {%if not patient%} 
+                <div class="col-md-6 col-6 mb-3 mt-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="bookAppointment" name="bookAppointment">
+                        <label class="form-check-label" for="bookAppointment">
+                            Book Appointment
+                        </label>
+                    </div>
+                </div>
+            {%endif%}
         </div>
          
      
