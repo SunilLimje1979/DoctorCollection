@@ -49,7 +49,7 @@ def opdlogin(request,token):
     if(response.json().get("message_code") ==999):
         request.session.clear()
         request.session['token']=token
-        return redirect(doctorReg)
+        return redirect(planinfo)
     else:
         print(response.text)
         doctor_id=response.json().get("message_data").get("doctor_id")
@@ -73,6 +73,9 @@ def opdlogin(request,token):
 def opdlogin1(request):
     return render(request,"Doctor/opdlogin.html")
 
+def planinfo(request):
+    return render(request,'Doctor/planinfo.html')
+
 
 def doctorReg(request):
     if(request.method=="GET"):
@@ -80,22 +83,25 @@ def doctorReg(request):
         # doctor_id=request.session['doctor_id']
         # print(request.session['doctor_id'])
         # request.session.clear()
-        if 'doctor_id' in request.session:
-            doctor_id=request.session['doctor_id']
-            api_data={"doctor_id":doctor_id}
-            # api_url="http://127.0.0.1:8000/api/get_doctor_by_id/"
-            api_url="http://13.233.211.102/doctor/api/get_doctor_by_id/"
-            response=requests.post(api_url,json=api_data)
-            data=response.json().get("message_data",{})
-            print(data)
-            # Convert epoch timestamp to formatted date
-            epoch_timestamp = data[0].get('doctor_dateofbirth', 0)
-            # print(epoch_timestamp)
-            # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
-            formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
-            # print(formatted_date)
-            data[0]['doctor_dateofbirth'] = formatted_date
-            return render(request,"Doctor/DoctorRegUpdate.html",{"data":data[0],'doctor_id':doctor_id})
+        if 'doctor_id' in request.session and 'role' in request.session :
+            if(request.session['role']=='Doctor'):
+                doctor_id=request.session['doctor_id']
+                api_data={"doctor_id":doctor_id}
+                # api_url="http://127.0.0.1:8000/api/get_doctor_by_id/"
+                api_url="http://13.233.211.102/doctor/api/get_doctor_by_id/"
+                response=requests.post(api_url,json=api_data)
+                data=response.json().get("message_data",{})
+                print(data)
+                # Convert epoch timestamp to formatted date
+                epoch_timestamp = data[0].get('doctor_dateofbirth', 0)
+                # print(epoch_timestamp)
+                # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
+                formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
+                # print(formatted_date)
+                data[0]['doctor_dateofbirth'] = formatted_date
+                return render(request,"Doctor/DoctorRegUpdate.html",{"data":data[0],'doctor_id':doctor_id})
+            else:
+                return redirect(dashboard)
         else:
             request.session['doctor_id']=None
             return render(request,"Doctor/DoctorRegUpdate.html",{"doctor_id":None})
@@ -147,6 +153,7 @@ def doctorReg(request):
             return redirect(settingdashboard)
         
         else:
+            #print('token',request.session['token'])
             api_data['doctor_login_token']=request.session['token']
             # api_url = "http://127.0.0.1:8000/api/insert_doctor/"
             api_url = "http://13.233.211.102/doctor/api/insert_doctor/"

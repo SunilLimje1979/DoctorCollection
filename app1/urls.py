@@ -63,7 +63,6 @@ urlpatterns = [
     path("update_instruction/<int:id>",update_instruction,name='update_instruction'),
     path("all_patient/",all_patient,name='all_patient'),
     path("update_patient/<int:id>",update_patient,name='update_patient'),
+    path('planinfo/',planinfo,name='planinfo'),
 
-   
-     
 ]
