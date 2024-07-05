@@ -817,7 +817,14 @@
         event.preventDefault(); 
         const pdfLink = this.dataset.pdfLink;
         if (pdfLink) {
-            window.open(pdfLink, '_blank');
+            const link = document.createElement("a");
+            link.href = pdfLink;
+            link.target="_blank";
+            link.download = "prescription_document.pdf"; // Specify the filename here
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            // window.open(pdfLink, '_blank');
         } else {
             alert('PDF link not available.');
         }
