@@ -347,14 +347,16 @@ def addClinic(request):
                 except Exception as e:
                     return HttpResponse(f"Error: {str(e)}")
 
-            else:
-                return HttpResponse("No file uploaded.")
+            # else:
+            #     return HttpResponse("No file uploaded.")
             api_data['doctor_id']=request.session['doctor_id']
             print(api_data['doctor_id'])
             # api_url = "http://127.0.0.1:8000/api/insert_doctor_location/"
             api_url = "http://13.233.211.102/doctor/api/insert_doctor_location/"
-
-            response = requests.post(api_url, data=api_data, files={'location_image': (new_filename, renamed_file)})
+            if(clinic_logo):
+                response = requests.post(api_url, data=api_data, files={'location_image': (new_filename, renamed_file)})
+            else:
+                response= requests.post(api_url, json=api_data)
             print(response.text)
             api_response = response.json()
             print(api_response)

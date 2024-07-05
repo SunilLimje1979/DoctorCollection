@@ -174,7 +174,6 @@
         {% if data %}
         <div  class="text-center mt-3">
             <div class="col-md-6 col-12" >
-                <!-- <img src="http://127.0.0.1:8000{{data.location_image}}" alt="Clinic Logo"  style="max-width: 50%; height: auto; margin-top: 10px;"> -->
                 <img src="{{ data.location_image }}?t={{ timestamp }}" alt="Clinic Logo"  style="max-width: 50%; height: auto; margin-top: 10px;">
                 <input type="hidden" name="logoname" value="{{data.location_image}}">
             </div>
