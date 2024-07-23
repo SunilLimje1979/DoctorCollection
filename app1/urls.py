@@ -64,5 +64,7 @@ urlpatterns = [
     path("all_patient/",all_patient,name='all_patient'),
     path("update_patient/<int:id>",update_patient,name='update_patient'),
     path('planinfo/',planinfo,name='planinfo'),
+    path('get_states/', get_states, name='get_states'),
+    path('get_cities/', get_cities, name='get_cities'),
 
 ]

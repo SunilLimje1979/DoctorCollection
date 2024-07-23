@@ -83,6 +83,11 @@ def doctorReg(request):
         # doctor_id=request.session['doctor_id']
         # print(request.session['doctor_id'])
         # request.session.clear()
+        # Fetch countries, states, and cities
+        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        countries = country_response.json().get("message_data", [])
+        # print(countries)
+
         if 'doctor_id' in request.session and 'role' in request.session :
             if(request.session['role']=='Doctor'):
                 doctor_id=request.session['doctor_id']
@@ -99,14 +104,31 @@ def doctorReg(request):
                 formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
                 # print(formatted_date)
                 data[0]['doctor_dateofbirth'] = formatted_date
-                return render(request,"Doctor/DoctorRegUpdate.html",{"data":data[0],'doctor_id':doctor_id})
+                state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":data[0]['doctor_countryid']})
+                states = (state_response.json().get("message_data", [])).get('states',[])
+                # print(states)
+
+                city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":data[0]['doctor_stateid']})
+                cities = (city_response.json().get("message_data", [])).get('cities',[])
+                # print(cities)
+                return render(request,"Doctor/DoctorRegUpdate.html",{"data":data[0],'doctor_id':doctor_id,"countries": countries,"states": states,"cities": cities})
             else:
                 return redirect(dashboard)
         else:
+            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+            states = (state_response.json().get("message_data", [])).get('states',[])
+            # print(states)
+
+            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+            cities = (city_response.json().get("message_data", [])).get('cities',[])
+            # print(cities)
             request.session['doctor_id']=None
-            return render(request,"Doctor/DoctorRegUpdate.html",{"doctor_id":None})
+            return render(request,"Doctor/DoctorRegUpdate.html",{"doctor_id":None,"countries": countries,"states": states,"cities": cities})
     
     else:
+        # form_data=request.POST
+        # print(form_data)
+        # return HttpResponse("else part of Doctor Reg")
         doctor_id= request.session['doctor_id']
         fname=request.POST['firstName']
         lname=request.POST['lastName']
@@ -132,9 +154,9 @@ def doctorReg(request):
                 "doctor_gender":gender,
                 "doctor_aadharnumber": aadharNumber,
                 "doctor_address": address,
-                "doctor_cityid": 1,
-                "doctor_stateid": 1,
-                "doctor_countryid": 1,
+                "doctor_cityid": city,
+                "doctor_stateid": state,
+                "doctor_countryid": country,
                 "doctor_pincode": pincode,
                 "doctor_registrationno": regno,
                 "isactive": 1,
@@ -174,7 +196,20 @@ def doctorReg(request):
             else:
                 return HttpResponse(f"Failed to store data in the Database. API response: {response.text}")
 
+def get_states(request):
+    country_id = request.GET.get('country_id')
+    print(country_id)
+    state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":country_id})
+    states = (state_response.json().get("message_data", [])).get('states',[])
 
+    return JsonResponse(states, safe=False)
+
+def get_cities(request):
+    state_id = request.GET.get('state_id')
+    print(state_id)
+    city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":state_id})
+    cities = (city_response.json().get("message_data", [])).get('cities',[])
+    return JsonResponse(cities, safe=False)
 
 
 # def addClinic(request):
@@ -258,6 +293,10 @@ def addClinic(request):
         # print(location_id)
         # request.session['location_id']=20
         # del request.session['location_id']
+        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        countries = country_response.json().get("message_data", [])
+        # print(countries)
+
         if 'location_id' in request.session:
             location_id=request.session['location_id']
             print(location_id)
@@ -278,10 +317,25 @@ def addClinic(request):
 
             # Update the value in 'data' dictionary
             data[0]['location_image'] = "https://www.drishtis.app/doctor"+updated_link
-            return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id,"timestamp": timestamp})
+
+            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":data[0]['location_country_id']})
+            states = (state_response.json().get("message_data", [])).get('states',[])
+            # print(states)
+
+            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":data[0]['location_state_id']})
+            cities = (city_response.json().get("message_data", [])).get('cities',[])
+            # print(cities)
+            return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id,"timestamp": timestamp,"countries": countries,"states": states,"cities": cities})
         else:
+            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+            states = (state_response.json().get("message_data", [])).get('states',[])
+            # print(states)
+
+            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+            cities = (city_response.json().get("message_data", [])).get('cities',[])
+            # print(cities)
             request.session['location_id']=None
-            return render(request,"Doctor/clinicaddandupdate.html",{"location_id":None})
+            return render(request,"Doctor/clinicaddandupdate.html",{"location_id":None,"countries": countries,"states": states,"cities": cities})
     
     else:
         clinicname=request.POST['clinicName']
@@ -304,9 +358,9 @@ def addClinic(request):
                 "location_address": address,
                 "location_latitute": latitude,
                 "location_longitute": longitude,
-                "location_city_id": 1,
-                "location_state_id": 1,
-                "location_country_id": 1,
+                "location_city_id": city,
+                "location_state_id": state,
+                "location_country_id": country,
                 "location_pincode":pincode,
                 "location_status": 1,  #bydefault 1 means active
                 # "isdeleted":0 #bydefault put 0 later update the api.
