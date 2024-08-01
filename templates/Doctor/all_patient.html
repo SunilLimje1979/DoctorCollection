@@ -206,10 +206,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap" />
     <style>
-        body {
+         body {
             background-color: #f8f9fa;
+            /* font-family: 'Poppins', sans-serif; */
         }
-
         .navbar-orange {
             background-color: #008373;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
@@ -354,15 +354,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="d-flex">
-                        <div class="patient-label">{{ patient.patient_firstname }} {{ patient.patient_lastname }}</div>
-                        <div class="patient-info" style="margin-left: 15px;">
+                        <div class="patient-info" style="margin-right: 15px;">
                             {{ patient.patient_mobileno }}  
-                            <!-- {% if patient.patient_gender == 0 %}
-                               Male
-                            {% else %}
-                               Female
-                            {% endif %} -->
                         </div>
+                        <div class="patient-label">{{ patient.patient_firstname }} {{ patient.patient_lastname }}</div>
+                        <div class="patient-label" style="margin-left: 15px;">&#8377;{% if patient.outstanding %} {{ patient.outstanding }} {%else%} 0 {%endif%}</div>
+
+                         
                     </div>
                     <div class="actions-container">
                         <a href="{% url 'update_patient' patient.patient_id %}">

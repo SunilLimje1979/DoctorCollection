@@ -124,11 +124,12 @@
         {% csrf_token %}
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
             <div class="container-fluid pl-3">
-                
+            {% if consult_data.consultation_status != 3 and consult_data.consultation_status != 2 %}
                 <a class="navbar-brand"  href="#" style="color:#ffffff ;"><i class=""></i>
                     </i> Consultation
                 </a>
                 <div class="d-flex justify-content-end">
+        
                 <button type="submit" class="btn btn-primary mx-3" id="saveButton" onclick="saveData()" style="background-color:#ffff ; color:#000000">
                     <i class="fas fa-save"></i> 
                       {%if consult_data%}
@@ -137,6 +138,9 @@
                         Save 
                       {%endif%}        
                 </button>
+            {%else%}
+                <a class="navbar-brand" style="color: white;"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left" style="color: #fff;"></i> Consultation</a>
+            {%endif%}
             </div>
         </nav>
         <!--initial Assesment---------------------------------------------------------------->
@@ -170,6 +174,10 @@
                           SEX: F
                       {% endif %}
                   </div>
+                  <div style="font-size: 20px;">
+                    Balance: {{outstanding}} &#8377;
+                    <!-- Balance: 48378573878 &#8377; -->
+                </div>
                 </div>
                 <div class="label-row">
                   <div style="font-size: 20px;">
@@ -621,14 +629,16 @@
       <!-- <h1>Print and Save Example</h1> -->
       <div class="row mt-3 " style="margin-bottom:1%">
       <div class="d-flex justify-content-between">
+    {% if consult_data.consultation_status != 3 and consult_data.consultation_status != 2  %}
         <button type="submit" class="btn btn-primary mx-3" id="SaveButton"  onclick="saveData()" style="background-color: #008373; color:white ;display: block;">
           <i class="fas fa-save"></i> 
-            {%if consult_data%}
+            {% if consult_data %}
               Update
             {%else%}
               Save 
             {%endif%}        
         </button>
+     
         <button id="backToAppointmentBtn"  class="btn btn-primary" style="display: none;background-color: #008373;"><i class="fa-solid fa-circle-arrow-left"></i> Appointment</button>
         <!-- <button class="btn btn-success" onclick="printPage()">Print & save</button>
         <button class="btn btn-primary" onclick="savePage()">Print</button> -->
@@ -639,7 +649,7 @@
         <button id="paidBtn" class="btn btn-primary" style="display: none;background-color: #008373;">Paid</button>
         <div id="pdfViewer"></div>
         {%endif%}
-         
+    {%endif%}
       </div>
       </div>
       <div class="row mb-5">

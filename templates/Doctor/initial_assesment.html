@@ -98,7 +98,7 @@
           </nav>
         
         <!--initial Assesment---------------------------------------------------------------->
-        <div class="container mb-2 " style="margin-top:25%;" >
+        <div class="container mb-2 " style="margin-top:20%;">
           
           <div class="card p-2">
                 <div class="row">
@@ -125,6 +125,8 @@
                               <option value="1" {% if data1.appointment_gender == 1 %}selected{% endif %}>F</option>
                       </select>
                   </label>
+
+                  <label for="Outstanding" class="form-label" style="font-size: 20px;">Balance: {{data1.outstanding}} &#8377;</label>
                    
 
                 </div>

@@ -428,6 +428,7 @@ def addClinic(request):
 
 
 
+
 def addSlot(request):
     if(request.method=='GET'):
         # request.session['avalibility_id']=71
@@ -1177,6 +1178,7 @@ def initial_assesment(request,appointment_id):
                 data1['dob'] = formatted_date
                 data1['aadharnumber']=data.get('patient_aadharnumber', 0)
                 data1['health_id']=data.get('patient_universalhealthid', 0)
+                data1['outstanding']= data.get('outstanding',0) or 0
                 pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
                 pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":request.GET.get('patient_id')}
                 pdlink_res=requests.post(pdlink_url,json=pdlink_data)
@@ -1204,6 +1206,7 @@ def initial_assesment(request,appointment_id):
             data1['aadharnumber']=data.get('patient_aadharnumber', 0)
             data1['health_id']=data.get('patient_universalhealthid', 0)
             data1['patient_id']=vital_data['patient_id']
+            data1['outstanding']= data.get('outstanding',0) or 0
 
             return render(request, 'Doctor/initial_assesment.html',{"data1":data1,"vital_data":vital_data,'pain_scale_range': range(1, 11)})
         else:
@@ -1484,13 +1487,17 @@ def Consultation(request,id):
     #######################################################################################################################
             
         Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
+        patient_res=requests.post('http://13.233.211.102/pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":request.session['appointment_id']})
+        outstanding=(patient_res.json().get("message_data",{})).get('outstanding',0) or 0
+        print(outstanding)
+
 
         return render(request, 'Doctor/consultation.html', {"get_patient_by_appointment_id":get_patient_by_appointment_id,
                     "get_patient_boimterics_vitals":get_patient_boimterics_vitals,"all_medicines":all_medicines,
                     "kco":kco,"advice":advice,"lab_investigation_report":lab_investigation_report,
                     "medicine_instruction":medicine_instruction,'consult_data':consult_data,'symptoms_data':symptoms_data,
                     'lab_list':lab_list,'medic_list':medic_list,'prescription':prescription_data['prescription_details'],
-                    'default_fees':default_fees,'pain_scale_range': range(1, 11),
+                    'default_fees':default_fees,'pain_scale_range': range(1, 11),'outstanding':outstanding
                 })
     else:          
 ########################## insert consultaions ########################################
@@ -2127,6 +2134,13 @@ def get_pdf_link(request):
     consult_data=(consult_response.json().get("message_data"))[0]
     print(consult_data)
 
+    url="http://13.233.211.102/pateint/api/get_patient_byid/"
+    res=requests.post(url,json={"patient_id":consult_data['patient_id']})
+    print(res.text)
+    patient=res.json().get('message_data')
+    prev_oustanding = patient.get('outstanding', 0) or 0
+    new_oustanding = prev_oustanding + float(consult_data['consultation_fees'])
+
     patient_charges_url="http://13.233.211.102/pateint/api/insert_patient_charges/"
     patient_charges_data={
             "doctor_id": request.session['doctor_id'],
@@ -2142,11 +2156,17 @@ def get_pdf_link(request):
             "charges_amount": consult_data['consultation_fees'],
             "charges_discount": 2,
             "charges_discount_reason": 1,
-            "charges_discountby": "Admin"
+            "charges_discountby": "Admin",
+            "previous_outstanding":prev_oustanding,
+            "new_outstanding":new_oustanding
         }
     print(patient_charges_data)
     patient_charge_response=requests.post(patient_charges_url,json=patient_charges_data)
     print(patient_charge_response.text)
+    
+    patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_oustanding}
+    oustanding_res=requests.post("http://13.233.211.102/pateint/api/update_patient_by_id/",json=patient_apidata)
+    print(oustanding_res.text)
 
     pdf_url="http://13.233.211.102/medicalrecord/api/generateprescriptionpdf/"
     url_data= {"consultation_id":request.session['consultation_id']}
@@ -2177,6 +2197,13 @@ def paid(request):
     consult_data=(consult_response.json().get("message_data"))[0]
     print(consult_data)
 
+    url="http://13.233.211.102/pateint/api/get_patient_byid/"
+    res=requests.post(url,json={"patient_id":consult_data['patient_id']})
+    print(res.text)
+    patient=res.json().get('message_data')
+    prev_oustanding = patient.get('outstanding', 0) or 0
+    new_oustanding = abs(float(consult_data['consultation_fees']) - prev_oustanding)
+
     patient_payment_url="http://13.233.211.102/pateint/api/insert_patient_payments/"
     patient_payment_data={
             "doctor_id": request.session['doctor_id'],
@@ -2184,11 +2211,17 @@ def paid(request):
             "patient_status": 1,
             "payment_mode": 2,
             "payment_amount": consult_data['consultation_fees'],
-            "payment_transaction_no": "TXN12345"
+            "payment_transaction_no": "TXN12345",
+            "previous_outstanding":prev_oustanding,
+            "new_outstanding":new_oustanding
         }
     print(patient_payment_data)
     patient_charge_response=requests.post(patient_payment_url,json=patient_payment_data)
     print(patient_charge_response.text)
+
+    patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_oustanding}
+    oustanding_res=requests.post("http://13.233.211.102/pateint/api/update_patient_by_id/",json=patient_apidata)
+    print(oustanding_res.text)
     
     if appstatus_response.ok and consultstatus_response.ok:
             return JsonResponse({'message': 'Payment successful'})
@@ -2208,6 +2241,8 @@ def for_user(request,id):
         data1=data.get('appointment details', {})
         request.session['appointment_details']=data1
         print(data1)
+        patient_res=requests.post('http://13.233.211.102/pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":id})
+        data1['outstanding']=(patient_res.json().get("message_data",{})).get('outstanding',0) or 0
         patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
         api_para={"consultation_id":data1.get('consultation_id')}
         patientlab_response=requests.post(patientlab_url,json=api_para)
@@ -2560,6 +2595,7 @@ def patient_history(request,id):
             for patient in patient_data:
                 if(patient['patient_firstname'].lower() ==fullname[0].lower()  and patient['patient_lastname'].lower() ==fullname[1].lower() ):
                     patient_id=patient['patient_id']
+                    data1['outstanding']= patient.get('outstanding',0) or 0
                     break
              
             print("if pateint_id",patient_id)
@@ -2672,6 +2708,7 @@ def patientselect(request,id):
         patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
         print("else patient_id",patient_id)
         data2['patient_id']=patient_id
+        data2['outstanding']=0
         data1=[]
         pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
         pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
@@ -2729,6 +2766,7 @@ def add_member(request):
         patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
         print("else patient_id",patient_id)
         data2['patient_id']=patient_id
+        data2['outstanding']=0
         pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
         pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
         pdlink_res=requests.post(pdlink_url,json=pdlink_data)
@@ -3062,6 +3100,16 @@ def all_patient(request):
 
 def addPatient(request):
     if(request.method=="GET"):
+        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        countries = country_response.json().get("message_data", [])
+
+        state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+        states = (state_response.json().get("message_data", [])).get('states',[])
+        # print(states)
+
+        city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+        cities = (city_response.json().get("message_data", [])).get('cities',[])
+        # print(cities)
         allergy_api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
         allergy_data={"doctor_id": request.session['doctor_id']}
         allergy_res=requests.post(allergy_api,json=allergy_data)
@@ -3077,7 +3125,7 @@ def addPatient(request):
         # print(disease_res.text)
         if(disease_res.json().get('message_code')==1000):
             disease_data=disease_res.json().get("message_data")
-        return render(request,'Doctor/addandupdatepatient.html',{'disease_data':disease_data,'allergy_data':allergy_data})
+        return render(request,'Doctor/addandupdatepatient.html',{'disease_data':disease_data,'allergy_data':allergy_data,"countries": countries,"states": states,"cities": cities})
     
     else:
         form_data=request.POST
@@ -3122,12 +3170,12 @@ def addPatient(request):
         if 'patient_countryid' in non_empty_fields:
             patient_apidata["patient_countryid"] = form_data['patient_countryid']
         else:
-            patient_apidata["patient_countryid"]=1
+            patient_apidata["patient_countryid"]=101
 
         if 'patient_stateid' in non_empty_fields:
             patient_apidata["patient_stateid"] = form_data['patient_stateid']
-        # if 'city' in non_empty_fields:
-        #     patient_apidata["patient_cityid"] = form_data['city']
+        if 'patient_cityid' in non_empty_fields:
+            patient_apidata["patient_cityid"] = form_data['patient_cityid']
         if 'patient_emergencycontact' in non_empty_fields:
             patient_apidata["patient_emergencycontact"] = form_data['patient_emergencycontact']
         else:
@@ -3240,6 +3288,7 @@ def addPatient(request):
                     data2['dob'] = form_data['dob']
                     data2['aadharnumber']=form_data.get('patient_aadharnumber', 0)
                     data2['health_id']=form_data.get('patient_universalhealthid', 0)
+                    data2['outstanding']=0
                     print(data2)
                     return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
         
@@ -3258,7 +3307,7 @@ def update_patient(request,id):
         print('patient id',id)
         url="http://13.233.211.102/pateint/api/get_patient_byid/"
         res=requests.post(url,json={"patient_id":id})
-        # print(res.text)
+        print(res.text)
         patient=res.json().get('message_data')
         epoch_timestamp = patient.get('patient_dateofbirth', 0)
         print(epoch_timestamp)
@@ -3300,7 +3349,23 @@ def update_patient(request,id):
         if(get_disease_res.json().get('message_code')==1000):
             disease_list=get_disease_res.json().get("message_data")
 
-        return render(request,'Doctor/addandupdatepatient.html',{'patient':patient,'disease_data':disease_data,'allergy_data':allergy_data,'allergy_list':allergy_list,'disease_list':disease_list})
+        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        countries = country_response.json().get("message_data", [])
+        
+        print(patient)
+        if(patient['patient_stateid']):
+            state_id=patient['patient_stateid']
+        else:
+            state_id=22
+        state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":patient['patient_countryid']})
+        states = (state_response.json().get("message_data", [])).get('states',[])
+        # print(states)
+
+        city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":state_id})
+        cities = (city_response.json().get("message_data", [])).get('cities',[])
+        # print(cities)
+
+        return render(request,'Doctor/addandupdatepatient.html',{'patient':patient,'disease_data':disease_data,'allergy_data':allergy_data,'allergy_list':allergy_list,'disease_list':disease_list,"countries": countries,"states": states,"cities": cities})
     
     else:
         diseases = request.POST.getlist('diseases[]')
@@ -3387,12 +3452,12 @@ def update_patient(request,id):
         
         if 'patient_universalhealthid' in non_empty_fields:
             patient_apidata["patient_universalhealthid"] = form_data['patient_universalhealthid']
-        # if 'patient_countryid' in non_empty_fields:
-        #     patient_apidata["patient_countryid"] = form_data['patient_countryid']
+        if 'patient_countryid' in non_empty_fields:
+            patient_apidata["patient_countryid"] = form_data['patient_countryid']
         if 'patient_stateid' in non_empty_fields:
             patient_apidata["patient_stateid"] = form_data['patient_stateid']
-        # if 'city' in non_empty_fields:
-        #     patient_apidata["patient_cityid"] = form_data['city']
+        if 'patient_cityid' in non_empty_fields:
+            patient_apidata["patient_cityid"] = form_data['patient_cityid']
         if 'patient_emergencycontact' in non_empty_fields:
             patient_apidata["patient_emergencycontact"] = form_data['patient_emergencycontact']
 
