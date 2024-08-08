@@ -125,12 +125,17 @@
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
             <div class="container-fluid pl-3">
             {% if consult_data.consultation_status != 3 and consult_data.consultation_status != 2 %}
-                <a class="navbar-brand"  href="#" style="color:#ffffff ;"><i class=""></i>
-                    </i> Consultation
-                </a>
+               {% if request.session.subscription_status == 'active' %}
+                    <a class="navbar-brand"  href="#" style="color:#ffffff ;"><i class=""></i>
+                        </i> Consultation
+                    </a>
+                {%else%}
+                    <a class="navbar-brand" style="color: white;"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left" style="color: #fff;"></i> Consultation</a>
+                {%endif%}
+                    
                 <div class="d-flex justify-content-end">
         
-                <button type="submit" class="btn btn-primary mx-3" id="saveButton" onclick="saveData()" style="background-color:#ffff ; color:#000000">
+                <button type="submit" class="btn btn-light mx-3" id="saveButton" onclick="saveData()" style="background-color:#ffff ; color:#000000">
                     <i class="fas fa-save"></i> 
                       {%if consult_data%}
                         Update
@@ -663,6 +668,9 @@
       </div>
       </div>
     </form>
+    {%if request.session.subscription_status == 'inactive' and consult_data.consultation_status != 3 %}
+        {% include "Doctor/popup.html" %}
+    {%endif%}
      
      
     

@@ -886,3 +886,25 @@
                 
 #                 # return redirect(get_all_doctor_appointments)
 #                 return redirect(Consultation)
+
+
+# def dashboard(request):
+#     if('role' in request.session):
+#         print("700 role",request.session['role'])
+#         res=requests.post("http://127.0.0.1:8000/masters/api/validate_subscription/",json={"doctor_id":15})
+#         print(res.text)
+#         days=0 #if remaining days is less than 30 then only it will assign to that value else it will set to 0 means remaining days us greather then 30.
+#         if(res.json().get('message_code')==1000):
+#             subscription_status='active'
+#             if("remaining_days" in res.json().get('message_data')):
+#                 days=(res.json().get('message_data')).get('remaining_days')
+#                 # messages.success(request, f'Your Subscription will end in {days} Days')
+#         else:
+#             messages.error(request, 'Your Subscription is ended..')
+#             subscription_status='inactive'
+#     else:
+#         days=0
+#         subscription_status='active'
+#         request.session['role']='Doctor'
+#     request.session['subscription_status'] = subscription_status
+#     return render(request,"Doctor/dashboard.html",{'role':request.session['role'],'subscription_status': subscription_status,'days':days})

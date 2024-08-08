@@ -92,6 +92,30 @@
             font-weight: bold; /* Optionally apply bold font weight to statistic values */
             color: #008373; /* Customize text color */
         }
+
+        .messages {
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            color: #fff;
+            border-radius: 5px;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .message.success {
+            background-color: #4caf50;
+        }
+
+        .message.error {
+            background-color: #f44336;
+        }
     </style>
 </head>
 
@@ -103,6 +127,28 @@
             <input type="date" id="dateInput" name="dateInput" value="">
         </div>
     </nav>
+
+    {% if messages %}
+        <div id="messages-container" class="messages">
+            {% for message in messages %}
+            <div class="message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var messagesContainer = document.getElementById('messages-container');
+                if (messagesContainer) {
+                    setTimeout(function() {
+                        messagesContainer.style.opacity = '0';
+                        setTimeout(function() {
+                            messagesContainer.style.display = 'none';
+                        }, 500);
+                    }, 2000);
+                }
+            });
+        </script>
+    {% endif %}
 
     <div class="d-flex justify-content-between" style="margin-top: 24%;">
         <button class="btn btn-primary filter-btn" data-status="1" style="margin-left:1%;margin-right: 1%;background-color: #008373;">Uncompleted</button>

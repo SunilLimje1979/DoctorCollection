@@ -686,16 +686,79 @@ def pdf_view(request):
         scriptoption_res=requests.post(scriptoption_url,json=scriptoption_data)
         print(chatscript_res.text)
         print(scriptoption_res.text)
+        messages.success(request, 'Thank You For Registeration')
+        messages.success(request,"Your 15 days Trial Plan is Activated ")
+        return redirect(subscriptioninfo)
+
+        
+
+
+def subscriptioninfo(request): 
+    if(request.method=='GET'):
+       url="http://13.233.211.102/masters/api/get_all_master_subscriptions/"
+       res=requests.get(url)
+       subinfo=res.json().get('message_data')
+       print(subinfo)
+       return render(request,'Doctor/subscriptioninfo.html',{'plans':subinfo})
+    
+    else:
+        master_subscription_id = request.POST['selectedPlan']
+        sub_url="http://13.233.211.102/masters/api/insert_doctor_subscription/"
+        api_data={
+                "doctor_id": request.session['doctor_id'],
+                "master_subscription_id": master_subscription_id,
+                "subscription_price": 0,
+                "subscription_tax1": 0,
+                "subscription_tax2": 0,
+                "subscription_amount": 0,
+                "subscription_paid_amount": 0,
+                "subscription_discount_amount": 0,
+                "subscription_discount_type": 1,
+                "subscription_promo_code": "PROMO345",
+                "subscription_type": 3,
+                # "subscription_billing_name": "viraj",
+                # "subscription_billing_GstNo": "GST52468",
+                # "subscription_billing_address": "address Testing",
+                # "subscription_billing_pincode": "415565",
+                # "subscription_billing_city": 1
+            }
+        res=requests.post(sub_url,json=api_data)
+        print(res.text)
+        # print(api_data)
+        print("master_subscription_id",master_subscription_id)
         return redirect(dashboard)
 
 
 def dashboard(request):
-    if('role' in request.session):
-        print("role",request.session['role'])
-        return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
+    # Ensure role is set in session
+    if 'role' not in request.session:
+        request.session['role'] = 'Doctor'
+        print("734")
+    
+    # Make the API call to validate subscription
+    res = requests.post("http://13.233.211.102/masters/api/validate_subscription/", json={"doctor_id": request.session['doctor_id']})
+    print(res.text)
+    
+    days = 0  # Default days to 0 if remaining days are more than 30
+    if res.json().get('message_code') == 1000:
+        subscription_status = 'active'
+        days = res.json().get('message_data').get('remaining_days')
+        if(15<=days<30):
+            messages.success(request, f'Your Subscription will end in {days} Days')
+        
     else:
-        request.session['role']='Doctor'
-        return render(request,"Doctor/dashboard.html",{'role':request.session['role']})
+        #messages.error(request, 'Your Subscription is ended.')
+        subscription_status = 'inactive'
+    
+    # Update session values with the latest data
+    request.session['subscription_status'] = subscription_status
+    # request.session['days'] = days
+    
+    # Render the dashboard with the latest data
+    return render(request, "Doctor/dashboard.html", {'role': request.session['role'],'subscription_status': subscription_status,'days': days})
+
+def renew_subscription(request):
+    return HttpResponse("Renew is in process...")
 
 def no_service(request):
     return render(request, 'Doctor/no_service.html')
@@ -2655,69 +2718,73 @@ def patient_history(request,id):
 
 
 ##############select patient #####################
-def patientselect(request,id):  
-    api_data = {"appointment_id":id}
-        # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
-    response = requests.post(api_url, json=api_data)
+def patientselect(request,id): 
+    if(request.session['subscription_status'] == 'active'): 
+        api_data = {"appointment_id":id}
+            # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
+        api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+        response = requests.post(api_url, json=api_data)
 
-    if response.status_code == 200:
-        data = response.json().get('message_data')
-        data2=data.get('appointment details', {})
-        request.session['appointment_details']=data2
-        print(data2)
-        
-    url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
-    # res=requests.post(url,json={"mobile_number":9876564532})
-    res=requests.post(url,json={"mobile_number": data2['appointment_mobileno']})
-    if(res.json().get('message_code')==1000):
-        data1=res.json().get('patients_data')
-        print(data1)
+        if response.status_code == 200:
+            data = response.json().get('message_data')
+            data2=data.get('appointment details', {})
+            request.session['appointment_details']=data2
+            print(data2)
+            
+        url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
+        # res=requests.post(url,json={"mobile_number":9876564532})
+        res=requests.post(url,json={"mobile_number": data2['appointment_mobileno']})
+        if(res.json().get('message_code')==1000):
+            data1=res.json().get('patients_data')
+            print(data1)
+        else:
+            print("no patient avaliable for current phone number")
+            appointment_details=request.session['appointment_details']
+            print(appointment_details)
+            fullname=(appointment_details['appointment_name']).split(" ")
+            print(fullname)
+            fullname=[item for item in fullname if item != '']
+            print(fullname)
+            if(len(fullname)<=1):
+                fullname.append('None')
+            
+            # patient_url="http://localhost:8000/pateint/api/insert_patient/"
+            patient_url="http://13.233.211.102/pateint/api/insert_patient/"
+            patient_apidata={
+                "patient_mobileno": appointment_details['appointment_mobileno'],
+                "patient_firstname": fullname[0],
+                "patient_lastname": fullname[1],
+                # "patient_fateherhusbandname": "vijay",
+                "patient_gender":appointment_details['appointment_gender'],
+                "patient_dateofbirth": "2023-12-15",
+                "patient_maritalstatus": 1,
+                # "patient_aadharnumber": "1234567890123456",
+                "patient_universalhealthid": 0,
+                "patient_bloodgroup": 0,
+                "patient_emergencycontact": "9876543210",
+                "patient_address": "123 Main Street",
+                "patient_cityid": 1,
+                "patient_stateid": 1,
+                "patient_countryid": 1
+            }
+            patientdata_response=requests.post(patient_url,json=patient_apidata)
+            print(patientdata_response.text)
+            patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
+            print("else patient_id",patient_id)
+            data2['patient_id']=patient_id
+            data2['outstanding']=0
+            data1=[]
+            pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+            pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
+            pdlink_res=requests.post(pdlink_url,json=pdlink_data)
+            print("first time patient inserted",pdlink_res.text)
+            return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
+            
+
+        return render(request,'Doctor/patientselect.html',{'data1':data1,'data2':data2})
     else:
-        print("no patient avaliable for current phone number")
-        appointment_details=request.session['appointment_details']
-        print(appointment_details)
-        fullname=(appointment_details['appointment_name']).split(" ")
-        print(fullname)
-        fullname=[item for item in fullname if item != '']
-        print(fullname)
-        if(len(fullname)<=1):
-            fullname.append('None')
-        
-        # patient_url="http://localhost:8000/pateint/api/insert_patient/"
-        patient_url="http://13.233.211.102/pateint/api/insert_patient/"
-        patient_apidata={
-            "patient_mobileno": appointment_details['appointment_mobileno'],
-            "patient_firstname": fullname[0],
-            "patient_lastname": fullname[1],
-            # "patient_fateherhusbandname": "vijay",
-            "patient_gender":appointment_details['appointment_gender'],
-            "patient_dateofbirth": "2023-12-15",
-            "patient_maritalstatus": 1,
-            # "patient_aadharnumber": "1234567890123456",
-            "patient_universalhealthid": 0,
-            "patient_bloodgroup": 0,
-            "patient_emergencycontact": "9876543210",
-            "patient_address": "123 Main Street",
-            "patient_cityid": 1,
-            "patient_stateid": 1,
-            "patient_countryid": 1
-        }
-        patientdata_response=requests.post(patient_url,json=patient_apidata)
-        print(patientdata_response.text)
-        patient_id=((patientdata_response.json().get("message_data"))[0]).get("Patient_Id")
-        print("else patient_id",patient_id)
-        data2['patient_id']=patient_id
-        data2['outstanding']=0
-        data1=[]
-        pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
-        pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
-        pdlink_res=requests.post(pdlink_url,json=pdlink_data)
-        print("first time patient inserted",pdlink_res.text)
-        return render(request, 'Doctor/initial_assesment.html',{"data1":data2,'pain_scale_range': range(1, 11)})
-         
-
-    return render(request,'Doctor/patientselect.html',{'data1':data1,'data2':data2})
+        messages.error(request,"As your subscription has ended, you cannot proceed.")
+        return redirect(get_all_doctor_appointments)
 
 
 def add_member(request):

@@ -124,6 +124,9 @@
             </button>
         </div>
     </form>
+    {%if request.session.subscription_status == 'inactive' %}
+        {% include "Doctor/popup.html" %}
+    {%endif%}
 </body>
 
 </html>

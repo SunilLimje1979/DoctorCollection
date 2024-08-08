@@ -84,7 +84,7 @@
             <div class="container-fluid">
               
               <a class="navbar-brand"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Initial Assesment</a>     
-              <button type="submit" class="btn btn-primary mx-3" style="background-color:#ffffff;color: #000000;">
+              <button type="submit" class="btn btn-light mx-3" style="background-color:#ffffff;color: #000000;">
                 <i class="fas fa-save"></i> 
                   {%if vital_data %}
                     Update
@@ -258,9 +258,9 @@
             <div class="text-center mt-3">
                 <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
                   {%if vital_data %}
-                    Update and Consultation
+                    Update 
                   {%else%}
-                  Save and Consultation
+                    Save 
                   {%endif%}
                 </button>
             </div>
@@ -268,6 +268,9 @@
           
             </div>
     </form>
+    {%if request.session.subscription_status == 'inactive' %}
+        {% include "Doctor/popup.html" %}
+    {%endif%}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Your existing JavaScript code -->
