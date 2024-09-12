@@ -68,5 +68,9 @@ urlpatterns = [
     path('get_cities/', get_cities, name='get_cities'),
     path('subscriptioninfo/',subscriptioninfo,name='subscriptioninfo'),
     path('renew_subscription/',renew_subscription,name='renew_subscription'),
+    path('approvePharmacy/',approvePharmacy,name='approvePharmacy'),
+    path('get_all_pharmacist/',get_all_pharmacist,name='get_all_pharmacist'),
+    path('toggle_pharmacist_status/',toggle_pharmacist_status,name='toggle_pharmacist_status'),
+    path('Add_pharmacist/',Add_pharmacist,name='Add_pharmacist'),
 
 ]

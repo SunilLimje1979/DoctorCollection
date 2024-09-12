@@ -28,6 +28,11 @@
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" /> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+     
+    
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
+
     <style>
       .navbar-orange {
           background-color:#008373;
@@ -115,11 +120,51 @@
             max-height: 750px; /* Adjust the maximum height as needed */
             overflow-y: auto; /* Enable vertical scrollbar if needed */
         }
+
+         /* Loader styles */
+         #loader {
+            position: fixed;
+            left: 30%;
+            top: 30%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #008373;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            display: none;
+            z-index: 1000;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         
     </style>
   </head>
 
   <body>
+    <div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;"></div>
+    <div id="loader"></div>
     <form id="myForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
@@ -629,6 +674,22 @@
       </div>
       </div>
       </div>
+    {% if pharmadata %}
+        <div class="container mt-3">
+            <div class="card" style="padding: 1%;">
+                <div class="form-group">
+                    <label for="options" class="times-new-roman fw-bold" style="font-size:20px;">Select Pharmacists</label>
+                    <select id="options" name="options[]" class="selectpicker form-control" multiple data-live-search="true">
+                        {% for pharma in pharmadata %}
+                        <option value="{{pharma.pharmacist_id}}" selected>{{pharma.pharmacist_details.shop_name}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+            </div>
+        </div>
+    {%endif%}
+    
+    
   
       <div class="container mb-5 ">
       <!-- <h1>Print and Save Example</h1> -->
@@ -690,7 +751,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    
+<script>
+    // Handle form submission
+    $('#myForm').on('submit', function(e) {
+        $('.btn').prop('disabled', true); // Disable the save button
+        $('#loader').show(); // Show the loader
+        $('#overlay').show(); // Show the overlay to disable the page
+    });
+</script> 
     
 <script>
   function UpdateKCOTextArea() {
@@ -871,13 +939,17 @@
          
 </script>
 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        // Initialize Select2
-        $(document).ready(function() {
-            $('#labDropdown').select2();
-        });
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+<script>
+    // Initialize Select2
+    $(document).ready(function() {
+        $('#labDropdown').select2();
+    });
 </script>
+
+
 
 <!-- <script>
   // Initialize Select2
@@ -1270,13 +1342,26 @@ document.getElementById('dropdownSearch').addEventListener('input', function () 
 });
 </script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
+<script>
         // Initialize Select2
         $(document).ready(function() {
             $('#medicineSelect').select2();
         });
 </script>
 
+
+    
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap Select JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.selectpicker').selectpicker();
+    });
+</script>
 <!--
 <script>
   document.addEventListener('DOMContentLoaded', () => {

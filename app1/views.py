@@ -8,6 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_protect
 from datetime import timedelta
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 # from googletrans import Translator
 
 from io import BytesIO
@@ -1554,15 +1555,26 @@ def Consultation(request,id):
         outstanding=(patient_res.json().get("message_data",{})).get('outstanding',0) or 0
         print(outstanding)
 
+        ################################All Active Pharmacist##################
+        pharma_res= requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={"doctor_id":request.session['doctor_id'],"Status":0})
+        print(pharma_res.text)
+        if(pharma_res.json().get('message_code')==1000):
+            pharmadata = pharma_res.json().get('message_data')
+            print("1563",pharmadata) 
+        
+        else:
+            pharmadata=[]
+
 
         return render(request, 'Doctor/consultation.html', {"get_patient_by_appointment_id":get_patient_by_appointment_id,
                     "get_patient_boimterics_vitals":get_patient_boimterics_vitals,"all_medicines":all_medicines,
                     "kco":kco,"advice":advice,"lab_investigation_report":lab_investigation_report,
                     "medicine_instruction":medicine_instruction,'consult_data':consult_data,'symptoms_data':symptoms_data,
                     'lab_list':lab_list,'medic_list':medic_list,'prescription':prescription_data['prescription_details'],
-                    'default_fees':default_fees,'pain_scale_range': range(1, 11),'outstanding':outstanding
+                    'default_fees':default_fees,'pain_scale_range': range(1, 11),'outstanding':outstanding,'pharmadata':pharmadata,
                 })
-    else:          
+    else:  
+             
 ########################## insert consultaions ########################################
             # Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
             # print("in consult",get_patient_boimterics_vitals)
@@ -1969,7 +1981,21 @@ def Consultation(request,id):
                 prescritption_response=requests.post(prescription_url,json=prescription_data)
                 print(prescritption_response.text)
                 prescription_id=(prescritption_response.json().get("message_data"))[0]['Prescriptions_Id']
-                print("prescroption id:",prescription_id)
+                print("prescription id:",prescription_id)
+            
+    #############################Pharmacist details##############################
+                selected_pharmacistid = request.POST.getlist('options[]')  # Fetch selected options as a list 
+                if(selected_pharmacistid):
+                    for pharmacistid in selected_pharmacistid:
+                        pharmaapi_data={
+                            "doctor_id": request.session["doctor_id"],
+                            "patient_id": patient_id,
+                            "pharmacist_id": int(pharmacistid),
+                            "prescription_id":prescription_id
+                        }
+                        pharmaapi_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_prescribe_pharmacist/',json=pharmaapi_data)
+                        print(pharmaapi_res.text)
+                    
                 
     #############################Patient Medications##############################
                 mode = request.POST.get('Mode')
@@ -3541,6 +3567,123 @@ def update_patient(request,id):
             return redirect(all_patient)
         else:
             return HttpResponse("patient data not updated..")
+        
+
+def approvePharmacy(request):
+    if(request.method=='GET'):
+        pharmacy_token=request.GET.get("pharmacy_token")
+        if(pharmacy_token):
+            print(pharmacy_token)
+            if('doctor_id' in request.session):
+                api_res= requests.post('http://13.233.211.102/medicalrecord/api/get_pharmacist_details_bytoken/',json={'pharmacist_token':pharmacy_token})
+                print(api_res.text)
+                if(api_res.json().get('message_code')==1000):
+                    pharmacy = api_res.json().get('message_data')
+                    return render(request,'Doctor/approvePharmacy.html',{'pharmacy':pharmacy})
+                else:
+                    return HttpResponse("No Details found for Pharmacist token")
+            else:
+                return redirect(opdlogin1)
+        
+        else:
+            print(pharmacy_token)
+            return HttpResponse('No Pharmacy token')
+    
+    else:
+        pharmacist_id = request.POST['pharmacist_id']
+        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
+        print(api_res.text)
+        if(api_res.json().get('message_code')==1000):
+           messages.success(request, 'Pharmacist Approved successfully!')
+           print('Approved')
+        
+        elif(api_res.json().get('message_code')==1001):
+            messages.success(request, 'Pharmacist Already Approved!')
+
+        else:
+            messages.error(request, 'failed to approve try to contact Support')
+            #return HttpResponse("failed to approve try to contact Support")
+
+
+        return redirect(get_all_pharmacist)
+    
+
+def get_all_pharmacist(request):
+    api_res = requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={'doctor_id':request.session['doctor_id']})
+    print(api_res.text)
+    if(api_res.json().get('message_code')==1000):
+        pharmacists = api_res.json().get('message_data')
+        print(pharmacists)
+    else:
+        pharmacists=[]
+        messages.error(request,'No Pharmacist is Approved..')
+    
+
+    return render(request,'Doctor/get_all_pharmacist.html',{'pharmacists':pharmacists})
+
+@csrf_exempt
+def toggle_pharmacist_status(request):
+    response_data = {
+        'message_code': 999,
+        'message_text': 'Error occurred.'
+    }
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            doctorpharmacist_id = data.get('doctorpharmacist_id')
+            new_status = data.get('status')
+            print(doctorpharmacist_id,new_status)
+
+            api_res = requests.post('http://13.233.211.102/medicalrecord/api/update_doctor_pharmacist_status/',json={'doctorpharmacist_id':doctorpharmacist_id,'status':new_status})
+            print(api_res.text)
+            response_data= api_res.json()
+
+        except Exception as e:
+            response_data['message_text'] = str(e)
+
+    return JsonResponse(response_data)
+
+
+def Add_pharmacist(request):
+    if(request.method=='GET'):
+        return render(request,'Doctor/add_pharmacist.html')
+    
+    else:
+        form_data=request.POST
+        print(form_data)
+        api_data = {
+            "shop_name": form_data.get('shop_name'),
+            "shop_address": form_data.get('shop_address'),
+            "shop_contact_number": form_data.get('shop_contact_number'),
+            "shop_owner_name": form_data.get('shop_owner_name'),
+            "shop_owner_number":form_data.get('shop_owner_number'),
+            "pharmacist_username": form_data.get('username'),
+            "pharmacist_password": form_data.get('password'),
+            "pharmacist_type": form_data.get('pharmacist_type'), # 1 means external and 2 means internal
+        }
+        print(api_data)
+        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_pharmacist/',json=api_data)
+        print(api_res.text)
+        if(api_res.json().get('message_code')==1000):
+            pharmacist_id = api_res.json().get('message_data').get('pharmacist_id')
+            approve_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
+            print(approve_res.text)
+            if(approve_res.json().get('message_code')==1000):
+                messages.success(request, 'Pharmacist Added and Approved successfully!')
+                print('Approved')
+
+            else:
+                messages.error(request, 'failed to approve try to do By Scanning QR Code')
+  
+        else:
+            messages.error(request, 'failed to Add Pharmacist try one more time')
+
+        return redirect(get_all_pharmacist)
+ 
+    
+
+
         
 
 
