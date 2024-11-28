@@ -1,28 +1,57 @@
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Dashboard</title>
+    <title>Drishti-EHR Dashboard</title>
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
     <style>
-        body {
+       body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        .navbar {
-            background-color: #008373;
+        {% comment %} .navbar {
+            background-color:  #008373;
             color: white;
             padding: 15px;
             text-align: center;
             font-size: 24px;
             margin-bottom: 20px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
+        } {% endcomment %}
+        .navbar {
+            background-color:  #008373;
+            color: white;
+            padding: 15px ;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
         }
+        
+        .navbar span {
+            color: white;
+            font-size: 25px;
+        }
+        
+        .logout-icon i{
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        .logout-icon:hover {
+            color: #f8a488; /* Hover color for icon */
+        }
+        
 
         .container {
             padding: 5px;
@@ -36,49 +65,59 @@
 
         .button {
             width: 49%;
-            margin-bottom: 7px;
-            padding: 20px;
+            margin-bottom: 5px;
+            padding: 5px;
             font-size: 30px;
             text-align: center;
-            background-color: #008373;
-            color: white;
-            border: none;
+            background-color:white;
+            color:  #008373;
+            border: 1px solid #a0c3a9; /* Added a colored border */
             cursor: pointer;
             border-radius: 10px;
-            transition: background-color 0.3s;
+            box-shadow: 4px 4px 6px rgba(0.1, 0.1, 0.1, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        .button-single {
+        /* .button-single {
             width: 49%;
             padding: 20px;
             font-size: 30px;
             text-align: center;
             background-color: #008373;
             color: white;
-            border: none;
+            outline-color: #ff9632;
             cursor: pointer;
             border-radius: 10px;
-            transition: background-color 0.3s;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        } */
+
+        /* Hover and active styles */
+        .button:hover {
+            background-color:  #008373;
+            color: white;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .button:hover, .button-single:hover {
-            background-color: #04564b; /* Darker shade on hover */
+        .button:active {
+            background-color:  #008373;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
         }
 
-        .button:active, .button-single:active {
-            background-color: #055e52; /* Even darker shade on click */
-        }
-
-        /* Icons style */
+        /* Icon style */
         i {
             margin-bottom: 10px;
             font-size: 28px;
             transition: transform 0.3s;
+            color:  #008373;
         }
 
         .button:hover i, .button-single:hover i {
-            transform: scale(1.2); /* Enlarge icon on hover */
+            transform: scale(1.2);
+            color: white;
         }
+
+        /* Message styling */
         .messages {
             position: fixed;
             top: 10%;
@@ -108,13 +147,30 @@
 
 <body>
 
-    <div class="navbar">
+    {% comment %} <div class="navbar">
         {%if subscription_status == 'active'%}
           <span style="color: white; font-size: 25px">Dashboard</span>
         {%else%}
-            <span style="color: white; font-size: 25px">Dashboard <span style="color: 	rgb(143, 7, 7);">(Expired)</span></span>
+            <span style="color: white; font-size: 25px">Dashboard <span style="color: 	rgba(248, 81, 15, 0.954);">(Expired)</span></span>
         {%endif%}
+    </div> {% endcomment %}
+    <div class="navbar d-flex justify-content-between align-items-center mb-2">
+        <div>
+            {% if subscription_status == 'active' %}
+                <span>Dashboard</span>
+            {% else %}
+                <span>Dashboard 
+                    <span style="color: rgba(248, 81, 15, 0.954);">(Expired)</span>
+                </span>
+            {% endif %}
+        </div>
+        
+        <!-- Logout icon on the right side -->
+        <a href="{% url 'logout' %}" class="logout-icon" aria-label="Logout">
+            <i class="fas fa-sign-out-alt" style="color:white;"></i>
+        </a>
     </div>
+    
 
     {% if messages %}
         <div id="messages-container" class="messages">
@@ -140,20 +196,21 @@
 
     <div class="container">
         <div class="button-container">
-            <button class="button" onclick="location.href='/DoctorCollection/get_all_doctor_appointments'"> <i class="fas fa-stethoscope" style="margin-bottom:20px ;"></i><br> OPD</button>
+            <button class="button" onclick="location.href='/DoctorCollection/get_all_doctor_appointments'"> <i class="fas fa-stethoscope" style="margin-bottom:10px ;"></i><br> OPD</button>
             <!-- <button class="button" onclick="location.href='/DoctorCollection/no_service/'">  <i class="fas fa-hospital" style="margin-bottom:20px ;"></i><br> IPD</button> -->
             {% if role == 'Doctor' %}
                
                 <!-- <button class="button" onclick="location.href='/no_service/'"> <i class="fas fa-user" style="margin-bottom:20px ;"></i><br> User</button> -->
-                <button class="button" onclick="location.href='/DoctorCollection/settingdashboard/'"> <i class="fas fa-cogs" style="margin-bottom:20px ;"></i><Br> Settings</button>
-                    <button class="button" onclick="location.href='/DoctorCollection/all_patient/'"> <i class="fas fa-user-injured" style="margin-bottom:20px ;"></i><br> Patient</button>
-                <button class="button" onclick="location.href='/DoctorCollection/get_all_medicines/'"><i class="fas fa-pills" style="margin-bottom:20px ;"></i><br> Medicines</button>
-                <button class="button" onclick="location.href='/DoctorCollection/get_all_lab_report/'"><i class="fas fa-flask" style="margin-bottom:20px ;"></i><br>Exam/Lab</button>
-                <button class="button" onclick="location.href='/DoctorCollection/all_kco/'"> <i class="fa-solid fa-notes-medical" style="margin-bottom:20px ;"></i><br>KCO</button>
-                <button class="button" onclick="location.href='/DoctorCollection/all_advice/'"> <i class="fa-solid fa-comment-medical" style="margin-bottom:20px ;"></i><br>Advice</button>
-                <button class="button" onclick="location.href='/DoctorCollection/all_instruction/'"><i class="fa-solid fa-book-medical" style="margin-bottom:20px ;"></i><br><span style="font-size: 29px;">Instruction</span></button> 
-                <button class="button" onclick="location.href='/DoctorCollection/all_diseases/'"><i class="fa-solid fa-virus" style="margin-bottom:20px ;"></i><br>Disease</button>
-                <button class="button" onclick="location.href='/DoctorCollection/all_allergy/'"><i class="fa-solid fa-hand-dots" style="margin-bottom:20px ;"></i><br>Allergies</button>
+                <button class="button" onclick="location.href='/DoctorCollection/settingdashboard/'"> <i class="fas fa-cogs" style="margin-bottom:10px ;"></i><Br> Settings</button>
+                <button class="button" onclick="location.href='/DoctorCollection/all_patient/'"> <i class="fas fa-user-injured" style="margin-bottom:10px ;"></i><br> Patient</button>
+                <button class="button" onclick="location.href='/DoctorCollection/get_all_medicines/'"><i class="fas fa-pills" style="margin-bottom:10px ;"></i><br> Medicines</button>
+                <button class="button" onclick="location.href='/DoctorCollection/get_all_lab_report/'"><i class="fas fa-flask" style="margin-bottom:10px ;"></i><br>Exam/Lab</button>
+                <button class="button" onclick="location.href='/DoctorCollection/all_kco/'"> <i class="fa-solid fa-notes-medical" style="margin-bottom:10px ;"></i><br>KCO</button>
+                <button class="button" onclick="location.href='/DoctorCollection/all_advice/'"> <i class="fa-solid fa-comment-medical" style="margin-bottom:10px ;"></i><br>Advice</button>
+                <button class="button" onclick="location.href='/DoctorCollection/all_instruction/'"><i class="fa-solid fa-book-medical" style="margin-bottom:10px ;"></i><br><span style="font-size: 29px;">Instruction</span></button> 
+                <button class="button" onclick="location.href='/DoctorCollection/all_diseases/'"><i class="fa-solid fa-virus" style="margin-bottom:10px ;"></i><br>Disease</button>
+                <button class="button" onclick="location.href='/DoctorCollection/all_allergy/'"><i class="fa-solid fa-hand-dots" style="margin-bottom:10px ;"></i><br>Allergies</button>
+                <button class="button" onclick="location.href='/DoctorCollection/showDeals/'"><i class="fa-solid fa-envelopes-bulk" style="margin-bottom:10px ;"></i><br>Offers</button>
             {%endif%}
              
         </div>

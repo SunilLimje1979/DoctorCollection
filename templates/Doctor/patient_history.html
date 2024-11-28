@@ -1,147 +1,13 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient History</title>
-    
-
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <style>
-        .navbar-orange {
-          background-color:#008373;
-          box-shadow: 0px 4px 8px;
-        }
-        .navbar-brand{
-            color: #ffffff;
-        }
-        .btn1{
-            color:#000000 ;
-            background-color: #ffffff;
-
-        }
-
-        .label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .input-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: center;
-        color: inherit;
-        text-decoration: none;
-        margin-bottom:5px ;
-      }
-
-      .input-row label {
-        flex: 1;
-        text-align: center;
-        padding-right: 0px;
-        font-size: 20px;
-        text-decoration: none;
-        
-      }
-
-      .input-row input {
-        flex: 2;
-        width: 100%;
-        margin: 5px;
-        padding: 5px;
-        box-sizing: border-box;
-      }
-
-      .row {
-        display: flex;
-        align-items: right;
-      }
-
-      .form-control{
-        border-color:rgb(160, 154, 154);
-      }
-        
-    </style>
-  </head>
-  <body>
-    <form id="myForm" method="post">
-        {% csrf_token %}
-        <nav class="navbar navbar-orange fixed-top">
-            <div class="container-fluid">
-              <a class="navbar-brand"  href="{% url 'get_all_doctor_appointments' %}"><i class="fas fa-arrow-left"> </i> Patient History</a>      
-            </div>
-        </nav>
-
-        <div class="container mb-2 " style="margin-top:25%;" >
-            <div class="card p-2">
-                <div class="row">
-                  <input type="hidden" name="appointment_id" value={{data1.appointment_id}} />
-                  <div class="label-row">
-                    <label for="label1" style="font-size: 20px;">Patient: {{ data1.appointment_name }}</label>
-                    <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color: #008373;"></i> {{data1.appointment_token}}</label>
-                  </div>
-                  <div class="label-row">
-                    <div style="font-size: 20px;">
-                        {% if data1.appointment_gender == 0 %}
-                            SEX: M
-                        {% else %}
-                            SEX: F
-                        {% endif %}
-                    </div>
-                  </div>
-                
-                  <div class="label-row">
-                      <div style="font-size: 20px;">
-                        {% if data1.age %}
-                          Age: {{ data1.age }}
-                        {% else %}
-                          Age:  
-                        {% endif %}
-                      </div>
-                  </div>
-                  <div class="label-row">
-                          <label for="label1"style="font-size: 20px;">Mobile: {{data1.appointment_mobileno}}</label>
-            
-                          <label for="label2" style="font-size: 20px;">
-                            <i class="fa-solid fa-circle-user"></i>
-                            {% if data1.appointment_status == 1 %}
-                                Open
-                            {% elif data1.appointment_status == 2 %}
-                                In Process
-                            {% elif data1.appointment_status >= 3 %}
-                                Completed
-                            {% endif %}
-                          </label>
-                  </div>  
-            </div>
-        </div>
-       
-      
-
-</body>
-</html> -->
-
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient History</title>
-
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons CSS -->
@@ -154,7 +20,7 @@
 
         }
         .navbar-orange {
-            background-color: #008373;
+            background-color:  #008373;
             box-shadow: 0px 4px 8px;
         }
         .navbar-brand {
@@ -194,7 +60,7 @@
                 <input type="hidden" name="appointment_id" value={{data1.appointment_id}} />
                 <div class="label-row">
                   <label for="label1" style="font-size: 20px;">Patient: {{ data1.appointment_name }}</label>
-                  <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color: #008373;"></i> {{data1.appointment_token}}</label>
+                  <label for="label2"style="font-size: 20px; "><i class="fa-solid fa-user-group" style="color:  #008373"></i> {{data1.appointment_token}}</label>
                 </div>
                 <div class="label-row">
                   <div style="font-size: 20px;">
@@ -267,15 +133,25 @@
                         {% for medicine in consultation.medicines %}
                             <div class="medicine-item" style="margin: 0;">
                                 <p>
-                                    {% if medicine.medicine_form == '1' %}
+                                {% if medicine.medicine_form == '1' %}
                                     Tab
-                                 {% elif medicine.medicine_form == '2' %}
+                                {% elif medicine.medicine_form == '2' %}
                                      Syp
-                                 {% elif medicine.medicine_form == '3' %}
+                                {% elif medicine.medicine_form == '3' %}
                                      Pwd
-                                 {% else %}
+                                {% elif medicine.medicine_form == '4' %}
+                                     Capsule
+                                {% elif medicine.medicine_form == '5' %}
+                                     Injection
+                                {% elif medicine.medicine_form == '6' %}
+                                     Suspension
+                                {% elif medicine.medicine_form == '7' %}
+                                     Drop
+                                {% elif medicine.medicine_form == '8' %}
+                                     other
+                                {% else %}
                                      Unknown Mode
-                                 {% endif %}&nbsp;
+                                {% endif %}&nbsp;
                                   {{ medicine.medicine_name }}&nbsp;&nbsp;
                                   {{ medicine.medicine_doses }}&nbsp;&nbsp;
                                   <!-- {% if medicine.medicine_form == '1' %}

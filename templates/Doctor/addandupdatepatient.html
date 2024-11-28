@@ -1,10 +1,14 @@
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add And Update Patient</title>
+    <title>Patient</title>
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap"/>
@@ -18,7 +22,7 @@
     </script>
     <style>
         .navbar-orange {
-            background-color: #008373;
+            background-color:  #008373;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
         }
 
@@ -97,14 +101,55 @@
             max-height: 750px;  
             overflow-y: auto; 
         }
+
+        /* Loader styles */
+         #loader {
+            position: fixed;
+            left: 30%;
+            top: 30%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #f5873e;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            display: none;
+            z-index: 1000;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+         
+
     </style>
 
 </head>
 
 <body>
 
-  
-    <form class="container form-container" method="Post">
+    <div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;"></div>
+    <div id="loader"></div>
+    <form id="myForm" class="container form-container" method="Post">
         {% csrf_token %}
         
         <nav class="navbar navbar-expand-lg navbar-light navbar-orange fixed-top">
@@ -314,14 +359,15 @@
          
      
         <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="allergySelect" class="form-label">Select Allergy</label>
+            <div class="form-floating col-md-6">
+                {% comment %} <label for="allergySelect" class="form-label">Select Allergy</label> {% endcomment %}
                 <select id="allergySelect" class="form-select" name="allergy">
                     <option value="" disabled selected hidden>Select</option>
                     {% for allergy in allergy_data %}
                         <option value="{{ allergy.allergy_id }}">{{ allergy.allergy_name }}</option>
                     {% endfor %}
                 </select>
+                <label for="allergySelect" class="form-label">Select Allergy</label>
             </div>
             <div class="col-md-6">
                 <label for="allergyDescription">Additional Comment</label>
@@ -360,14 +406,14 @@
         </div>
 
         <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="diseaseSelect" class="form-label">Select Disease</label>
+            <div class="form-floating col-md-6">
                 <select id="diseaseSelect" class="form-select" name="disease">
                     <option value="" disabled selected hidden>Select</option>
                     {% for disease in disease_data %}
                         <option value="{{ disease.disease_id }}">{{ disease.disease_name }}</option>
                     {% endfor %}
                 </select>
+                <label for="diseaseSelect" class="form-label">Select Disease</label>
             </div>
             <div class="col-md-6">
                 <label for="diseaseDescription" class="form-label">Additional Comment</label>
@@ -409,7 +455,7 @@
         <input type="hidden" id="removedDiseases" name="removed_diseases" value="">
 
         <div class="text-center mt-3">
-            <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
+            <button type="submit" class="btn btn-primary btn-save" style="background-color:  #008373; border-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
                 {% if patient %}
                    Update
                 {% else %}
@@ -560,6 +606,26 @@
             diseaseSelect.selectedIndex = 0;
             diseaseDescription.value = '';
         }
+    </script>
+    <script>
+        // Handle form submission
+        $('#myForm').on('submit', function(e) {
+            $('.btn').prop('disabled', true); // Disable the save button
+            $('#loader').show(); // Show the loader
+            $('#overlay').show(); // Show the overlay to disable the page
+        });
+    </script> 
+
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#diseaseSelect').select2();
+        });
+
+        // Initialize Select2
+        $(document).ready(function() {
+            $('#allergySelect').select2();
+        });
     </script>
 
 

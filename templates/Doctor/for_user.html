@@ -1,9 +1,13 @@
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>payment Process Screen</title>
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     
 
     <!-- !-- Bootstrap CSS --> 
@@ -21,7 +25,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         .navbar-orange {
-          background-color:#008373;
+          background-color: #008373;
           box-shadow: 0px 4px 8px;
         }
         .navbar-brand{
@@ -158,6 +162,16 @@
                                 Syp
                             {% elif i.medicine_form == '3' %}
                                 Pwd
+                            {% elif i.medicine_form == '4' %}
+                                Capsule
+                            {% elif i.medicine_form == '5' %}
+                                Injection
+                            {% elif i.medicine_form == '6' %}
+                                Suspension
+                            {% elif i.medicine_form == '7' %}
+                                Drop
+                            {% elif i.medicine_form == '8' %}
+                                other
                             {% else %}
                                 Unknown Mode
                             {% endif %}
@@ -199,7 +213,7 @@
 
         {%if consult_data.consultation_status == 2 %}
           <div class="text-center mt-3">
-          <button id="paidBtn" class="btn btn-light" style="background-color: #008373;color:white">Paid</button>
+          <button id="paidBtn" class="btn btn-light" style="background-color:   #008373; border-color: #008373;color:white">Paid</button>
           </div>
         {%endif%}
                 

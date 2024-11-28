@@ -1,9 +1,13 @@
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Pharmacists</title>
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap" />
     <style>
@@ -17,7 +21,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #008373;
+            background-color:  #008373;
             color: white;
             padding: 10px;
         }
@@ -25,7 +29,7 @@
             font-size: 18px;
         }
         .navbar .add-button {
-            color: #008373;
+            color:  #008373;
             text-decoration: none;
             background-color:white;
             padding: 8px 12px;

@@ -1,0 +1,19 @@
+{
+    "name": "Drishti-EHR By Appwelt Pvt. Ltd.",
+    "short_name": "Drishti-EHR",
+    "description": "DoctorCollection Web App",
+    "dir": "auto",
+    "lang": "en-US",
+    "display": "standalone",
+    "orientation": "any",
+    "start_url": "/DoctorCollection/login/",
+    "background_color": "#FFFFFF",
+    "theme_color": " #008373",
+    "icons": [
+        {
+        "src": "/static/assets/img/OPDLogo.png",
+        "sizes": "512x512",
+        "type": "image/png"
+        }
+    ]
+}

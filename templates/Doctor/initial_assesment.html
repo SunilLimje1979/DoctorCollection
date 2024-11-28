@@ -1,11 +1,13 @@
+{% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Initial Assesment</title>
-    
-
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
     <!-- !-- Bootstrap CSS --> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons CSS -->
@@ -21,7 +23,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         .navbar-orange {
-          background-color:#008373;
+          background-color: #008373;
           box-shadow: 0px 4px 8px;
         }
         .navbar-brand{
@@ -74,10 +76,50 @@
       .form-control{
         border-color: #000000;
       }
+
+      /* Loader styles */
+        #loader {
+          position: fixed;
+          left: 30%;
+          top: 30%;
+          transform: translate(-50%, -50%);
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid #f5873e;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite;
+          animation: spin 2s linear infinite;
+          display: none;
+          z-index: 1000;
+      }
+
+      @-webkit-keyframes spin {
+          0% {
+              -webkit-transform: rotate(0deg);
+          }
+
+          100% {
+              -webkit-transform: rotate(360deg);
+          }
+      }
+
+      @keyframes spin {
+          0% {
+              transform: rotate(0deg);
+          }
+
+          100% {
+              transform: rotate(360deg);
+          }
+      }
+
         
     </style>
   </head>
   <body>
+    <div id="overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;"></div>
+    <div id="loader"></div>
     <form id="myForm" method="post" {% if vital_data %}action="{% url   'update_initial_assesment' %}"{% else %}action="{% url  'initial_assesment' data1.appointment_id %}"{% endif %}>
         {% csrf_token %}
         <nav class="navbar navbar-orange fixed-top">
@@ -256,7 +298,7 @@
             </div>
           
             <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary btn-save" style="background-color: #008373;"><span class="fas fa-save" style="color: #FFFFFF;" ></span>
+                <button type="submit" class="btn btn-primary btn-save" style="background-color:  #008373; border-color: #008373;" ><span class="fas fa-save" style="color: #FFFFFF;" ></span>
                   {%if vital_data %}
                     Update 
                   {%else%}
@@ -273,6 +315,7 @@
     {%endif%}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Your existing JavaScript code -->
     <script>
         // Function to calculate BMI
@@ -295,5 +338,13 @@
         document.getElementById('inputWeight').addEventListener('input', calculateBMI);
         document.getElementById('inputHeight').addEventListener('input', calculateBMI);
     </script>
+    <script>
+      // Handle form submission
+      $('#myForm').on('submit', function(e) {
+          $('.btn').prop('disabled', true); // Disable the save button
+          $('#loader').show(); // Show the loader
+          $('#overlay').show(); // Show the overlay to disable the page
+      });
+    </script> 
 </body>
 </html>
