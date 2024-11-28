@@ -11,7 +11,7 @@
     "theme_color": " #008373",
     "icons": [
         {
-        "src": "/static/assets/img/OPDLogo.png",
+        "src": "/DoctorCollection/static/assets/img/OPDLogo.png",
         "sizes": "512x512",
         "type": "image/png"
         }
