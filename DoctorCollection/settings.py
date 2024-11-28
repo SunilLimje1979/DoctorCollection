@@ -135,5 +135,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'DoctorCollection/static/assets/js', 'serviceworker.js')
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/assets/js', 'serviceworker.js')
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'DoctorCollection/static/assets/js', 'serviceworker.js')
+# PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/assets/js', 'serviceworker.js')
