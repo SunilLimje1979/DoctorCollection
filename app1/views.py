@@ -80,7 +80,7 @@ def opdlogin(request,token):
     # # print(token)
     api_data={"doctor_login_token":token}
     #api_url=" http://127.0.0.1:8002/doctor/api/get_doctor_profileby_token/"
-    api_url="http://13.233.211.102/doctor/api/get_doctor_profileby_token/"
+    api_url="https://drishtis.app/drishti_doctor/api/get_doctor_profileby_token/"
     response=requests.post(api_url,json=api_data)
     if(response.json().get("message_code") ==999):
         request.session.clear()
@@ -93,7 +93,7 @@ def opdlogin(request,token):
         request.session['role']=role
         api_data={"doctor_id":doctor_id}
         # api_url="http://127.0.0.1:8000/api/get_doctor_related_info/"
-        api_url="http://13.233.211.102/doctor/api/get_doctor_related_info/"
+        api_url="https://drishtis.app/drishti_doctor/api/get_doctor_related_info/"
         response=requests.post(api_url,json=api_data)
         all_id=response.json()
         # # print(all_id)
@@ -120,7 +120,7 @@ def login(request):
             password= request.POST['password']
             # # print(mobileno,password)
             api_data={"mobile_number":mobileno,"password":password}
-            api_url="http://13.233.211.102/doctor/api/login_desktop/"
+            api_url="https://drishtis.app/drishti_doctor/api/login_desktop/"
             response=requests.post(api_url,json=api_data)
             # # print(response.text)
             if(response.json().get("message_code") ==999):
@@ -135,7 +135,7 @@ def login(request):
                 request.session['role']=role
                 api_data={"doctor_id":doctor_id}
                 # api_url="http://127.0.0.1:8000/api/get_doctor_related_info/"
-                api_url="http://13.233.211.102/doctor/api/get_doctor_related_info/"
+                api_url="https://drishtis.app/drishti_doctor/api/get_doctor_related_info/"
                 response=requests.post(api_url,json=api_data)
                 all_id=response.json()
                 # # print(all_id)
@@ -164,7 +164,7 @@ def doctorReg(request):
         # # # print(request.session['doctor_id'])
         # request.session.clear()
         # Fetch countries, states, and cities
-        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        country_response = requests.post("https://drishtis.app/drishti_masters/api/get_all_countries/")
         countries = country_response.json().get("message_data", [])
         # # # print(countries)
 
@@ -173,7 +173,7 @@ def doctorReg(request):
                 doctor_id=request.session['doctor_id']
                 api_data={"doctor_id":doctor_id}
                 # api_url="http://127.0.0.1:8000/api/get_doctor_by_id/"
-                api_url="http://13.233.211.102/doctor/api/get_doctor_by_id/"
+                api_url="https://drishtis.app/drishti_doctor/api/get_doctor_by_id/"
                 response=requests.post(api_url,json=api_data)
                 data=response.json().get("message_data",{})
                 # # print(data)
@@ -184,22 +184,22 @@ def doctorReg(request):
                 formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
                 # # print(formatted_date)
                 data[0]['doctor_dateofbirth'] = formatted_date
-                state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":data[0]['doctor_countryid']})
+                state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":data[0]['doctor_countryid']})
                 states = (state_response.json().get("message_data", [])).get('states',[])
                 # # print(states)
 
-                city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":data[0]['doctor_stateid']})
+                city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":data[0]['doctor_stateid']})
                 cities = (city_response.json().get("message_data", [])).get('cities',[])
                 # # print(cities)
                 return render(request,"Doctor/DoctorRegUpdate.html",{"data":data[0],'doctor_id':doctor_id,"countries": countries,"states": states,"cities": cities})
             else:
                 return redirect(dashboard)
         else:
-            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+            state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":101})
             states = (state_response.json().get("message_data", [])).get('states',[])
             # # print(states)
 
-            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+            city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":22})
             cities = (city_response.json().get("message_data", [])).get('cities',[])
             # # print(cities)
             request.session['doctor_id']=None
@@ -251,7 +251,7 @@ def doctorReg(request):
                 "updated_data":api_data
             }
             # api_url="http://127.0.0.1:8000/api/update_doctor_details/"
-            api_url="http://13.233.211.102/doctor/api/update_doctor_details/"
+            api_url="https://drishtis.app/drishti_doctor/api/update_doctor_details/"
             response=requests.post(api_url,json=update_data)
             messages.success(request, 'Doctor Profile updated successfully!')
             return redirect(settingdashboard)
@@ -262,7 +262,7 @@ def doctorReg(request):
             # print(api_data)
             request.session['doctor_login_token']=api_data['doctor_login_token']
             # api_url = "http://127.0.0.1:8000/api/insert_doctor/"
-            api_url = "http://13.233.211.102/doctor/api/insert_doctor/"
+            api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor/"
 
             response = requests.post(api_url, data=api_data)
             api_response = response.json()
@@ -284,7 +284,7 @@ def doctorReg(request):
 def get_states(request):
     country_id = request.GET.get('country_id')
     # print(country_id)
-    state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":country_id})
+    state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":country_id})
     states = (state_response.json().get("message_data", [])).get('states',[])
 
     return JsonResponse(states, safe=False)
@@ -292,7 +292,7 @@ def get_states(request):
 def get_cities(request):
     state_id = request.GET.get('state_id')
     # print(state_id)
-    city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":state_id})
+    city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":state_id})
     cities = (city_response.json().get("message_data", [])).get('cities',[])
     return JsonResponse(cities, safe=False)
 
@@ -308,7 +308,7 @@ def get_cities(request):
 #             # print(location_id)
 #             api_data={"doctor_location_id":location_id}
 #             # api_url="http://127.0.0.1:8000/api/get_all_doctor_location/"
-#             api_url="http://13.233.211.102/doctor/api/get_all_doctor_location/"
+#             api_url="https://drishtis.app/drishti_doctor/api/get_all_doctor_location/"
 #             response=requests.post(api_url,json=api_data)
 #             data=response.json().get("message_data",{})
 #             # # print(data)
@@ -345,7 +345,7 @@ def get_cities(request):
 #         if location_id is not None :
 #             api_data['doctor_location_id']=location_id
 #             # api_url="http://127.0.0.1:8000/api/update_doctor_location/"
-#             api_url="http://13.233.211.102/doctor/api/update_doctor_location/"
+#             api_url="https://drishtis.app/drishti_doctor/api/update_doctor_location/"
 #             response=requests.post(api_url,json=api_data)
 #             messages.success(request, 'Clinic Details updated successfully!')
 #             return redirect(settingdashboard)
@@ -354,7 +354,7 @@ def get_cities(request):
 #             api_data['doctor_id']=request.session['doctor_id']
 #             # print(api_data['doctor_id'])
 #             # api_url = "http://127.0.0.1:8000/api/insert_doctor_location/"
-#             api_url = "http://13.233.211.102/doctor/api/insert_doctor_location/"
+#             api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor_location/"
 
 #             response = requests.post(api_url, json=api_data)
 #             api_response = response.json()
@@ -378,7 +378,7 @@ def addClinic(request):
         # # print(location_id)
         # request.session['location_id']=20
         # del request.session['location_id']
-        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        country_response = requests.post("https://drishtis.app/drishti_masters/api/get_all_countries/")
         countries = country_response.json().get("message_data", [])
         # # print(countries)
 
@@ -387,7 +387,7 @@ def addClinic(request):
             # print(location_id)
             api_data={"doctor_location_id":location_id}
             # api_url="http://127.0.0.1:8000/api/get_all_doctor_location/"
-            api_url="http://13.233.211.102/doctor/api/get_all_doctor_location/"
+            api_url="https://drishtis.app/drishti_doctor/api/get_all_doctor_location/"
             response=requests.post(api_url,json=api_data)
             data=response.json().get("message_data",{})
             # print(data)
@@ -401,22 +401,22 @@ def addClinic(request):
             timestamp = int(time())
 
             # Update the value in 'data' dictionary
-            data[0]['location_image'] = "https://www.drishtis.app/doctor"+updated_link
+            data[0]['location_image'] = "https://www.drishtis.app/drishti_doctor"+updated_link
 
-            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":data[0]['location_country_id']})
+            state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":data[0]['location_country_id']})
             states = (state_response.json().get("message_data", [])).get('states',[])
             # # print(states)
 
-            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":data[0]['location_state_id']})
+            city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":data[0]['location_state_id']})
             cities = (city_response.json().get("message_data", [])).get('cities',[])
             # # print(cities)
             return render(request,"Doctor/clinicaddandupdate.html",{"data":data[0],'location_id':location_id,"timestamp": timestamp,"countries": countries,"states": states,"cities": cities})
         else:
-            state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+            state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":101})
             states = (state_response.json().get("message_data", [])).get('states',[])
             # # print(states)
 
-            city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+            city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":22})
             cities = (city_response.json().get("message_data", [])).get('cities',[])
             # # print(cities)
             request.session['location_id']=None
@@ -454,11 +454,11 @@ def addClinic(request):
         if location_id is not None :
             # print("new Logo: ",clinic_logo)
             api_data['doctor_location_id']=location_id
-            detail_url="http://13.233.211.102/doctor/api/update_location_details/"
+            detail_url="https://drishtis.app/drishti_doctor/api/update_location_details/"
             detail_response=requests.post(detail_url,json=api_data)
             # print(detail_response.text)
             if(clinic_logo):
-                image_url="http://13.233.211.102/doctor/api/update_location_image/"
+                image_url="https://drishtis.app/drishti_doctor/api/update_location_image/"
                 image_response=requests.post(image_url,data={"doctor_location_id":location_id},files={'location_image': clinic_logo})
                 # print(image_response.text)
             messages.success(request, 'Clinic Details updated successfully!')
@@ -491,7 +491,7 @@ def addClinic(request):
             api_data['doctor_id']=request.session['doctor_id']
             # print(api_data['doctor_id'])
             # api_url = "http://127.0.0.1:8000/api/insert_doctor_location/"
-            api_url = "http://13.233.211.102/doctor/api/insert_doctor_location/"
+            api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor_location/"
             if(clinic_logo):
                 response = requests.post(api_url, data=api_data, files={'location_image': (new_filename, renamed_file)})
             else:
@@ -524,7 +524,7 @@ def addSlot(request):
             avalibility_id=request.session['avalibility_id']-20
             for i in range(1,22):
                 # api_url = "http://127.0.0.1:8000/api/get_all_doctor_location_availability/"
-                api_url = "http://13.233.211.102/doctor/api/get_all_doctor_location_availability/"
+                api_url = "https://drishtis.app/drishti_doctor/api/get_all_doctor_location_availability/"
                 api_data={"Doctor_Location_Availability_Id":avalibility_id}
                 response = requests.post(api_url, json=api_data)
                 avalibility_id+=1
@@ -561,7 +561,7 @@ def addSlot(request):
                         }
                     
                         # api_url = "http://127.0.0.1:8000/api/update_doctor_location_availability/"
-                        api_url = "http://13.233.211.102/doctor/api/update_doctor_location_availability/"
+                        api_url = "https://drishtis.app/drishti_doctor/api/update_doctor_location_availability/"
                         avalibility_id+=1
                         response = requests.post(api_url, json=api_data)
                         response.raise_for_status()  # Raise exception for bad responses
@@ -597,7 +597,7 @@ def addSlot(request):
                         }
                     
                         # api_url = "http://127.0.0.1:8000/api/insert_doctor_location_availability/"
-                        api_url = "http://13.233.211.102/doctor/api/insert_doctor_location_availability/"
+                        api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor_location_availability/"
                         response = requests.post(api_url, json=api_data)
                         response.raise_for_status()  # Raise exception for bad responses
                 api_response = response.json()
@@ -647,12 +647,12 @@ def consultaion_fee(request):
             for i in range(1,4):
                 api_consultdata={"consultation_fee_id":consult_id}
                 # consult_url="http://127.0.0.1:8000/api/get_consultation_fee_details/"
-                consult_url="http://13.233.211.102/doctor/api/get_consultation_fee_details/"
+                consult_url="https://drishtis.app/drishti_doctor/api/get_consultation_fee_details/"
                 response=requests.post(consult_url,json=api_consultdata)
                 consult_data[i]=response.json().get("message_data",{})
                 api_medicdata={"medical_service_fee_id":medic_id}
                 # medic_url="http://127.0.0.1:8000/api/get_medical_service_fee_details/"
-                medic_url="http://13.233.211.102/doctor/api/get_medical_service_fee_details/"
+                medic_url="https://drishtis.app/drishti_doctor/api/get_medical_service_fee_details/"
                 response=requests.post(medic_url,json=api_medicdata)
                 medic_data[i]=response.json().get("message_data",{})
                 consult_id+=1
@@ -687,14 +687,14 @@ def consultaion_fee(request):
                         "second_visit_fee":map_data[i][1]
                     }
                 # consult_url = "http://127.0.0.1:8000/api/update_consultation_fee_details/"
-                consult_url = "http://13.233.211.102/doctor/api/update_consultation_fee_details/"
+                consult_url = "https://drishtis.app/drishti_doctor/api/update_consultation_fee_details/"
                 consult_response = requests.post(consult_url, json=api_consultdata)
                 api_medicdata={
                         "medical_service_fee_id":medic_id,
                         "charges": map_data[i][2]
                     }
                 # medic_url = "http://127.0.0.1:8000/api/update_medical_service_fee_details/"
-                medic_url = "http://13.233.211.102/doctor/api/update_medical_service_fee_details/"
+                medic_url = "https://drishtis.app/drishti_doctor/api/update_medical_service_fee_details/"
                 medic_response = requests.post(medic_url, json=api_medicdata)
                 consult_id+=1
                 medic_id+=1
@@ -722,7 +722,7 @@ def consultaion_fee(request):
                     }
                     }
                 # api_url = "http://127.0.0.1:8000/api/insert_consultAndMedic_fees/"
-                api_url = "http://13.233.211.102/doctor/api/insert_consultAndMedic_fees/"
+                api_url = "https://drishtis.app/drishti_doctor/api/insert_consultAndMedic_fees/"
                 response = requests.post(api_url, json=api_data)
 
             api_response = response.json()
@@ -750,11 +750,11 @@ def pdf_view(request):
    
    else:
         api_data={"doctor_location_id":request.session['location_id']}
-        api_url="http://13.233.211.102/doctor/api/get_all_doctor_location/"
+        api_url="https://drishtis.app/drishti_doctor/api/get_all_doctor_location/"
         response=requests.post(api_url,json=api_data)
         data=response.json().get("message_data",{})
         # print("location_details",data)
-        doctor_url="http://13.233.211.102/doctor/api/get_doctor_by_id/"
+        doctor_url="https://drishtis.app/drishti_doctor/api/get_doctor_by_id/"
         response=requests.post(doctor_url,json={'doctor_id':request.session['doctor_id']})
         doctor_data=response.json().get("message_data",{})
         # print(doctor_data)
@@ -764,9 +764,9 @@ def pdf_view(request):
         # print(doctor_phoneno)
         clinic_name=(data[0]).get('location_title')
         location_token=(data[0]).get('location_token')
-        # print(clinic_name,location_token)
-        chatscript_url="http://13.233.211.102/appointmentbot/api/insert_chatscripts_bulk_record_withparam/"
-        scriptoption_url="http://13.233.211.102/appointmentbot/api/insert_scriptoptions_bulk_record_withparam/"
+        print(clinic_name,location_token)
+        chatscript_url="https://drishtis.app/drishti_appointmentbot/api/insert_chatscripts_bulk_record_withparam/"
+        scriptoption_url="https://drishtis.app/drishti_appointmentbot/api/insert_scriptoptions_bulk_record_withparam/"
         chatscript_data={
             "clinic_name":clinic_name,
             "dr_name":doctor_name,
@@ -777,12 +777,12 @@ def pdf_view(request):
             "dr_name":doctor_name,
             "location_token":location_token 
         }
-        # print(chatscript_data)
-        # print(scriptoption_data)
+        print(chatscript_data)
+        print(scriptoption_data)
         chatscript_res=requests.post(chatscript_url,json=chatscript_data)
         scriptoption_res=requests.post(scriptoption_url,json=scriptoption_data)
-        # print(chatscript_res.text)
-        # print(scriptoption_res.text)
+        print(chatscript_res.text)
+        print(scriptoption_res.text)
         messages.success(request, "Thank you for registering! Please click 'Continue' to proceed.")
         messages.success(request,"Your 30 days Trial Plan is Activated ")
         return redirect(subscriptioninfo)
@@ -792,7 +792,7 @@ def pdf_view(request):
 
 def subscriptioninfo(request): 
     if(request.method=='GET'):
-       url="http://13.233.211.102/masters/api/get_all_master_subscriptions/"
+       url="https://drishtis.app/drishti_masters/api/get_all_master_subscriptions/"
        res=requests.get(url)
        subinfo=res.json().get('message_data')
        # print(subinfo)
@@ -801,7 +801,7 @@ def subscriptioninfo(request):
     else:
         master_subscription_id = request.POST['selectedPlan']
         # print(master_subscription_id)
-        sub_url="http://13.233.211.102/masters/api/insert_doctor_subscription/"
+        sub_url="https://drishtis.app/drishti_masters/api/insert_doctor_subscription/"
         api_data={
                 "doctor_id": request.session['doctor_id'],
                 "master_subscription_id": master_subscription_id,
@@ -838,7 +838,7 @@ def dashboard(request):
             # print("734")
         
         # Make the API call to validate subscription
-        res = requests.post("http://13.233.211.102/masters/api/validate_subscription/", json={"doctor_id": request.session['doctor_id']})
+        res = requests.post("https://drishtis.app/drishti_masters/api/validate_subscription/", json={"doctor_id": request.session['doctor_id']})
         # print(res.text)
         
         days = 0  # Default days to 0 if remaining days are more than 30
@@ -881,7 +881,7 @@ def leaves(request):
     if(request.method=="GET"):
         api_data={"doctor_id":request.session['doctor_id']}
         # api_url = "http://127.0.0.1:8000/api/get_doctor_leave_details/"
-        api_url = "http://13.233.211.102/doctor/api/get_doctor_leave_details/"
+        api_url = "https://drishtis.app/drishti_doctor/api/get_doctor_leave_details/"
         response = requests.post(api_url, json=api_data)
         leaves=response.json().get("message_data",{})
         # # print(leaves)
@@ -940,7 +940,7 @@ def leavesystem(request):
                                 }
                         
                     # api_url = "http://127.0.0.1:8000/api/insert_doctor_leave/"
-                    api_url = "http://13.233.211.102/doctor/api/insert_doctor_leave/"
+                    api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor_leave/"
                     response = requests.post(api_url, json=api_data)    
                
         return redirect(leaves)
@@ -949,7 +949,7 @@ def updateleave(request,leave_date):
     if(request.method=='GET'):
         api_data={"doctor_id":request.session['doctor_id']}
         # api_url = "http://127.0.0.1:8000/api/get_doctor_leave_details/"
-        api_url = "http://13.233.211.102/doctor/api/get_doctor_leave_details/"
+        api_url = "https://drishtis.app/drishti_doctor/api/get_doctor_leave_details/"
         response = requests.post(api_url, json=api_data)
         Leaves=response.json().get("message_data",{})
         # # print(leaves)
@@ -991,7 +991,7 @@ def updateleave(request,leave_date):
                             }
                     
                 # api_url = "http://127.0.0.1:8000/api/update_doctor_leave/"
-                api_url = "http://13.233.211.102/doctor/api/update_doctor_leave/"
+                api_url = "https://drishtis.app/drishti_doctor/api/update_doctor_leave/"
                 response = requests.post(api_url, json=api_data)
                 # data[order]=[start_time,end_time]
         # print(response.text)
@@ -1030,7 +1030,7 @@ def fetch_timings(request):
         # # print(day_of_week)
 
         # api_url = "http://127.0.0.1:8000/api/get_doctor_location_availability/"
-        api_url = "http://13.233.211.102/doctor/api/get_doctor_location_availability/"
+        api_url = "https://drishtis.app/drishti_doctor/api/get_doctor_location_availability/"
         api_data = {
             "doctor_id": request.session['doctor_id'],
             "availability_day": day_name_to_int(day_of_week)
@@ -1107,7 +1107,7 @@ def insert_medicine(request):
                 "medicine_content_name": request.POST["Medicine_Content_name"],
                 "price":request.POST["Medicine_price"]
                 }
-        api_url = "http://13.233.211.102/doctor/api/insert_doctor_medicine/"
+        api_url = "https://drishtis.app/drishti_doctor/api/insert_doctor_medicine/"
         response = requests.post(api_url,json=insert_medicine_details)
         # print(response.text)
 
@@ -1120,7 +1120,7 @@ def insert_medicine(request):
 def update_medicine(request,doctor_medicine_id):
     if(request.method=="GET"):
         api_data = {"doctor_id":request.session['doctor_id']}
-        api_url = 'http://13.233.211.102/doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
+        api_url = 'https://drishtis.app/drishti_doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
 
         response = requests.post(api_url,json=api_data)
         global all_medicines
@@ -1148,7 +1148,7 @@ def update_medicine(request,doctor_medicine_id):
                 "medicine_content_name": request.POST["Medicine_Content_name"],
                 "price":request.POST["Medicine_price"]
                 }
-        api_url = f'http://13.233.211.102/doctor/api/update_doctor_medicine/{doctor_medicine_id}/'
+        api_url = f'https://drishtis.app/drishti_doctor/api/update_doctor_medicine/{doctor_medicine_id}/'
         response = requests.post(api_url,json=update_medicine_details)
         # print(response.text)
 
@@ -1161,9 +1161,10 @@ def update_medicine(request,doctor_medicine_id):
 
 def get_all_medicines(request):
     api_data = {"doctor_id":request.session['doctor_id']}
-    api_url = 'http://13.233.211.102/doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
+    api_url = 'https://drishtis.app/drishti_doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
 
     response = requests.post(api_url,json=api_data)
+    print(response.text)
     global all_medicines
     all_medicines=response.json().get('message_data', {})
     # for i in all_medicines:
@@ -1175,7 +1176,7 @@ def get_all_medicines(request):
 
 def delete_medicine(request,doctor_medicine_id):
     if doctor_medicine_id:
-        api_url = f'http://13.233.211.102/doctor/api/delete_doctor_medicine/{doctor_medicine_id}/'
+        api_url = f'https://drishtis.app/drishti_doctor/api/delete_doctor_medicine/{doctor_medicine_id}/'
         response = requests.delete(api_url)
         if response.status_code == 200:
             messages.success(request, 'Medicine details Deleted successfully!')
@@ -1200,7 +1201,7 @@ def add_lab_report(request):
         "investigation_category":request.POST['investigation_category'],
         "investigation_name":request.POST["investigation_name"]
         }
-        api_url= f"http://13.233.211.102/doctor/api/insert_labinvestigations/"
+        api_url= f"https://drishtis.app/drishti_doctor/api/insert_labinvestigations/"
         response = requests.post(api_url,json=api_data)
         # print(response.text)
         messages.success(request, 'Lab report Added successfully!')
@@ -1209,7 +1210,7 @@ def add_lab_report(request):
 
 def get_all_lab_report(request):
     doctor_id ={"doctor_id":request.session['doctor_id']}
-    api_url ='http://13.233.211.102/medicalrecord/api/get_labinvestigation_bydoctorid/'
+    api_url ='https://drishtis.app/drishti_medicalrecord/api/get_labinvestigation_bydoctorid/'
 
     response = requests.post(api_url,json=doctor_id)
     ## print("lab_investigation_report_data:", lab_investigation_report_data)
@@ -1222,7 +1223,7 @@ def get_all_lab_report(request):
 def update_lab_report(request,investigation_id):
     if(request.method=="GET"):
         doctor_id ={"doctor_id":request.session['doctor_id']}
-        api_url ='http://13.233.211.102/medicalrecord/api/get_labinvestigation_bydoctorid/'
+        api_url ='https://drishtis.app/drishti_medicalrecord/api/get_labinvestigation_bydoctorid/'
 
         response = requests.post(api_url,json=doctor_id)
         ## print("lab_investigation_report_data:", lab_investigation_report_data)
@@ -1241,7 +1242,7 @@ def update_lab_report(request,investigation_id):
                   "investigation_category":request.POST['investigation_category'],
                   "investigation_name":request.POST["investigation_name"]
                 }
-        api_url = f"http://13.233.211.102/doctor/api/update_labinvestigations/"
+        api_url = f"https://drishtis.app/drishti_doctor/api/update_labinvestigations/"
         response = requests.post(api_url,json=api_data)
         # print(response.text)
         if response.status_code == 200:
@@ -1253,7 +1254,7 @@ def update_lab_report(request,investigation_id):
 
 def delete_lab_report(request,investigation_id):
     if investigation_id:
-        api_url = f'http://13.233.211.102/doctor/api/delete_labinvestigations/'
+        api_url = f'https://drishtis.app/drishti_doctor/api/delete_labinvestigations/'
         api_data={'investigation_id':investigation_id}
         response = requests.post(api_url,api_data)
         if response.status_code == 200:
@@ -1280,7 +1281,7 @@ def fetch_data(request):
         selected_date = request.POST.get('selectedDate', None)
         # print(selected_date)
 
-        api_url = "http://13.233.211.102/appointment/api/get_doctor_appointments/"
+        api_url = "https://drishtis.app/drishti_appointment/api/get_doctor_appointments/"
         api_data ={
             "Doctor_Id":request.session['doctor_id'],
             "Appointment_DateTime": selected_date+" 00:00:00"
@@ -1293,7 +1294,7 @@ def fetch_data(request):
         # # print(data)
         for appointment in data:
             if(appointment['consultation_id'] is not None):
-                consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+                consultation_url="https://drishtis.app/drishti_medicalrecord/api/get_consultation_byconsultationid/"
                 api_para={"consultation_id":appointment['consultation_id']}
                 consult_response=requests.post(consultation_url,json=api_para)
                 consult_data=(consult_response.json().get("message_data"))[0]
@@ -1319,7 +1320,7 @@ def initial_assesment(request,appointment_id):
         # print(request.session['appointment_id'])
         api_data = {"appointment_id": appointment_id}
         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-        api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+        api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
         response = requests.post(api_url, json=api_data)
 
         # request.session['appointment_id'] = api_data
@@ -1332,7 +1333,7 @@ def initial_assesment(request,appointment_id):
             data1['patient_id']=request.GET.get('patient_id')
             # print('pateint_id',request.GET.get('patient_id'))
             if(request.GET.get('patient_id') is not None):
-                api_url="http://13.233.211.102/pateint/api/get_patient_byid/"
+                api_url="https://drishtis.app/drishti_pateint/api/get_patient_byid/"
                 response=requests.post(api_url,json={"patient_id":request.GET.get('patient_id')})
                 # print(response.text)
                 data=response.json().get("message_data",{})
@@ -1347,19 +1348,19 @@ def initial_assesment(request,appointment_id):
                 data1['aadharnumber']=data.get('patient_aadharnumber', 0)
                 data1['health_id']=data.get('patient_universalhealthid', 0)
                 data1['outstanding']= data.get('outstanding',0) or 0
-                pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+                pdlink_url="https://drishtis.app/drishti_pateint/api/insert_patient_doctor_link/"
                 pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":request.GET.get('patient_id')}
                 pdlink_res=requests.post(pdlink_url,json=pdlink_data)
                 # print("if selected",pdlink_res.text)
         
         # vital_url="http://localhost:8000/api/get_patientvitals_by_appointment_id/"
-        vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
+        vital_url="https://drishtis.app/drishti_medicalrecord/api/get_patientvitals_by_appointment_id/"
         vital_response=requests.post(vital_url,json={"appointment_id": appointment_id})
         # # print(vital_response.text)
         vital_data=vital_response.json().get('message_data')
         if(vital_response.json().get('message_code')==1000):
             # print("vitals_data: ",vital_data)
-            api_url="http://13.233.211.102/pateint/api/get_patient_byid/"
+            api_url="https://drishtis.app/drishti_pateint/api/get_patient_byid/"
             response=requests.post(api_url,json={"patient_id":vital_data['patient_id']})
             # print(response.text)
             data=response.json().get("message_data",{})
@@ -1400,7 +1401,7 @@ def initial_assesment(request,appointment_id):
         age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         # print(age)
         # appointment_update="http://127.0.0.1:8002/appointment/api/update_appointment_by_id/"
-        appointment_update="http://13.233.211.102/appointment/api/update_appointment_by_id/"
+        appointment_update="https://drishtis.app/drishti_appointment/api/update_appointment_by_id/"
         appointment_data={"appointment_id":appointment_id,"age":age,"appointment_gender":sex,"appointment_name":pname}
         appointment_res=requests.post(appointment_update,json=appointment_data)
         # print(appointment_res.text)
@@ -1414,7 +1415,7 @@ def initial_assesment(request,appointment_id):
         
 
         # patient_update="http://127.0.0.1:8000/pateint/api/update_patient_by_id/"
-        patient_update="http://13.233.211.102/pateint/api/update_patient_by_id/"
+        patient_update="https://drishtis.app/drishti_pateint/api/update_patient_by_id/"
         p_data={"patient_id":patient_id,"patient_gender":sex,"patient_firstname":fullname[0],"patient_lastname":fullname[1],"patient_dateofbirth":request.POST['dob']}
         if aadharno:
             p_data['patient_aadharnumber']=aadharno
@@ -1447,7 +1448,7 @@ def initial_assesment(request,appointment_id):
             # "consultation_id":0    
         }
         # api_url = 'http://127.0.0.1:8000/api/insert_patients_vitals/'
-        api_url ='http://13.233.211.102/medicalrecord/api/insert_patients_vitals/'
+        api_url ='https://drishtis.app/drishti_medicalrecord/api/insert_patients_vitals/'
         response = requests.post(api_url, json=patient_data)
         # print(response.text)
 
@@ -1457,7 +1458,7 @@ def initial_assesment(request,appointment_id):
         # print(vitals_id)
         # print("vitals_id",vitals_id)
 
-        update_status_url="http://13.233.211.102/appointment/api/update_appointment_status"
+        update_status_url="https://drishtis.app/drishti_appointment/api/update_appointment_status"
         status_response=requests.post(update_status_url,json={"appointment_id":appointment_id,"appointment_status":2})
         # print(status_response.text)
         
@@ -1488,7 +1489,7 @@ def update_initial_assesment(request):
     age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     # print(age)
     # appointment_update="http://127.0.0.1:8002/appointment/api/update_appointment_by_id/"
-    appointment_update="http://13.233.211.102/appointment/api/update_appointment_by_id/"
+    appointment_update="https://drishtis.app/drishti_appointment/api/update_appointment_by_id/"
     appointment_data={"appointment_id":appointment_id,"age":age,"appointment_gender":sex,"appointment_name":pname}
     appointment_res=requests.post(appointment_update,json=appointment_data)
     # print(appointment_res.text)
@@ -1502,7 +1503,7 @@ def update_initial_assesment(request):
     
 
     # patient_update="http://127.0.0.1:8000/pateint/api/update_patient_by_id/"
-    patient_update="http://13.233.211.102/pateint/api/update_patient_by_id/"
+    patient_update="https://drishtis.app/drishti_pateint/api/update_patient_by_id/"
     p_data={"patient_id":patient_id,"patient_gender":sex,"patient_firstname":fullname[0],"patient_lastname":fullname[1],"patient_dateofbirth":request.POST['dob']}
     if aadharno:
         p_data['patient_aadharnumber']=aadharno
@@ -1532,7 +1533,7 @@ def update_initial_assesment(request):
             
         }
     # url="http://localhost:8000/api/update_patientvitals_by_appointment_id/"
-    url="http://13.233.211.102/medicalrecord/api/update_patientvitals_by_appointment_id/"
+    url="https://drishtis.app/drishti_medicalrecord/api/update_patientvitals_by_appointment_id/"
     response=requests.post(url,json=api_data)
     # print(response.text)
     vdata=response.json().get('message_data')
@@ -1557,7 +1558,7 @@ def Consultation(request,id):
         if(get_patient_by_appointment_id.get('consultation_id')):
             request.session['consultation_id']=get_patient_by_appointment_id.get('consultation_id')
             # print("the consultation id is present",get_patient_by_appointment_id.get('consultation_id'))
-            consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+            consultation_url="https://drishtis.app/drishti_medicalrecord/api/get_consultation_byconsultationid/"
             api_para={"consultation_id":request.session['consultation_id']}
             consult_response=requests.post(consultation_url,json=api_para)
             consult_data=(consult_response.json().get("message_data"))[0]
@@ -1572,14 +1573,14 @@ def Consultation(request,id):
 
             #################patient findingsymptoms################
             # finding_symptoms_url="http://localhost:8000/api/get_patient_findings_symptoms_by_consultation/"
-            finding_symptoms_url="http://13.233.211.102/medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
+            finding_symptoms_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
             api_para={"consultation_id":request.session['consultation_id']}
             symptoms_response=requests.post(finding_symptoms_url,json=api_para)
             symptoms_data=(symptoms_response.json().get("message_data"))[0]
             # print(symptoms_data)
             #################patient Lab Invstigations################
             # patientlab_url="http://localhost:8000/api/get_patient_labinvestigations_by_consultation_id/"
-            patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+            patientlab_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
             api_para={"consultation_id":request.session['consultation_id']}
             patientlab_response=requests.post(patientlab_url,json=api_para)
             patientlab_data=(patientlab_response.json().get("message_data"))
@@ -1590,7 +1591,7 @@ def Consultation(request,id):
                 # print("-----------------------")
             # print(lab_list)
             #################patient Medications################
-            patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+            patientmedic_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_medications_byconsultationid/"
             api_para={"consultation_id":request.session['consultation_id']}
             patientmedic_response=requests.post(patientmedic_url,json=api_para)
             patientmedic_data=(patientmedic_response.json().get("message_data"))
@@ -1602,7 +1603,7 @@ def Consultation(request,id):
          
             if medic_list:
                 for i in medic_list:
-                    instuct_res=requests.post("http://13.233.211.102/masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
+                    instuct_res=requests.post("https://drishtis.app/drishti_masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
                     i['instruction_text']=(instuct_res.json().get('message_data'))[0].get('instruction_text')
 
                 # print(medic_list)
@@ -1611,7 +1612,7 @@ def Consultation(request,id):
 
             #################patient prescription################
             # prescription_url="http://localhost:8000/api/get_prescription_details/"
-            prescription_url="http://13.233.211.102/medicalrecord/api/get_prescription_details/"
+            prescription_url="https://drishtis.app/drishti_medicalrecord/api/get_prescription_details/"
             api_para={"consultation_id":request.session['consultation_id']}
             prescription_response=requests.post(prescription_url,json=api_para)
             # print(prescription_response.text)
@@ -1630,7 +1631,7 @@ def Consultation(request,id):
            # print("not present",get_patient_by_appointment_id.get('consultation_id'))
            consult_id=request.session['consult_id']-1
            api_consultdata={"consultation_fee_id":consult_id}
-           consult_url="http://13.233.211.102/doctor/api/get_consultation_fee_details/"
+           consult_url="https://drishtis.app/drishti_doctor/api/get_consultation_fee_details/"
            response=requests.post(consult_url,json=api_consultdata)
            fees=response.json().get("message_data",{})
            default_fees=fees['first_visit_fee']
@@ -1655,12 +1656,12 @@ def Consultation(request,id):
     #######################################################################################################################
             
         Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
-        patient_res=requests.post('http://13.233.211.102/pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":request.session['appointment_id']})
+        patient_res=requests.post('https://drishtis.app/drishti_pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":request.session['appointment_id']})
         outstanding=(patient_res.json().get("message_data",{})).get('outstanding',0) or 0
         # print(outstanding)
 
         ################################All Active Pharmacist##################
-        pharma_res= requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={"doctor_id":request.session['doctor_id'],"Status":0})
+        pharma_res= requests.post('https://drishtis.app/drishti_medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={"doctor_id":request.session['doctor_id'],"Status":0})
         # print(pharma_res.text)
         if(pharma_res.json().get('message_code')==1000):
             pharmadata = pharma_res.json().get('message_data')
@@ -1670,7 +1671,7 @@ def Consultation(request,id):
             pharmadata=[]
         
         ################################All Active Laboratory##################
-        laboratory_res= requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_laboratory_bydoctorid/',json={"doctor_id":request.session['doctor_id'],"Status":0})
+        laboratory_res= requests.post('https://drishtis.app/drishti_medicalrecord/api/get_doctor_laboratory_bydoctorid/',json={"doctor_id":request.session['doctor_id'],"Status":0})
         # print(laboratory_res.text)
         if(laboratory_res.json().get('message_code')==1000):
             laboratorydata = laboratory_res.json().get('message_data')
@@ -1693,7 +1694,7 @@ def Consultation(request,id):
 ########################## insert consultaions ########################################
             # Get_Patient_Boimterics_Vitals(requests,request.session['appointment_id'])
             # # print("in consult",get_patient_boimterics_vitals)
-            vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
+            vital_url="https://drishtis.app/drishti_medicalrecord/api/get_patientvitals_by_appointment_id/"
             vital_response=requests.post(vital_url,json={"appointment_id": request.session['appointment_id']})
             # # print(vital_response.text)
             vital_data=vital_response.json().get('message_data')
@@ -1739,7 +1740,7 @@ def Consultation(request,id):
                     "consultation_mode": 1,
                 }
                 #updateconsult_url="http://localhost:8000/api/update_consultation_details/"
-                updateconsult_url="http://13.233.211.102/medicalrecord/api/update_consultation_details/"
+                updateconsult_url="https://drishtis.app/drishti_medicalrecord/api/update_consultation_details/"
                 updateconsult_response=requests.post(updateconsult_url,json=update_consultation)
                 # print(updateconsult_response.text)
 
@@ -1766,7 +1767,7 @@ def Consultation(request,id):
                     "kco":kco_str,
                     "advice":advice_str
                     }
-                update_patient_findingsandsymtoms_url = "http://13.233.211.102/medicalrecord/api/update_patient_findings_and_symptoms/"
+                update_patient_findingsandsymtoms_url = "https://drishtis.app/drishti_medicalrecord/api/update_patient_findings_and_symptoms/"
 
                 updatefindingsandsymtoms_response = requests.post(update_patient_findingsandsymtoms_url,json=update_symptoms)
                 # print(updatefindingsandsymtoms_response.text)
@@ -1788,7 +1789,7 @@ def Consultation(request,id):
                 dosage_list=dosage.split(",")
                 language_list=language.split(",")
                 # print(language_list,instruction_list,mode_list,medicine_list,days_list,dosage_list)
-                patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+                patientmedic_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_medications_byconsultationid/"
                 api_para={"consultation_id":request.session['consultation_id']}
                 patientmedic_response=requests.post(patientmedic_url,json=api_para)
                 patientmedic_data=(patientmedic_response.json().get("message_data"))
@@ -1798,7 +1799,7 @@ def Consultation(request,id):
                     medic_list.append(i)
                     # print("-----------------------")
                 # print(medic_list)
-                prescription_url="http://13.233.211.102/medicalrecord/api/get_prescription_details/"
+                prescription_url="https://drishtis.app/drishti_medicalrecord/api/get_prescription_details/"
                 api_para={"consultation_id":request.session['consultation_id']}
                 prescription_response=requests.post(prescription_url,json=api_para)
                 # print(prescription_response.text)
@@ -1847,7 +1848,7 @@ def Consultation(request,id):
                           if(name==medicine['medicine_name']):
                              med_id_list.append(medicine['doctor_medicine_id'])
                     # medication_url="http://127.0.0.1:8000/api/insert_patient_medications/"
-                    medication_url="http://13.233.211.102/medicalrecord/api/insert_patient_medications/"
+                    medication_url="https://drishtis.app/drishti_medicalrecord/api/insert_patient_medications/"
                     for i in range(len(unique_list)):
                             medication_data={
                                 "doctor_id": request.session["doctor_id"],
@@ -1882,7 +1883,7 @@ def Consultation(request,id):
                 for key, value in previous_name.items():
                     if key not in common_name:
                         delete_medic.append(key)
-                        deletemedic_url=" http://13.233.211.102/medicalrecord/api/delete_patient_medications/"
+                        deletemedic_url=" https://drishtis.app/drishti_medicalrecord/api/delete_patient_medications/"
                         deletemedic_response=requests.post(deletemedic_url,json={"Patient_Medication_Id":value})
                         # print(deletemedic_response.text)
                          
@@ -1901,10 +1902,10 @@ def Consultation(request,id):
                                 "laboratory_id": int(laboratoryid),
                                 "prescription_id":prescription_id
                             }
-                            laboratoryapi_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_prescribe_laboratory/',json=laboratoryapi_data)
+                            laboratoryapi_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_prescribe_laboratory/',json=laboratoryapi_data)
                             # print(laboratoryapi_res.text)
                 # print('from screen',labsdata_list)
-                patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+                patientlab_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
                 api_para={"consultation_id":request.session['consultation_id']}
                 patientlab_response=requests.post(patientlab_url,json=api_para)
                 patientlab_data=(patientlab_response.json().get("message_data"))
@@ -1923,7 +1924,7 @@ def Consultation(request,id):
                 # print(unique_lablist)
                 if(unique_lablist):
                     # lab_url="http://localhost:8000/api/insert_patient_labinvestigations/"
-                    lab_url="http://13.233.211.102/medicalrecord/api/insert_patient_labinvestigations/"
+                    lab_url="https://drishtis.app/drishti_medicalrecord/api/insert_patient_labinvestigations/"
                     labs_data={
                     "doctor_id": request.session["doctor_id"],
                     "patient_id": patient_id,
@@ -1955,7 +1956,7 @@ def Consultation(request,id):
                 for key, value in lab_list.items():
                     if key not in common_labname:
                         delete_lab.append(key)
-                        deletelab_url=" http://13.233.211.102/medicalrecord/api/delete_patient_labinvestigations/"
+                        deletelab_url=" https://drishtis.app/drishti_medicalrecord/api/delete_patient_labinvestigations/"
                         deletelab_response=requests.post(deletelab_url,json={"Patient_LabInvestigation_Id":value})
                         # print(deletelab_response.text)
                          
@@ -1965,7 +1966,7 @@ def Consultation(request,id):
                 prescritption=request.POST['Prescription']
                 # print(prescritption)
                 # updateprescription_url="http://localhost:8000/api/update_prescription_details/"
-                updateprescription_url="http://13.233.211.102/medicalrecord/api/update_prescription_details/"
+                updateprescription_url="https://drishtis.app/drishti_medicalrecord/api/update_prescription_details/"
                 prescription_data={
                     "doctor_id": request.session["doctor_id"],
                     "patient_id": patient_id,
@@ -1998,7 +1999,7 @@ def Consultation(request,id):
                     "consultation_id":request.session['consultation_id']  
                 }
                 # url="http://localhost:8000/api/update_patientvitals_by_appointment_id/"
-                url="http://13.233.211.102/medicalrecord/api/update_patientvitals_by_appointment_id/"
+                url="https://drishtis.app/drishti_medicalrecord/api/update_patientvitals_by_appointment_id/"
                 response=requests.post(url,json=api_data)
                 # print(response.text)
 
@@ -2021,7 +2022,7 @@ def Consultation(request,id):
                     "appointment_id":request.session['appointment_id'],
                     'consultation_status':1
                 }
-                consultation_api_url = 'http://13.233.211.102/medicalrecord/api/insert_consultation'
+                consultation_api_url = 'https://drishtis.app/drishti_medicalrecord/api/insert_consultation'
 
                 consultation_response = requests.post(consultation_api_url, json=insert_consultation)
                 # print("consultation_response : ", consultation_response.text)
@@ -2029,7 +2030,7 @@ def Consultation(request,id):
                 consultation_id=consultation['consultation_id']
                 # print("consultation_ID : ", consultation)
                 #update appointment status to 3 means completed.
-                # update_status_url="http://13.233.211.102/appointment/api/update_appointment_status"
+                # update_status_url="https://drishtis.app/drishti_appointment/api/update_appointment_status"
                 # status_response=requests.post(update_status_url,json={"appointment_id":request.session['appointment_id'],"appointment_status":3})
                 # # print(status_response.text)
                 consultation_id = consultation['consultation_id']
@@ -2060,7 +2061,7 @@ def Consultation(request,id):
                     "consultation_id":consultation_id   
             }
                 # url="http://localhost:8000/api/update_patientvitals_by_appointment_id/"
-                url="http://13.233.211.102/medicalrecord/api/update_patientvitals_by_appointment_id/"
+                url="https://drishtis.app/drishti_medicalrecord/api/update_patientvitals_by_appointment_id/"
                 response=requests.post(url,json=api_data)
                 # print(response.text)
                 
@@ -2089,7 +2090,7 @@ def Consultation(request,id):
                     "advice":advice_str
 
                     }
-                insert_patient_findingsandsymtoms_url = "http://13.233.211.102/medicalrecord/api/insert_patient_findingsandsymtoms/"
+                insert_patient_findingsandsymtoms_url = "https://drishtis.app/drishti_medicalrecord/api/insert_patient_findingsandsymtoms/"
 
                 findingsandsymtoms_response = requests.post(insert_patient_findingsandsymtoms_url,json=finding_symptoms)
                 # print(findingsandsymtoms_response.text)
@@ -2097,7 +2098,7 @@ def Consultation(request,id):
     #################################Prescription###############################
                 prescritption=request.POST['Prescription']
                 # print(prescritption)
-                prescription_url="http://13.233.211.102/medicalrecord/api/insert_prescriptions/"
+                prescription_url="https://drishtis.app/drishti_medicalrecord/api/insert_prescriptions/"
                 prescription_data={
                     "doctor_id": request.session["doctor_id"],
                     "patient_id": patient_id,
@@ -2121,7 +2122,7 @@ def Consultation(request,id):
                             "pharmacist_id": int(pharmacistid),
                             "prescription_id":prescription_id
                         }
-                        pharmaapi_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_prescribe_pharmacist/',json=pharmaapi_data)
+                        pharmaapi_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_prescribe_pharmacist/',json=pharmaapi_data)
                         # print(pharmaapi_res.text)
                     
                 
@@ -2150,7 +2151,7 @@ def Consultation(request,id):
                 
                 if medicine_list[0]:
                     # medication_url="http://127.0.0.1:8000/api/insert_patient_medications/"
-                    medication_url="http://13.233.211.102/medicalrecord/api/insert_patient_medications/"
+                    medication_url="https://drishtis.app/drishti_medicalrecord/api/insert_patient_medications/"
                     for i in range(len(medicine_list)):
                             medication_data={
                                 "doctor_id": request.session["doctor_id"],
@@ -2187,7 +2188,7 @@ def Consultation(request,id):
                 # print(labs_list)
                 if(labs_list):
                     # lab_url="http://localhost:8000/api/insert_patient_labinvestigations/"
-                    lab_url="http://13.233.211.102/medicalrecord/api/insert_patient_labinvestigations/"
+                    lab_url="https://drishtis.app/drishti_medicalrecord/api/insert_patient_labinvestigations/"
                     labs_data={
                     "doctor_id": request.session["doctor_id"],
                     "patient_id": patient_id,
@@ -2218,7 +2219,7 @@ def Consultation(request,id):
                                 "laboratory_id": int(laboratoryid),
                                 "prescription_id":prescription_id
                             }
-                            laboratoryapi_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_prescribe_laboratory/',json=laboratoryapi_data)
+                            laboratoryapi_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_prescribe_laboratory/',json=laboratoryapi_data)
                             # print(laboratoryapi_res.text)
                 else:
                     print("no labs found")
@@ -2235,7 +2236,7 @@ def Get_Patient_By_Appointment_Id(requests,appointment_id):
     # # print("session : ",request.session['appointment_id'])
 
     api_data1 = {"appointment_id": appointment_id}
-    url = 'http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    url = 'https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
     response1 = requests.post(url, json=api_data1)
     # # print(response1.text)
 
@@ -2272,9 +2273,9 @@ def Get_Patient_Boimterics_Vitals(requests,vitals_id):
     
     # api_data = {"patient_biometric_id": vitals_id }
     # # api_url = 'http://127.0.0.1:8000/api/get_patientvitals_by_biometric_id/'
-    # api_url  ='http://13.233.211.102/medicalrecord/api/get_patientvitals_by_biometric_id/'
+    # api_url  ='https://drishtis.app/drishti_medicalrecord/api/get_patientvitals_by_biometric_id/'
     # response = requests.post(api_url, api_data)
-    vital_url="http://13.233.211.102/medicalrecord/api/get_patientvitals_by_appointment_id/"
+    vital_url="https://drishtis.app/drishti_medicalrecord/api/get_patientvitals_by_appointment_id/"
     response=requests.post(vital_url,json={"appointment_id": vitals_id})
     # print(response.text)
        
@@ -2289,7 +2290,7 @@ def Get_Patient_Boimterics_Vitals(requests,vitals_id):
 def All_medicines(requests,doctor_id):
 
     all_medicine_api_data = {"doctor_id":doctor_id}
-    all_medicine_url = 'http://13.233.211.102/doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
+    all_medicine_url = 'https://drishtis.app/drishti_doctor/api/get_all_doctor_medicine_bydoctorid_medicinename/'
 
     all_medicine_response = requests.post(all_medicine_url,json=all_medicine_api_data)
     # # print(all_medicine_response.text)
@@ -2303,7 +2304,7 @@ def All_medicines(requests,doctor_id):
 
 
 def ADVICE(requests,did):
-    advice_url="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    advice_url="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
     advice_data={"datacodename": "ADVICE","doctor_id":did}
 
     advice_response = requests.post(advice_url,json=advice_data)
@@ -2315,8 +2316,8 @@ def ADVICE(requests,did):
 
 def KCO(requests,did):
     # kco_data = {"DataCodeName":"KCO"}
-    # kco_url ='http://13.233.211.102/masters/api/get_datacodemaster_byname'
-    kco_url="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    # kco_url ='https://drishtis.app/drishti_masters/api/get_datacodemaster_byname'
+    kco_url="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
     kco_data={"datacodename": "KCO","doctor_id": did}
 
     kco_response = requests.post(kco_url,json=kco_data)
@@ -2327,7 +2328,7 @@ def KCO(requests,did):
 
 def get_instruction(requests,did):
         doctor_id ={ "Doctor_Id":did}
-        url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instructionsbydoctorId'
+        url_instruction = 'https://drishtis.app/drishti_masters/api/get_medicine_instructionsbydoctorId'
 
         medicine_instruction_response = requests.post(url_instruction, json = doctor_id)
         # print("medicine_instruction_response:",medicine_instruction_response.text)
@@ -2340,7 +2341,7 @@ def get_instruction(requests,did):
 
 def get_labinvestigation(requests,doctor_id):
     doctor_id ={"doctor_id":doctor_id}
-    lab_investigation_url ='http://13.233.211.102/medicalrecord/api/get_labinvestigation_bydoctorid/'
+    lab_investigation_url ='https://drishtis.app/drishti_medicalrecord/api/get_labinvestigation_bydoctorid/'
 
     lab_investigation_report_data = requests.post(lab_investigation_url,json=doctor_id)
     ## print("lab_investigation_report_data:", lab_investigation_report_data)
@@ -2350,28 +2351,28 @@ def get_labinvestigation(requests,doctor_id):
 
 
 def get_pdf_link(request):
-    update_appstatus_url="http://13.233.211.102/appointment/api/update_appointment_status"
+    update_appstatus_url="https://drishtis.app/drishti_appointment/api/update_appointment_status"
     appstatus_response=requests.post(update_appstatus_url,json={"appointment_id":request.session['appointment_id'],"appointment_status":3})
     # print(appstatus_response.text)
 
-    update_consultstatus_url="http://13.233.211.102/medicalrecord/api/update_consultation_status/"
+    update_consultstatus_url="https://drishtis.app/drishti_medicalrecord/api/update_consultation_status/"
     consultstatus_response=requests.post(update_consultstatus_url,json={"consultation_id":request.session['consultation_id'],"consultation_status":2})
     # print(consultstatus_response.text)
 
-    consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+    consultation_url="https://drishtis.app/drishti_medicalrecord/api/get_consultation_byconsultationid/"
     api_para={"consultation_id":request.session['consultation_id']}
     consult_response=requests.post(consultation_url,json=api_para)
     consult_data=(consult_response.json().get("message_data"))[0]
     # print(consult_data)
 
-    url="http://13.233.211.102/pateint/api/get_patient_byid/"
+    url="https://drishtis.app/drishti_pateint/api/get_patient_byid/"
     res=requests.post(url,json={"patient_id":consult_data['patient_id']})
     # print(res.text)
     patient=res.json().get('message_data')
     prev_oustanding = patient.get('outstanding', 0) or 0
     new_oustanding = prev_oustanding + float(consult_data['consultation_fees'])
 
-    patient_charges_url="http://13.233.211.102/pateint/api/insert_patient_charges/"
+    patient_charges_url="https://drishtis.app/drishti_pateint/api/insert_patient_charges/"
     patient_charges_data={
             "doctor_id": request.session['doctor_id'],
             "patient_id": consult_data['patient_id'],
@@ -2395,10 +2396,10 @@ def get_pdf_link(request):
     # print(patient_charge_response.text)
     
     patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_oustanding}
-    oustanding_res=requests.post("http://13.233.211.102/pateint/api/update_patient_by_id/",json=patient_apidata)
+    oustanding_res=requests.post("https://drishtis.app/drishti_pateint/api/update_patient_by_id/",json=patient_apidata)
     # print(oustanding_res.text)
 
-    pdf_url="http://13.233.211.102/medicalrecord/api/generateprescriptionpdf/"
+    pdf_url="https://drishtis.app/drishti_medicalrecord/api/generateprescriptionpdf/"
     url_data= {"consultation_id":request.session['consultation_id']}
     response=requests.post(pdf_url,json=url_data)
     # print(response.text)
@@ -2413,28 +2414,28 @@ def get_pdf_link(request):
         return JsonResponse({'error': 'Failed to fetch PDF link.'}, status=500)
     
 def paid(request):
-    update_appstatus_url="http://13.233.211.102/appointment/api/update_appointment_status"
+    update_appstatus_url="https://drishtis.app/drishti_appointment/api/update_appointment_status"
     appstatus_response=requests.post(update_appstatus_url,json={"appointment_id":request.session['appointment_id'],"appointment_status":4})
     # print(appstatus_response.text)
 
-    update_consultstatus_url="http://13.233.211.102/medicalrecord/api/update_consultation_status/"
+    update_consultstatus_url="https://drishtis.app/drishti_medicalrecord/api/update_consultation_status/"
     consultstatus_response=requests.post(update_consultstatus_url,json={"consultation_id":request.session['consultation_id'],"consultation_status":3})
     # print(consultstatus_response.text)
 
-    consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+    consultation_url="https://drishtis.app/drishti_medicalrecord/api/get_consultation_byconsultationid/"
     api_para={"consultation_id":request.session['consultation_id']}
     consult_response=requests.post(consultation_url,json=api_para)
     consult_data=(consult_response.json().get("message_data"))[0]
     # print(consult_data)
 
-    url="http://13.233.211.102/pateint/api/get_patient_byid/"
+    url="https://drishtis.app/drishti_pateint/api/get_patient_byid/"
     res=requests.post(url,json={"patient_id":consult_data['patient_id']})
     # print(res.text)
     patient=res.json().get('message_data')
     prev_oustanding = patient.get('outstanding', 0) or 0
     new_oustanding = abs(float(consult_data['consultation_fees']) - prev_oustanding)
 
-    patient_payment_url="http://13.233.211.102/pateint/api/insert_patient_payments/"
+    patient_payment_url="https://drishtis.app/drishti_pateint/api/insert_patient_payments/"
     patient_payment_data={
             "doctor_id": request.session['doctor_id'],
             "patient_id": consult_data['patient_id'],
@@ -2450,7 +2451,7 @@ def paid(request):
     # print(patient_charge_response.text)
 
     patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_oustanding}
-    oustanding_res=requests.post("http://13.233.211.102/pateint/api/update_patient_by_id/",json=patient_apidata)
+    oustanding_res=requests.post("https://drishtis.app/drishti_pateint/api/update_patient_by_id/",json=patient_apidata)
     # print(oustanding_res.text)
     
     if appstatus_response.ok and consultstatus_response.ok:
@@ -2463,7 +2464,7 @@ def for_user(request,id):
     # print(request.session['role'])
     api_data = {"appointment_id":id}
         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
     response = requests.post(api_url, json=api_data)
 
     if response.status_code == 200:
@@ -2471,9 +2472,9 @@ def for_user(request,id):
         data1=data.get('appointment details', {})
         request.session['appointment_details']=data1
         # print(data1)
-        patient_res=requests.post('http://13.233.211.102/pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":id})
+        patient_res=requests.post('https://drishtis.app/drishti_pateint/api/get_patient_details_by_appointment_id/',json={"appointment_id":id})
         data1['outstanding']=(patient_res.json().get("message_data",{})).get('outstanding',0) or 0
-        patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+        patientlab_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
         api_para={"consultation_id":data1.get('consultation_id')}
         patientlab_response=requests.post(patientlab_url,json=api_para)
         patientlab_data=(patientlab_response.json().get("message_data"))
@@ -2485,7 +2486,7 @@ def for_user(request,id):
             # print("-----------------------")
         # print(lab_list)
         #################patient Medications################
-        patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+        patientmedic_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_medications_byconsultationid/"
         api_para={"consultation_id":data1.get('consultation_id')}
         patientmedic_response=requests.post(patientmedic_url,json=api_para)
         patientmedic_data=(patientmedic_response.json().get("message_data"))
@@ -2498,14 +2499,14 @@ def for_user(request,id):
 
         if medic_list:
             for i in medic_list:
-                instuct_res=requests.post("http://13.233.211.102/masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
+                instuct_res=requests.post("https://drishtis.app/drishti_masters/api/get_medicine_instruction",json={"Doctor_Instruction_Id":i['medicine_instruction_id']})
                 i['instruction_text']=(instuct_res.json().get('message_data'))[0].get('instruction_text')
 
             # print(medic_list)
         else:
             print('no data in medic list')
 
-        consultation_url="http://13.233.211.102/medicalrecord/api/get_consultation_byconsultationid/"
+        consultation_url="https://drishtis.app/drishti_medicalrecord/api/get_consultation_byconsultationid/"
         api_para={"consultation_id":data1.get('consultation_id')}
         consult_response=requests.post(consultation_url,json=api_para)
         consult_data=(consult_response.json().get("message_data"))[0]
@@ -2518,12 +2519,12 @@ def for_user(request,id):
 ################clinic pdf###############################
 def clinic_pdf(request):
     try:
-        clinic_pdf_url = "http://13.233.211.102/medicalrecord/api/generateclinicpdf/"
+        clinic_pdf_url = "https://drishtis.app/drishti_medicalrecord/api/generateclinicpdf/"
         response = requests.post(clinic_pdf_url, json={"doctor_location_id": request.session['location_id']})
         data = response.json()
-        # print(data)
+        print(data)
         pdf_url = data.get("message_data")[0].get("pdf_url")
-        
+        print(pdf_url)
         if pdf_url:
             pdf_url = pdf_url.replace("http://13.233.211.102", "https://www.drishtis.app")
             return JsonResponse({'pdf_url': pdf_url})
@@ -2536,7 +2537,7 @@ def clinic_pdf(request):
 ##################Prescription Settings#########################
 def prescription_setting(request):
     if(request.method=='GET'):
-        detail_url="http://13.233.211.102/doctor/api/get_prescription_settings_by_doctor/"
+        detail_url="https://drishtis.app/drishti_doctor/api/get_prescription_settings_by_doctor/"
         detail_response=requests.post(detail_url,json={'doctor_id':request.session['doctor_id']})
         # print(detail_response.text)
         if(detail_response.json().get('message_code')==1000):
@@ -2585,14 +2586,14 @@ def prescription_setting(request):
                             break
                    
                 # print(api_data)
-                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
+                insert_url="https://drishtis.app/drishti_doctor/api/insert_prescription_settings/"
                 response = requests.post(insert_url, data=api_data)
                 # print(response.text)
 
 
             
             elif(header_type=='2'):
-                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
+                insert_url="https://drishtis.app/drishti_doctor/api/insert_prescription_settings/"
                 api_data={
                     "doctor_id": request.session['doctor_id'],
                     "location_id":request.session['location_id'],
@@ -2628,7 +2629,7 @@ def prescription_setting(request):
                 # # print(header_image)
             
             else:
-                insert_url="http://13.233.211.102/doctor/api/insert_prescription_settings/"
+                insert_url="https://drishtis.app/drishti_doctor/api/insert_prescription_settings/"
                 api_data={
                     "doctor_id": request.session['doctor_id'],
                     "location_id":request.session['location_id'],
@@ -2682,12 +2683,12 @@ def update_prescription_setting(request):
                         
                 # print(api_data)
                     
-                update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+                update_url="https://drishtis.app/drishti_doctor/api/update_prescription_details/"
                 response = requests.post(update_url, data=api_data)
                 # print(response.text)
             
     elif(header_type=='2'):
-        update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+        update_url="https://drishtis.app/drishti_doctor/api/update_prescription_details/"
         api_data={
             "doctor_id": request.session['doctor_id'],
             "paper_size": int(paper_size),
@@ -2700,7 +2701,7 @@ def update_prescription_setting(request):
         # print(response.text)
         # # print(header_image)
         if(header_image):
-                image_url="http://13.233.211.102/doctor/api/update_header_image/"
+                image_url="https://drishtis.app/drishti_doctor/api/update_header_image/"
                 image_response=requests.post(image_url,data={"doctor_id":request.session['doctor_id']},files={'header_image':header_image})
                 # print(image_response.text)
         else:
@@ -2708,7 +2709,7 @@ def update_prescription_setting(request):
             # return HttpResponse("no image uploaded")
     
     else:
-        update_url="http://13.233.211.102/doctor/api/update_prescription_details/"
+        update_url="https://drishtis.app/drishti_doctor/api/update_prescription_details/"
         api_data={
             "doctor_id": request.session['doctor_id'],
             "paper_size": int(paper_size),
@@ -2732,7 +2733,7 @@ def update_prescription_setting(request):
 ###############################Users################################
 def get_all_users(request):
     api_data = {"location_id":request.session['location_id']}
-    api_url = 'http://13.233.211.102/doctor/api/get_all_users_by_location/'
+    api_url = 'https://drishtis.app/drishti_doctor/api/get_all_users_by_location/'
     response = requests.post(api_url,json=api_data)
     all_users=response.json().get('message_data', {})
     # # print(all_users)
@@ -2745,7 +2746,7 @@ def insert_user(request):
     
     else:
          
-        user_url="http://13.233.211.102/doctor/api/insert_user/"
+        user_url="https://drishtis.app/drishti_doctor/api/insert_user/"
         user_data={
                     "user_name":request.POST['user_name'],
                     "user_mobileno":request.POST['user_mobileno'],
@@ -2764,7 +2765,7 @@ def insert_user(request):
 def update_user(request,user_id):
     if(request.method=="GET"):
         api_data = {"location_id":request.session['location_id']}
-        api_url = 'http://13.233.211.102/doctor/api/get_all_users_by_location/'
+        api_url = 'https://drishtis.app/drishti_doctor/api/get_all_users_by_location/'
         response = requests.post(api_url,json=api_data)
         all_users=response.json().get('message_data', {})
         # # print(all_users)
@@ -2775,7 +2776,7 @@ def update_user(request,user_id):
         else:
             return HttpResponse("no data found")
     else:
-        user_updateurl="http://13.233.211.102/doctor/api/update_user_details/"
+        user_updateurl="https://drishtis.app/drishti_doctor/api/update_user_details/"
         user_updatedata={
                     "user_name":request.POST['user_name'],
                     "user_mobileno":request.POST['user_mobileno'],
@@ -2798,7 +2799,7 @@ def patient_history(request,id):
     # print("appointment id",id)
     api_data = {"appointment_id":id}
         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
     response = requests.post(api_url, json=api_data)
 
     if response.status_code == 200:
@@ -2811,9 +2812,9 @@ def patient_history(request,id):
         # print(fullname)
         if(len(fullname)<=1):
             fullname.append('none')
-        # patient_url="http://13.233.211.102/pateint/api/get_patient_details_by_phone/"
+        # patient_url="https://drishtis.app/drishti_pateint/api/get_patient_details_by_phone/"
         # patient_url="http://127.0.0.1:8000/pateint/api/get_patient_details_by_phone/"
-        patient_url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
+        patient_url="https://drishtis.app/drishti_pateint/api/get_patients_by_mobile_number/"
         api_data={"mobile_number": data1['appointment_mobileno']}
         patient_response=requests.post(patient_url,api_data)
         # print(patient_response.text)
@@ -2829,8 +2830,8 @@ def patient_history(request,id):
                     break
              
             # print("if pateint_id",patient_id)
-            # consult_url="http://13.233.211.102/medicalrecord/api/get_consultations_by_patient_id/"
-            consult_url="http://13.233.211.102/medicalrecord/api/get_consultations_by_patient_and_doctor_id/"
+            # consult_url="https://drishtis.app/drishti_medicalrecord/api/get_consultations_by_patient_id/"
+            consult_url="https://drishtis.app/drishti_medicalrecord/api/get_consultations_by_patient_and_doctor_id/"
             consult_res=requests.post(consult_url,{"patient_id":patient_id,"doctor_id":request.session['doctor_id']})
             if(consult_res.json().get('message_code')==1000):
 
@@ -2842,7 +2843,7 @@ def patient_history(request,id):
                     # print(formatted_date,'consult date')
                     data['consultation_datetime']=formatted_date
                 
-                    patientlab_url="http://13.233.211.102/medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
+                    patientlab_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_labinvestigations_by_consultation_id/"
                     api_para={"consultation_id":data.get('consultation_id')}
                     patientlab_response=requests.post(patientlab_url,json=api_para)
                     patientlab_data=(patientlab_response.json().get("message_data"))
@@ -2854,7 +2855,7 @@ def patient_history(request,id):
                     # # print(lab_list)
                     data['labs']=lab_list
                     #################patient Medications################
-                    patientmedic_url="http://13.233.211.102/medicalrecord/api/get_patient_medications_byconsultationid/"
+                    patientmedic_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_medications_byconsultationid/"
                     api_para={"consultation_id":data.get('consultation_id')}
                     patientmedic_response=requests.post(patientmedic_url,json=api_para)
                     patientmedic_data=(patientmedic_response.json().get("message_data"))
@@ -2864,7 +2865,7 @@ def patient_history(request,id):
                         medic_list.append(i)
                     data['medicines']=medic_list 
 
-                    finding_symptoms_url="http://13.233.211.102/medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
+                    finding_symptoms_url="https://drishtis.app/drishti_medicalrecord/api/get_patient_findings_symptoms_by_consultation/"
                     api_para={"consultation_id":data.get('consultation_id')}
                     symptoms_response=requests.post(finding_symptoms_url,json=api_para)
                     symptoms_data=(symptoms_response.json().get("message_data"))[0]
@@ -2889,7 +2890,7 @@ def patientselect(request,id):
     if(request.session['subscription_status'] == 'active'): 
         api_data = {"appointment_id":id}
             # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-        api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+        api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
         response = requests.post(api_url, json=api_data)
 
         if response.status_code == 200:
@@ -2898,7 +2899,7 @@ def patientselect(request,id):
             request.session['appointment_details']=data2
             # print(data2)
             
-        url="http://13.233.211.102/pateint/api/get_patients_by_mobile_number/"
+        url="https://drishtis.app/drishti_pateint/api/get_patients_by_mobile_number/"
         # res=requests.post(url,json={"mobile_number":9876564532})
         res=requests.post(url,json={"mobile_number": data2['appointment_mobileno']})
         if(res.json().get('message_code')==1000):
@@ -2916,7 +2917,7 @@ def patientselect(request,id):
                 fullname.append('None')
             
             # patient_url="http://localhost:8000/pateint/api/insert_patient/"
-            patient_url="http://13.233.211.102/pateint/api/insert_patient/"
+            patient_url="https://drishtis.app/drishti_pateint/api/insert_patient/"
             patient_apidata={
                 "patient_mobileno": appointment_details['appointment_mobileno'],
                 "patient_firstname": fullname[0],
@@ -2941,7 +2942,7 @@ def patientselect(request,id):
             data2['patient_id']=patient_id
             data2['outstanding']=0
             data1=[]
-            pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+            pdlink_url="https://drishtis.app/drishti_pateint/api/insert_patient_doctor_link/"
             pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
             pdlink_res=requests.post(pdlink_url,json=pdlink_data)
             # print("first time patient inserted",pdlink_res.text)
@@ -2959,7 +2960,7 @@ def add_member(request):
     # print(appointment_id)
     api_data = {"appointment_id":appointment_id}
         # api_url = 'http://127.0.0.1:8000/api/get_patient_by_appointment_id/'
-    api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+    api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
     response = requests.post(api_url, json=api_data)
 
     if response.status_code == 200:
@@ -2977,7 +2978,7 @@ def add_member(request):
             fullname.append('None')
         
         # patient_url="http://localhost:8000/pateint/api/insert_patient/"
-        patient_url="http://13.233.211.102/pateint/api/insert_patient/"
+        patient_url="https://drishtis.app/drishti_pateint/api/insert_patient/"
         patient_apidata={
             "patient_mobileno": appointment_details['appointment_mobileno'],
             "patient_firstname": fullname[0],
@@ -3001,7 +3002,7 @@ def add_member(request):
         # print("else patient_id",patient_id)
         data2['patient_id']=patient_id
         data2['outstanding']=0
-        pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+        pdlink_url="https://drishtis.app/drishti_pateint/api/insert_patient_doctor_link/"
         pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
         pdlink_res=requests.post(pdlink_url,json=pdlink_data)
         # print("add member",pdlink_res.text)
@@ -3011,7 +3012,7 @@ def add_member(request):
 
 ################################Disease#####################
 def all_diseases(request):
-    api="http://13.233.211.102/pateint/api/get_diseases_by_doctorid/"
+    api="https://drishtis.app/drishti_pateint/api/get_diseases_by_doctorid/"
     api_data={"doctor_id": request.session['doctor_id']}
     api_res=requests.post(api,json=api_data)
     # print(api_res.text)
@@ -3033,7 +3034,7 @@ def insert_disease(request):
     else:
         disease_name=request.POST['disease_name']
         disease_type=request.POST['disease_type']
-        disease_api="http://13.233.211.102/pateint/api/insert_disease/"
+        disease_api="https://drishtis.app/drishti_pateint/api/insert_disease/"
         disease_data={"doctor_id":request.session['doctor_id'],"disease_name":disease_name,"disease_type":disease_type}
         disease_res=requests.post(disease_api,json=disease_data)
         if(disease_res.json().get('message_code')==1000):
@@ -3047,7 +3048,7 @@ def insert_disease(request):
 def update_disease(request,id):
     if(request.method=='GET'):
         # print('disease id',id)
-        url_disease = 'http://13.233.211.102/pateint/api/get_diseases_by_diseaseid/'
+        url_disease = 'https://drishtis.app/drishti_pateint/api/get_diseases_by_diseaseid/'
         res=requests.post(url_disease,json={"disease_id":id})
         disease=res.json().get('message_data')[0]
         # print(disease)
@@ -3057,7 +3058,7 @@ def update_disease(request,id):
         disease_name=request.POST['disease_name']
         disease_type=request.POST['disease_type']
  
-        disease_api="http://13.233.211.102/pateint/api/update_disease_by_diseaseid/"
+        disease_api="https://drishtis.app/drishti_pateint/api/update_disease_by_diseaseid/"
         disease_data={"disease_id":id,"disease_name":disease_name,"disease_type":disease_type}
         disease_res=requests.post(disease_api,json=disease_data)
         # print(disease_res.text)
@@ -3073,7 +3074,7 @@ def update_disease(request,id):
 
 ######################Allergy###############################
 def all_allergy(request):
-    api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
+    api="https://drishtis.app/drishti_pateint/api/get_allergies_by_doctorid/"
     api_data={"doctor_id": request.session['doctor_id']}
     api_res=requests.post(api,json=api_data)
     # print(api_res.text)
@@ -3096,7 +3097,7 @@ def insert_allergy(request):
      
         allergy_name=request.POST['allergy_name']
         allergy_type=request.POST['allergy_type']
-        allergy_api="http://13.233.211.102/pateint/api/insert_allergy/"
+        allergy_api="https://drishtis.app/drishti_pateint/api/insert_allergy/"
         allergy_data={"doctor_id":request.session['doctor_id'],"allergy_name":allergy_name,"allergy_type":allergy_type}
         allergy_res=requests.post(allergy_api,json=allergy_data)
         if(allergy_res.json().get('message_code')==1000):
@@ -3110,7 +3111,7 @@ def insert_allergy(request):
 def update_allergy(request,id):
     if(request.method=='GET'):
         # print('allergy id',id)
-        url_allergy = 'http://13.233.211.102/pateint/api/get_allergy_by_allergyid/'
+        url_allergy = 'https://drishtis.app/drishti_pateint/api/get_allergy_by_allergyid/'
         res=requests.post(url_allergy,json={"allergy_id":id})
         allergy=res.json().get('message_data')
         # print(allergy)
@@ -3120,7 +3121,7 @@ def update_allergy(request,id):
         allergy_name=request.POST['allergy_name']
         allergy_type=request.POST['allergy_type']
  
-        allergy_api="http://13.233.211.102/pateint/api/update_allergy_by_allergyid/"
+        allergy_api="https://drishtis.app/drishti_pateint/api/update_allergy_by_allergyid/"
         allergy_data={"allergy_id":id,"allergy_name":allergy_name,"allergy_type":allergy_type}
         allergy_res=requests.post(allergy_api,json=allergy_data)
         # print(allergy_res.text)
@@ -3136,7 +3137,7 @@ def update_allergy(request,id):
 
 #############################KCO########################
 def all_kco(request):
-    api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    api="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
     api_data={"datacodename": "KCO","doctor_id": request.session['doctor_id']}
     api_res=requests.post(api,json=api_data)
     # print(api_res.text)
@@ -3154,7 +3155,7 @@ def insert_kco(request):
     else:
         datacodevalue=request.POST['datacodevalue']
         datacodedescription=request.POST['datacodedescription']
-        kco_api="http://13.233.211.102/masters/api/insert_datacodemaster"
+        kco_api="https://drishtis.app/drishti_masters/api/insert_datacodemaster"
         kco_data={"datacodename": "KCO","datacodevalue":datacodevalue,"datacodedescription":datacodedescription,"doctor_id": request.session['doctor_id']}
         # print(kco_data)
         kco_res=requests.post(kco_api,json=kco_data)
@@ -3166,7 +3167,7 @@ def insert_kco(request):
         
 def update_kco(request,id):
     if(request.method=="GET"):
-        api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+        api="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
         api_data={"datacodename": "KCO","doctor_id": request.session['doctor_id']}
         api_res=requests.post(api,json=api_data)
         all_data=api_res.json().get("message_data")
@@ -3179,7 +3180,7 @@ def update_kco(request,id):
             return HttpResponse("no data found")
     else:
         # return HttpResponse("update kco ...")
-        kco_updateurl="http://13.233.211.102/masters/api/update_datacodemaster_byid/"
+        kco_updateurl="https://drishtis.app/drishti_masters/api/update_datacodemaster_byid/"
         kco_updatedata={
                     "datacodeid":id,
                     "datacodename":"KCO",
@@ -3200,7 +3201,7 @@ def update_kco(request,id):
 
 ##############################Advice######################
 def all_advice(request):
-    api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+    api="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
     api_data={"datacodename": "ADVICE","doctor_id": request.session['doctor_id']}
     api_res=requests.post(api,json=api_data)
     # print(api_res.text)
@@ -3219,7 +3220,7 @@ def insert_advice(request):
     else:
         datacodevalue=request.POST['datacodevalue']
         datacodedescription=request.POST['datacodedescription']
-        advice_api="http://13.233.211.102/masters/api/insert_datacodemaster"
+        advice_api="https://drishtis.app/drishti_masters/api/insert_datacodemaster"
         advice_data={"datacodename": "ADVICE","datacodevalue":datacodevalue,"datacodedescription":datacodedescription,"doctor_id": request.session['doctor_id']}
         # print(advice_data)
         advice_res=requests.post(advice_api,json=advice_data)
@@ -3232,7 +3233,7 @@ def insert_advice(request):
 
 def update_advice(request,id):
     if(request.method=="GET"):
-        api="http://13.233.211.102/masters/api/get_datacodemaster_by_name_and_doctor/"
+        api="https://drishtis.app/drishti_masters/api/get_datacodemaster_by_name_and_doctor/"
         api_data={"datacodename": "ADVICE","doctor_id": request.session['doctor_id']}
         api_res=requests.post(api,json=api_data)
         all_data=api_res.json().get("message_data")
@@ -3245,7 +3246,7 @@ def update_advice(request,id):
             return HttpResponse("no data found")
     else:
         # return HttpResponse("update kco ...")
-        advice_updateurl="http://13.233.211.102/masters/api/update_datacodemaster_byid/"
+        advice_updateurl="https://drishtis.app/drishti_masters/api/update_datacodemaster_byid/"
         advice_updatedata={
                     "datacodeid":id,
                     "datacodename":"ADVICE",
@@ -3264,7 +3265,7 @@ def update_advice(request,id):
 
 #################Instructions###########################
 def all_instruction(request):
-    url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instructionsbydoctorId'
+    url_instruction = 'https://drishtis.app/drishti_masters/api/get_medicine_instructionsbydoctorId'
     all_res=requests.post(url_instruction,json={"Doctor_Id":request.session['doctor_id']})
     all_data=all_res.json().get("message_data")
     # print(all_data)
@@ -3292,7 +3293,7 @@ def insert_instruction(request):
         # return HttpResponse("ok")
 
         # # print(instruction,language)
-        instruct_api="http://13.233.211.102/masters/api/insert_medicine_instruction"
+        instruct_api="https://drishtis.app/drishti_masters/api/insert_medicine_instruction"
         instruct_data={"Doctor_Id":request.session['doctor_id'],"Instruction_Language":language,"Instruction_Text":instruction}
         ## print(instruct_data)
         instruct_res=requests.post(instruct_api,json=instruct_data)
@@ -3308,7 +3309,7 @@ def insert_instruction(request):
 def update_instruction(request,id):
     if(request.method=='GET'):
         # print('instruction id',id)
-        url_instruction = 'http://13.233.211.102/masters/api/get_medicine_instruction'
+        url_instruction = 'https://drishtis.app/drishti_masters/api/get_medicine_instruction'
         res=requests.post(url_instruction,json={"Doctor_Instruction_Id":id})
         instuction=res.json().get('message_data')[0]
         # print(instuction)
@@ -3318,7 +3319,7 @@ def update_instruction(request,id):
         instruction=request.POST['instruction_text']
         language=request.POST['instruction_language']
         # # print(instruction,language)
-        instruct_api="http://13.233.211.102/masters/api/update_medicine_instruction"
+        instruct_api="https://drishtis.app/drishti_masters/api/update_medicine_instruction"
         instruct_data={"Doctor_Instruction_Id":id,"Doctor_Id":request.session['doctor_id'],"Instruction_Language":language,"Instruction_Text":instruction}
         ## print(instruct_data)
         instruct_res=requests.post(instruct_api,json=instruct_data)
@@ -3332,7 +3333,7 @@ def update_instruction(request,id):
 
 ###############################Patient Tab flow########################################       
 def all_patient(request):
-    patient_url="http://13.233.211.102/pateint/api/get_patients_by_doctor_id/"
+    patient_url="https://drishtis.app/drishti_pateint/api/get_patients_by_doctor_id/"
     patient_res=requests.post(patient_url,json={"doctor_id":request.session['doctor_id']})
     # # print(patient_res.text)
     all_data=patient_res.json().get('message_data')
@@ -3341,17 +3342,17 @@ def all_patient(request):
 
 def addPatient(request):
     if(request.method=="GET"):
-        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        country_response = requests.post("https://drishtis.app/drishti_masters/api/get_all_countries/")
         countries = country_response.json().get("message_data", [])
 
-        state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":101})
+        state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":101})
         states = (state_response.json().get("message_data", [])).get('states',[])
         # # print(states)
 
-        city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":22})
+        city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":22})
         cities = (city_response.json().get("message_data", [])).get('cities',[])
         # # print(cities)
-        allergy_api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
+        allergy_api="https://drishtis.app/drishti_pateint/api/get_allergies_by_doctorid/"
         allergy_data={"doctor_id": request.session['doctor_id']}
         allergy_res=requests.post(allergy_api,json=allergy_data)
         # # print(allergy_res.text)
@@ -3360,7 +3361,7 @@ def addPatient(request):
         if(allergy_res.json().get('message_code')==1000):
             allergy_data=allergy_res.json().get("message_data")
         
-        disease_api="http://13.233.211.102/pateint/api/get_diseases_by_doctorid/"
+        disease_api="https://drishtis.app/drishti_pateint/api/get_diseases_by_doctorid/"
         disease_data={"doctor_id": request.session['doctor_id']}
         disease_res=requests.post(disease_api,json=disease_data)
         # # print(disease_res.text)
@@ -3423,17 +3424,17 @@ def addPatient(request):
             patient_apidata["patient_emergencycontact"]=0
 
 
-        res=requests.post("http://13.233.211.102/pateint/api/insert_patient/",json=patient_apidata)
+        res=requests.post("https://drishtis.app/drishti_pateint/api/insert_patient/",json=patient_apidata)
         # print(res.text)
         patient_id=((res.json().get("message_data"))[0]).get("Patient_Id")
 
-        pdlink_url="http://13.233.211.102/pateint/api/insert_patient_doctor_link/"
+        pdlink_url="https://drishtis.app/drishti_pateint/api/insert_patient_doctor_link/"
         pdlink_data={"doctor_id":request.session['doctor_id'],"patient_id":patient_id}
         pdlink_res=requests.post(pdlink_url,json=pdlink_data)
         # print("patient doctor link",pdlink_res.text)
 
         if 'remark' in non_empty_fields:
-            pdlink_res= requests.post("http://13.233.211.102/pateint/api/update_patient_doctor_link_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":patient_id,"remark":form_data['remark']})
+            pdlink_res= requests.post("https://drishtis.app/drishti_pateint/api/update_patient_doctor_link_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":patient_id,"remark":form_data['remark']})
             # print(pdlink_res.text)
             # # print(form_data['remark'])
         
@@ -3453,7 +3454,7 @@ def addPatient(request):
                 disease_apidata["disease_details"]=disease_description
                 print(disease_id,disease_description)
             
-            dis_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_diseases/",json=disease_apidata)
+            dis_res=requests.post("https://drishtis.app/drishti_pateint/api/insert_patient_diseases/",json=disease_apidata)
             # print(dis_res.text)
             # print("---------------------------")
         
@@ -3471,7 +3472,7 @@ def addPatient(request):
                 allergy_apidata["allergy_details"]=allergy_description
                 print(allergy_id,allergy_description)
             
-            allergy_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_allergies/",json=allergy_apidata)
+            allergy_res=requests.post("https://drishtis.app/drishti_pateint/api/insert_patient_allergies/",json=allergy_apidata)
             # print(allergy_res.text)
             # print("------------------------------")
 
@@ -3509,7 +3510,7 @@ def addPatient(request):
                         'appointment_gender':gender,
                         'age':age
                     }
-            api_url="http://13.233.211.102/appointment/api/insert_appointment_data/"
+            api_url="https://drishtis.app/drishti_appointment/api/insert_appointment_data/"
             appointment_response=requests.post(api_url,json=appointment_data)
             # print(appointment_response.text)
 
@@ -3519,7 +3520,7 @@ def addPatient(request):
                 appointment_id=(appointment_response.json().get('message_data')).get('appointment_id')
                 # print(appointment_id)
                 api_data = {"appointment_id":appointment_id}
-                api_url ='http://13.233.211.102/appointment/api/get_patient_by_appointment_id/'
+                api_url ='https://drishtis.app/drishti_appointment/api/get_patient_by_appointment_id/'
                 response = requests.post(api_url, json=api_data)
 
                 if response.json().get('message_code') == 1000:
@@ -3546,7 +3547,7 @@ def addPatient(request):
 def update_patient(request,id):
     if(request.method=='GET'):
         # print('patient id',id)
-        url="http://13.233.211.102/pateint/api/get_patient_byid/"
+        url="https://drishtis.app/drishti_pateint/api/get_patient_byid/"
         res=requests.post(url,json={"patient_id":id})
         # print(res.text)
         patient=res.json().get('message_data')
@@ -3557,12 +3558,12 @@ def update_patient(request,id):
         # print(formatted_date)
         patient['dob'] = formatted_date
 
-        res1=requests.post("http://13.233.211.102/pateint/api/get_patient_doctor_links_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":id})
+        res1=requests.post("https://drishtis.app/drishti_pateint/api/get_patient_doctor_links_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":id})
         if(res1.json().get('message_code')==1000):
             # # print(res1.text)
             patient['remark']=(res1.json().get('message_data')[0])['remark']
 
-        allergy_api="http://13.233.211.102/pateint/api/get_allergies_by_doctorid/"
+        allergy_api="https://drishtis.app/drishti_pateint/api/get_allergies_by_doctorid/"
         allergy_data={"doctor_id": request.session['doctor_id']}
         allergy_res=requests.post(allergy_api,json=allergy_data)
         # # print(allergy_res.text)
@@ -3573,24 +3574,24 @@ def update_patient(request,id):
         if(allergy_res.json().get('message_code')==1000):
             allergy_data=allergy_res.json().get("message_data")
         
-        disease_api="http://13.233.211.102/pateint/api/get_diseases_by_doctorid/"
+        disease_api="https://drishtis.app/drishti_pateint/api/get_diseases_by_doctorid/"
         disease_data={"doctor_id": request.session['doctor_id']}
         disease_res=requests.post(disease_api,json=disease_data)
         # # print(disease_res.text)
         if(disease_res.json().get('message_code')==1000):
             disease_data=disease_res.json().get("message_data")
         
-        get_allergy_res=requests.post("http://13.233.211.102/pateint/api/get_patient_allergies_by_patientid/",json={"patient_id":id})
+        get_allergy_res=requests.post("https://drishtis.app/drishti_pateint/api/get_patient_allergies_by_patientid/",json={"patient_id":id})
         # # print(get_allergy_res.text)
         if(get_allergy_res.json().get('message_code')==1000):
             allergy_list=get_allergy_res.json().get("message_data")
         
-        get_disease_res=requests.post("http://13.233.211.102/pateint/api/get_patient_diseases_by_patientid/",json={"patient_id":id})
+        get_disease_res=requests.post("https://drishtis.app/drishti_pateint/api/get_patient_diseases_by_patientid/",json={"patient_id":id})
         # # print(get_disease_res.text)
         if(get_disease_res.json().get('message_code')==1000):
             disease_list=get_disease_res.json().get("message_data")
 
-        country_response = requests.post("http://13.233.211.102/masters/api/get_all_countries/")
+        country_response = requests.post("https://drishtis.app/drishti_masters/api/get_all_countries/")
         countries = country_response.json().get("message_data", [])
         
         # print(patient)
@@ -3598,11 +3599,11 @@ def update_patient(request,id):
             state_id=patient['patient_stateid']
         else:
             state_id=22
-        state_response = requests.post("http://13.233.211.102/masters/api/get_states_by_country_id/",json={"country_id":patient['patient_countryid']})
+        state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":patient['patient_countryid']})
         states = (state_response.json().get("message_data", [])).get('states',[])
         # # print(states)
 
-        city_response = requests.post("http://13.233.211.102/masters/api/get_cities_by_state_id/",json={"state_id":state_id})
+        city_response = requests.post("https://drishtis.app/drishti_masters/api/get_cities_by_state_id/",json={"state_id":state_id})
         cities = (city_response.json().get("message_data", [])).get('cities',[])
         # # print(cities)
 
@@ -3624,11 +3625,11 @@ def update_patient(request,id):
 
         for pa_id in removed_allergies:
             # # print(pa_id)
-            pa_res=requests.post("http://13.233.211.102/pateint/api/delete_patient_allergy/",json={"patient_allergy_id":pa_id})
+            pa_res=requests.post("https://drishtis.app/drishti_pateint/api/delete_patient_allergy/",json={"patient_allergy_id":pa_id})
             # print(pa_res.text)
 
         for pd_id in removed_diseases:
-            pa_res=requests.post("http://13.233.211.102/pateint/api/delete_patient_disease/",json={"patient_disease_id":pd_id})
+            pa_res=requests.post("https://drishtis.app/drishti_pateint/api/delete_patient_disease/",json={"patient_disease_id":pd_id})
             # print(pa_res.text)
             # # print(pd_id)
     
@@ -3643,7 +3644,7 @@ def update_patient(request,id):
                 disease_apidata["disease_details"]=disease_description
                 print(disease_id,disease_description)
             
-            dis_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_diseases/",json=disease_apidata)
+            dis_res=requests.post("https://drishtis.app/drishti_pateint/api/insert_patient_diseases/",json=disease_apidata)
             # print(dis_res.text)
             # print("---------------------------")
         
@@ -3661,7 +3662,7 @@ def update_patient(request,id):
                 allergy_apidata["allergy_details"]=allergy_description
                 print(allergy_id,allergy_description)
             
-            allergy_res=requests.post("http://13.233.211.102/pateint/api/insert_patient_allergies/",json=allergy_apidata)
+            allergy_res=requests.post("https://drishtis.app/drishti_pateint/api/insert_patient_allergies/",json=allergy_apidata)
             # print(allergy_res.text)
             # print("------------------------------")
         
@@ -3703,12 +3704,12 @@ def update_patient(request,id):
             patient_apidata["patient_emergencycontact"] = form_data['patient_emergencycontact']
 
         if 'remark' in non_empty_fields:
-            pdlink_res= requests.post("http://13.233.211.102/pateint/api/update_patient_doctor_link_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":id,"remark":form_data['remark']})
+            pdlink_res= requests.post("https://drishtis.app/drishti_pateint/api/update_patient_doctor_link_by_doctorid_patientid/",json={"doctor_id":request.session['doctor_id'],"patient_id":id,"remark":form_data['remark']})
             # print(pdlink_res.text)
             # # print(form_data['remark'])
         
         
-        res=requests.post("http://13.233.211.102/pateint/api/update_patient_by_id/",json=patient_apidata)
+        res=requests.post("https://drishtis.app/drishti_pateint/api/update_patient_by_id/",json=patient_apidata)
         # print(res.text)
         if res.json().get('message_code') == 1000:
             messages.success(request, 'Patient details Updated successfully!')
@@ -3723,7 +3724,7 @@ def approvePharmacy(request):
         if(pharmacy_token):
             # print(pharmacy_token)
             if('doctor_id' in request.session):
-                api_res= requests.post('http://13.233.211.102/medicalrecord/api/get_pharmacist_details_bytoken/',json={'pharmacist_token':pharmacy_token})
+                api_res= requests.post('https://drishtis.app/drishti_medicalrecord/api/get_pharmacist_details_bytoken/',json={'pharmacist_token':pharmacy_token})
                 # print(api_res.text)
                 if(api_res.json().get('message_code')==1000):
                     pharmacy = api_res.json().get('message_data')
@@ -3739,7 +3740,7 @@ def approvePharmacy(request):
     
     else:
         pharmacist_id = request.POST['pharmacist_id']
-        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
+        api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
         # print(api_res.text)
         if(api_res.json().get('message_code')==1000):
            messages.success(request, 'Pharmacist Approved successfully!')
@@ -3757,7 +3758,7 @@ def approvePharmacy(request):
     
 
 def get_all_pharmacist(request):
-    api_res = requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={'doctor_id':request.session['doctor_id']})
+    api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/get_doctor_pharmacist_bydoctorid/',json={'doctor_id':request.session['doctor_id']})
     # print(api_res.text)
     if(api_res.json().get('message_code')==1000):
         pharmacists = api_res.json().get('message_data')
@@ -3783,7 +3784,7 @@ def toggle_pharmacist_status(request):
             new_status = data.get('status')
             # print(doctorpharmacist_id,new_status)
 
-            api_res = requests.post('http://13.233.211.102/medicalrecord/api/update_doctor_pharmacist_status/',json={'doctorpharmacist_id':doctorpharmacist_id,'status':new_status})
+            api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/update_doctor_pharmacist_status/',json={'doctorpharmacist_id':doctorpharmacist_id,'status':new_status})
             # print(api_res.text)
             response_data= api_res.json()
 
@@ -3811,11 +3812,11 @@ def Add_pharmacist(request):
             "pharmacist_type": form_data.get('pharmacist_type'), # 1 means external and 2 means internal
         }
         # print(api_data)
-        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_pharmacist/',json=api_data)
+        api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_pharmacist/',json=api_data)
         # print(api_res.text)
         if(api_res.json().get('message_code')==1000):
             pharmacist_id = api_res.json().get('message_data').get('pharmacist_id')
-            approve_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
+            approve_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_doctor_pharmacist_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'pharmacist_id':pharmacist_id})
             # print(approve_res.text)
             if(approve_res.json().get('message_code')==1000):
                 messages.success(request, 'Pharmacist Added and Approved successfully!')
@@ -3838,7 +3839,7 @@ def approveLaboratory(request):
         if(laboratory_token):
             # print(laboratory_token)
             if('doctor_id' in request.session):
-                api_res= requests.post('http://13.233.211.102/medicalrecord/api/get_laboratory_details_bytoken/',json={'laboratory_token':laboratory_token})
+                api_res= requests.post('https://drishtis.app/drishti_medicalrecord/api/get_laboratory_details_bytoken/',json={'laboratory_token':laboratory_token})
                 # print(api_res.text)
                 if(api_res.json().get('message_code')==1000):
                     laboratory = api_res.json().get('message_data')
@@ -3854,7 +3855,7 @@ def approveLaboratory(request):
     
     else:
         laboratory_id = request.POST['laboratory_id']
-        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_laboratory_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'laboratory_id':laboratory_id})
+        api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_doctor_laboratory_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'laboratory_id':laboratory_id})
         # print(api_res.text)
         if(api_res.json().get('message_code')==1000):
            messages.success(request, 'Laboratory Approved successfully!')
@@ -3872,7 +3873,7 @@ def approveLaboratory(request):
     
 
 def get_all_laboratory(request):
-    api_res = requests.post('http://13.233.211.102/medicalrecord/api/get_doctor_laboratory_bydoctorid/',json={'doctor_id':request.session['doctor_id']})
+    api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/get_doctor_laboratory_bydoctorid/',json={'doctor_id':request.session['doctor_id']})
     # print(api_res.text)
     if(api_res.json().get('message_code')==1000):
         labs = api_res.json().get('message_data')
@@ -3903,11 +3904,11 @@ def Add_laboratory(request):
             "laboratory_type": form_data.get('laboratory_type'), # 1 means external and 2 means internal
         }
         # print(api_data)
-        api_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_laboratory/',json=api_data)
+        api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_laboratory/',json=api_data)
         # print(api_res.text)
         if(api_res.json().get('message_code')==1000):
             laboratory_id = api_res.json().get('message_data').get('laboratory_id')
-            approve_res = requests.post('http://13.233.211.102/medicalrecord/api/insert_doctor_laboratory_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'laboratory_id':laboratory_id})
+            approve_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/insert_doctor_laboratory_link/',json={'doctor_id':request.session['doctor_id'],'location_id':request.session['location_id'],'laboratory_id':laboratory_id})
             # print(approve_res.text)
             if(approve_res.json().get('message_code')==1000):
                 messages.success(request, 'Laboratory Added and Approved successfully!')
@@ -3935,7 +3936,7 @@ def toggle_laboratory_status(request):
             new_status = data.get('status')
             # print(doctorlaboratory_id,new_status)
 
-            api_res = requests.post('http://13.233.211.102/medicalrecord/api/update_doctor_laboratory_status/',json={'doctorlaboratory_id':doctorlaboratory_id,'status':new_status})
+            api_res = requests.post('https://drishtis.app/drishti_medicalrecord/api/update_doctor_laboratory_status/',json={'doctorlaboratory_id':doctorlaboratory_id,'status':new_status})
             # print(api_res.text)
             response_data= api_res.json()
 
@@ -3947,7 +3948,7 @@ def toggle_laboratory_status(request):
 
 def showDeals(request):
     if('doctor_id' in request.session):
-        res = requests.post('http://13.233.211.102/masters/api/get_active_deals_by_visible_to/',json={"visible_to":"1","user_id":request.session.get('doctor_id')}) #here '1' pass as a string means Doctor
+        res = requests.post('https://drishtis.app/drishti_masters/api/get_active_deals_by_visible_to/',json={"visible_to":"1","user_id":request.session.get('doctor_id')}) #here '1' pass as a string means Doctor
         # print(res.text)
         if(res.json().get('message_code')==1000):
             alldeals = res.json().get('message_data')
@@ -3971,7 +3972,7 @@ def handle_deal_action(request):
         
         # Make request to external API
         response = requests.post(
-            'http://13.233.211.102/masters/api/update_deal_action_type_by_DealactionId/',
+            'https://drishtis.app/drishti_masters/api/update_deal_action_type_by_DealactionId/',
             json={"deal_id":deal_id,"dealaction_id":DealAction_id,"dealactiontype":action_type}
         )
         # print(response.text)
