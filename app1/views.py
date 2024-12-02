@@ -657,7 +657,7 @@ def consultaion_fee(request):
                 medic_data[i]=response.json().get("message_data",{})
                 consult_id+=1
                 medic_id+=1
-            return render(request,"Doctor/consultMedicaddandupdate.html",{"consult_data":consult_data,"medic_data":medic_data,'consult_id':consult_id-4})
+            return render(request,"Doctor/consultMedicaddandupdate.html",{"consult_data":consult_data,"medic_data":medic_data,'consult_id':consult_id})
         else:
             request.session['consult_id']=None
             request.session['medic_id']=None
