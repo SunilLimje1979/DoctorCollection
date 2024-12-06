@@ -2405,7 +2405,7 @@ def get_pdf_link(request):
     # print(response.text)
     pdfurl=((response.json().get("message_data"))[0]).get("pdf_url")
     # print(pdfurl)
-    pdf_link = pdfurl.replace("http://13.233.211.102", "https://www.drishtis.app")
+    pdf_link = pdfurl
     # print(pdf_link)
 
     if pdf_link:
@@ -2526,7 +2526,6 @@ def clinic_pdf(request):
         pdf_url = data.get("message_data")[0].get("pdf_url")
         print(pdf_url)
         if pdf_url:
-            pdf_url = pdf_url.replace("http://13.233.211.102", "https://www.drishtis.app")
             return JsonResponse({'pdf_url': pdf_url})
         else:
             return JsonResponse({'error': 'Failed to fetch PDF URL.'}, status=500)
