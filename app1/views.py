@@ -179,11 +179,12 @@ def doctorReg(request):
                 # # print(data)
                 # Convert epoch timestamp to formatted date
                 epoch_timestamp = data[0].get('doctor_dateofbirth', 0)
-                # # print(epoch_timestamp)
-                # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
-                formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
-                # # print(formatted_date)
-                data[0]['doctor_dateofbirth'] = formatted_date
+                if(epoch_timestamp):
+                    # # print(epoch_timestamp)
+                    # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
+                    formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d")   
+                    # # print(formatted_date)
+                    data[0]['doctor_dateofbirth'] = formatted_date
                 state_response = requests.post("https://drishtis.app/drishti_masters/api/get_states_by_country_id/",json={"country_id":data[0]['doctor_countryid']})
                 states = (state_response.json().get("message_data", [])).get('states',[])
                 # # print(states)
@@ -209,19 +210,20 @@ def doctorReg(request):
         # form_data=request.POST
         # # print(form_data)
         # return HttpResponse("else part of Doctor Reg")
+        print(request.POST)
         doctor_id= request.session['doctor_id']
         fname=request.POST['firstName']
         lname=request.POST['lastName']
-        regno=request.POST["registrationNumber"]
-        aadharNumber=request.POST["aadharNumber"]
+        regno= request.POST['registrationNumber'] if request.POST.get('registrationNumber') else '0'
+        aadharNumber=  request.POST['aadharNumber'] if request.POST.get('aadharNumber') else '0'
         pincode=request.POST["pincode"]
         city=request.POST["city"]
         state=request.POST["state"]
         country=request.POST["country"]
-        address=request.POST["address"]
-        dob=request.POST["dob"]
-        mstatus=request.POST["maritalStatus"]
-        gender=request.POST["gender"]
+        address= request.POST.get("address", None)
+        dob=request.POST['dob'] if request.POST.get('dob') else None
+        mstatus= request.POST.get("maritalStatus", 0)
+        gender=request.POST.get("gender", 0)
         email=request.POST["email"]
         mno=request.POST["mobileNumber"]
         password=request.POST['password']
@@ -244,7 +246,7 @@ def doctorReg(request):
                 "password":password,
                 # "doctor_login_token":request.session['token']
             }
-        # # print(dob)
+        print(api_data)
         if doctor_id is not None :
             update_data={
                 "doctor_id": doctor_id,
@@ -253,6 +255,7 @@ def doctorReg(request):
             # api_url="http://127.0.0.1:8000/api/update_doctor_details/"
             api_url="https://drishtis.app/drishti_doctor/api/update_doctor_details/"
             response=requests.post(api_url,json=update_data)
+            print(response.text)
             messages.success(request, 'Doctor Profile updated successfully!')
             return redirect(settingdashboard)
         
@@ -429,8 +432,8 @@ def addClinic(request):
         state=request.POST["state"]
         country=request.POST["country"]
         address=request.POST["address"]
-        latitude=request.POST['latitude']
-        longitude=request.POST['longitude']
+        latitude=request.POST['latitude'] if request.POST.get('latitude') else None
+        longitude=request.POST['longitude'] if request.POST.get('longitude') else None
         location_id=request.session['location_id']
         clinic_logo = request.FILES.get('clinicLogo')
         # print(clinic_logo)
@@ -781,8 +784,11 @@ def pdf_view(request):
         print(scriptoption_data)
         chatscript_res=requests.post(chatscript_url,json=chatscript_data)
         scriptoption_res=requests.post(scriptoption_url,json=scriptoption_data)
-        print(chatscript_res.text)
-        print(scriptoption_res.text)
+        # print(chatscript_res.text)
+        # print(scriptoption_res.text)
+        clinic_pdf_url = "https://drishtis.app/drishti_medicalrecord/api/generateclinicpdf/"
+        response = requests.post(clinic_pdf_url, json={"doctor_location_id": request.session['location_id']})
+        #print(response.text)
         messages.success(request, "Thank you for registering! Please click 'Continue' to proceed.")
         messages.success(request,"Your 30 days Trial Plan is Activated ")
         return redirect(subscriptioninfo)
