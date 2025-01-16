@@ -4311,12 +4311,12 @@ def add_daycare(request):
             consult_response=requests.post(consultation_url,json=api_para)
             consult_data=(consult_response.json().get("message_data"))[0]
             # print(consult_data)
-            epoch_timestamp = consult_data.get('followup_datetime', 0)
-            # # print(epoch_timestamp)
-            # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
-            formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d %H:%M:%S")   
-            # print(formatted_date)
-            consult_data['followup_datetime'] = formatted_date
+            # epoch_timestamp = consult_data.get('followup_datetime', 0)
+            # # # print(epoch_timestamp)
+            # # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
+            # formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d %H:%M:%S")   
+            # # print(formatted_date)
+            # consult_data['followup_datetime'] = formatted_date
             # print(consult_data)
 
             #################patient findingsymptoms################
