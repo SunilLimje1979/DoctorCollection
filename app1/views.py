@@ -1439,24 +1439,26 @@ def initial_assesment(request,appointment_id):
             "doctor_id": request.session['doctor_id'],
             "operator_id": 1,
             "patient_status":1, #bydefault 1=OPD
-            "patient_heartratepluse": request.POST['heart_rate'],
-            "patient_bpsystolic": request.POST['bp_s'],
-            "patient_bpdistolic": request.POST['bp_d'],
-            "patient_painscale": request.POST['pain_scale'],
-            "patient_respiratoryrate": request.POST['respiratory_rate'],
-            "patient_temparature": request.POST['temp'],
-            "patient_chest": request.POST['chest'],
-            "patient_ecg": request.POST['ecg'],
-            "weight":request.POST['weight'],
-            "height":request.POST['height'],
-            "bmi":request.POST['bmi'],
+            "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+            "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+            "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+            "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+            "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+            "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+            "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+            "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+            "weight":request.POST['weight'] if request.POST.get('weight') else None,
+            "height":request.POST['height'] if request.POST.get('height') else None,
+            "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
             "appointment_id":appointment_id,
             # "consultation_id":0    
         }
+        print(patient_data)
+        # return HttpResponse("1457")
         # api_url = 'http://127.0.0.1:8000/api/insert_patients_vitals/'
         api_url ='https://drishtis.app/drishti_medicalrecord/api/insert_patients_vitals/'
         response = requests.post(api_url, json=patient_data)
-        # print(response.text)
+        print(response.text)
 
         vitals_id = response.json().get('message_data', {})  # Getting 'message_data' safely
         vitals_id = (vitals_id[0]).get("Patient_Biometricid")
@@ -1524,24 +1526,24 @@ def update_initial_assesment(request):
             # "doctor_id": request.POST['doctor_id'],
             # "operator_id": request.POST['doctor_id'],
             # "patient_status": request.POST['patient_status'],
-            "patient_heartratepluse": request.POST['heart_rate'],
-            "patient_bpsystolic": request.POST['bp_s'],
-            "patient_bpdistolic": request.POST['bp_d'],
-            "patient_painscale": request.POST['pain_scale'],
-            "patient_respiratoryrate": request.POST['respiratory_rate'],
-            "patient_temparature": request.POST['temp'],
-            "patient_chest": request.POST['chest'],
-            "patient_ecg": request.POST['ecg'],
-            "weight":request.POST['weight'],
-            "height":request.POST['height'],
-            "bmi":request.POST['bmi'],
+            "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+            "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+            "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+            "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+            "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+            "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+            "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+            "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+            "weight":request.POST['weight'] if request.POST.get('weight') else None,
+            "height":request.POST['height'] if request.POST.get('height') else None,
+            "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
             "appointment_id":appointment_id,
             
         }
     # url="http://localhost:8000/api/update_patientvitals_by_appointment_id/"
     url="https://drishtis.app/drishti_medicalrecord/api/update_patientvitals_by_appointment_id/"
     response=requests.post(url,json=api_data)
-    # print(response.text)
+    print(response.text)
     vdata=response.json().get('message_data')
     request.session['vitals_id']= vdata['patient_biometricid']
     # print('update assesment',request.session['role'])
@@ -1572,7 +1574,10 @@ def Consultation(request,id):
             epoch_timestamp = consult_data.get('followup_datetime', 0)
             # # print(epoch_timestamp)
             # formatted_date = datetime.utcfromtimestamp(epoch_timestamp).strftime('%Y-%m-%d')
-            formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d %H:%M:%S")   
+            if(epoch_timestamp):
+                formatted_date=datetime.datetime.fromtimestamp(epoch_timestamp).strftime( "%Y-%m-%d %H:%M:%S")  
+            else:
+                formatted_date=0 
             # print(formatted_date)
             consult_data['followup_datetime'] = formatted_date
             # print(consult_data)
@@ -1713,17 +1718,21 @@ def Consultation(request,id):
             patient_id= vital_data.get("patient_id")
             patient_status= vital_data.get("patient_status")
             # print("id and status",patient_id,patient_status)
-            dt = request.POST["followup_datetime"]
-            # print(dt)
-             # Parse the input datetime string into a datetime object
-            datetime_obj = datetime.datetime.strptime(dt, '%Y-%m-%dT%H:%M')
-            # Add 9 months to the month to get December (datetime objects are 1-indexed)
-            # datetime_obj = datetime_obj.replace(month=datetime_obj.month + 9)
-            # Format the datetime object as the required string format
-            formatted_datetime = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
-            # print("required:",formatted_datetime)
-            followup_datetime_epoch = datetime.datetime.strptime(formatted_datetime, '%Y-%m-%d %H:%M:%S')
-            followup_datetime = int(followup_datetime_epoch.timestamp())
+            dt = request.POST['followup_datetime'] if request.POST.get('followup_datetime') else None
+            print(dt)
+            if(dt):
+                # Parse the input datetime string into a datetime object
+                datetime_obj = datetime.datetime.strptime(dt, '%Y-%m-%dT%H:%M')
+                # Add 9 months to the month to get December (datetime objects are 1-indexed)
+                # datetime_obj = datetime_obj.replace(month=datetime_obj.month + 9)
+                # Format the datetime object as the required string format
+                formatted_datetime = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+                # print("required:",formatted_datetime)
+                followup_datetime_epoch = datetime.datetime.strptime(formatted_datetime, '%Y-%m-%d %H:%M:%S')
+                followup_datetime = int(followup_datetime_epoch.timestamp())
+            else:
+                followup_datetime=None
+                formatted_datetime=None
             # print(followup_datetime,'fd')
             consultation_datetime=int(request.POST["Consultation_DateTime"])
             # print(consultation_datetime)
@@ -1741,7 +1750,7 @@ def Consultation(request,id):
                     "doctor_id":request.session["doctor_id"] ,
                     "patient_status":patient_status,
                     #"consultation_datetime":consultation_datetime,#appointment_datetime
-                    "instructions":request.POST["Prescription"],
+                    "instructions":request.POST['Prescription'] if request.POST.get('Prescription') else None,
                     "consultation_fees":request.POST["Fess"],
                     "referred_to_doctor":request.POST["referred_to_doctor"],
                     "referred_by_doctor":request.POST["referred_by_doctor"],
@@ -1756,15 +1765,18 @@ def Consultation(request,id):
                 updateconsult_response=requests.post(updateconsult_url,json=update_consultation)
                 # print(updateconsult_response.text)
 
-                all_kco=request.POST['kco']
-                alladvice=request.POST['advice']
+                # Check if 'kco' and 'advice' are present in POST data, otherwise default to empty string
+                all_kco = request.POST.get('kco', '')
+                alladvice = request.POST.get('advice', '')
+
                 # Splitting the strings by newline characters and removing empty strings
                 kco_list = [kco.strip() for kco in all_kco.split('\n') if kco.strip()]
                 advice_list = [advice.strip() for advice in alladvice.split('\n') if advice.strip()]
 
                 # Joining the lists into single strings separated by commas
-                kco_str = ', '.join(kco_list)
-                advice_str = ', '.join(advice_list)
+                kco_str = ', '.join(kco_list) if kco_list else ''
+                advice_str = ', '.join(advice_list) if advice_list else ''
+
 
                 # print(kco_str)
                 # print(advice_str)
@@ -1975,7 +1987,7 @@ def Consultation(request,id):
                 # print(delete_lab)
             
 #####################Update prescription details######################
-                prescritption=request.POST['Prescription']
+                prescritption=request.POST['Prescription'] if request.POST.get('Prescription') else '0'
                 # print(prescritption)
                 # updateprescription_url="http://localhost:8000/api/update_prescription_details/"
                 updateprescription_url="https://drishtis.app/drishti_medicalrecord/api/update_prescription_details/"
@@ -1995,17 +2007,17 @@ def Consultation(request,id):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse": request.POST['heart_rate'],
-                    "patient_bpsystolic": request.POST['bp_s'],
-                    "patient_bpdistolic": request.POST['bp_d'],
-                    "patient_painscale": request.POST['pain_scale'],
-                    "patient_respiratoryrate": request.POST['respiratory_rate'],
-                    "patient_temparature": request.POST['temp'],
-                    "patient_chest": request.POST['chest'],
-                    "patient_ecg": request.POST['ecg'],
-                    "weight":request.POST['weight'],
-                    "height":request.POST['height'],
-                    "bmi":request.POST['bmi'],
+                    "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+                    "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+                    "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+                    "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+                    "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+                    "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+                    "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+                    "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+                    "weight":request.POST['weight'] if request.POST.get('weight') else None,
+                    "height":request.POST['height'] if request.POST.get('height') else None,
+                    "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":request.session['consultation_id']  
@@ -2026,10 +2038,10 @@ def Consultation(request,id):
                     "Doctor_Id":request.session["doctor_id"] ,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":consultation_datetime,#appointment_datetime
-                    "instructions":request.POST["Prescription"],
+                    "instructions":request.POST['Prescription'] if request.POST.get('Prescription') else None,
                     "consultation_fees":request.POST["Fess"],
-                    "referred_to_doctor":request.POST["referred_to_doctor"],
-                    "referred_by_doctor":request.POST["referred_by_doctor"],
+                    "referred_to_doctor":request.POST['referred_to_doctor'] if request.POST.get('referred_to_doctor') else None,
+                    "referred_by_doctor":request.POST['referred_by_doctor'] if request.POST.get('referred_by_doctor') else None,
                     "Followup_DateTime":formatted_datetime,
                     "appointment_id":request.session['appointment_id'],
                     'consultation_status':1
@@ -2037,7 +2049,7 @@ def Consultation(request,id):
                 consultation_api_url = 'https://drishtis.app/drishti_medicalrecord/api/insert_consultation'
 
                 consultation_response = requests.post(consultation_api_url, json=insert_consultation)
-                # print("consultation_response : ", consultation_response.text)
+                print("consultation_response : ", consultation_response.text)
                 consultation = consultation_response.json().get('message_data', {})
                 consultation_id=consultation['consultation_id']
                 # print("consultation_ID : ", consultation)
@@ -2057,17 +2069,17 @@ def Consultation(request,id):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse": request.POST['heart_rate'],
-                    "patient_bpsystolic": request.POST['bp_s'],
-                    "patient_bpdistolic": request.POST['bp_d'],
-                    "patient_painscale": request.POST['pain_scale'],
-                    "patient_respiratoryrate": request.POST['respiratory_rate'],
-                    "patient_temparature": request.POST['temp'],
-                    "patient_chest": request.POST['chest'],
-                    "patient_ecg": request.POST['ecg'],
-                    "weight":request.POST['weight'],
-                    "height":request.POST['height'],
-                    "bmi":request.POST['bmi'],
+                    "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+                    "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+                    "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+                    "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+                    "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+                    "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+                    "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+                    "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+                    "weight":request.POST['weight'] if request.POST.get('weight') else None,
+                    "height":request.POST['height'] if request.POST.get('height') else None,
+                    "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":consultation_id   
@@ -2078,15 +2090,18 @@ def Consultation(request,id):
                 # print(response.text)
                 
     ###############################  insert finding symptoms(complaints & Diagnosis) ########################################
-                all_kco=request.POST['kco']
-                alladvice=request.POST['advice']
+                # Check if 'kco' and 'advice' are present in POST data, otherwise default to empty string
+                all_kco = request.POST.get('kco', '')
+                alladvice = request.POST.get('advice', '')
+
                 # Splitting the strings by newline characters and removing empty strings
                 kco_list = [kco.strip() for kco in all_kco.split('\n') if kco.strip()]
                 advice_list = [advice.strip() for advice in alladvice.split('\n') if advice.strip()]
 
                 # Joining the lists into single strings separated by commas
-                kco_str = ', '.join(kco_list)
-                advice_str = ', '.join(advice_list)
+                kco_str = ', '.join(kco_list) if kco_list else None
+                advice_str = ', '.join(advice_list) if advice_list else None
+
 
                 # print(kco_str)
                 # print(advice_str)
@@ -2105,10 +2120,10 @@ def Consultation(request,id):
                 insert_patient_findingsandsymtoms_url = "https://drishtis.app/drishti_medicalrecord/api/insert_patient_findingsandsymtoms/"
 
                 findingsandsymtoms_response = requests.post(insert_patient_findingsandsymtoms_url,json=finding_symptoms)
-                # print(findingsandsymtoms_response.text)
+                print(findingsandsymtoms_response.text)
 
     #################################Prescription###############################
-                prescritption=request.POST['Prescription']
+                prescritption=request.POST['Prescription'] if request.POST.get('Prescription') else '0'
                 # print(prescritption)
                 prescription_url="https://drishtis.app/drishti_medicalrecord/api/insert_prescriptions/"
                 prescription_data={
@@ -2120,7 +2135,7 @@ def Consultation(request,id):
                     "prescription_details": prescritption
                 }
                 prescritption_response=requests.post(prescription_url,json=prescription_data)
-                # print(prescritption_response.text)
+                print(prescritption_response.text)
                 prescription_id=(prescritption_response.json().get("message_data"))[0]['Prescriptions_Id']
                 # print("prescription id:",prescription_id)
             
@@ -2424,8 +2439,15 @@ def get_pdf_link(request):
         return JsonResponse({'pdf_link': pdf_link})
     else:
         return JsonResponse({'error': 'Failed to fetch PDF link.'}, status=500)
-    
+
+@csrf_exempt 
 def paid(request):
+    data = json.loads(request.body)
+    print(data)
+    previous_outstanding=data.get('previous_outstanding',0) or 0
+    consultation_fee=data.get('consultation_fee',0) or 0
+    new_outstanding = data.get('new_outstanding',0) or 0
+    paid_amount = data.get('paid_amount',0) or 0
     update_appstatus_url="https://drishtis.app/drishti_appointment/api/update_appointment_status"
     appstatus_response=requests.post(update_appstatus_url,json={"appointment_id":request.session['appointment_id'],"appointment_status":4})
     # print(appstatus_response.text)
@@ -2445,31 +2467,36 @@ def paid(request):
     # print(res.text)
     patient=res.json().get('message_data')
     prev_oustanding = patient.get('outstanding', 0) or 0
-    new_oustanding = abs(float(consult_data['consultation_fees']) - prev_oustanding)
-
+    print(prev_oustanding)
+    if(int(paid_amount)>=prev_oustanding):
+        new_patient_outstanding=0
+    else:
+        new_patient_outstanding = abs(prev_oustanding-int(paid_amount))
+    print(new_patient_outstanding)
     patient_payment_url="https://drishtis.app/drishti_pateint/api/insert_patient_payments/"
     patient_payment_data={
             "doctor_id": request.session['doctor_id'],
             "patient_id": consult_data['patient_id'],
             "patient_status": 1,
             "payment_mode": 2,
-            "payment_amount": consult_data['consultation_fees'],
+            "payment_amount": int(paid_amount),
             "payment_transaction_no": "TXN12345",
             "previous_outstanding":prev_oustanding,
-            "new_outstanding":new_oustanding
+            "new_outstanding":new_patient_outstanding
         }
-    # print(patient_payment_data)
+    print(patient_payment_data)
     patient_charge_response=requests.post(patient_payment_url,json=patient_payment_data)
-    # print(patient_charge_response.text)
+    print(patient_charge_response.text)
 
-    patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_oustanding}
+    patient_apidata = {"patient_id":consult_data['patient_id'],"outstanding":new_patient_outstanding}
     oustanding_res=requests.post("https://drishtis.app/drishti_pateint/api/update_patient_by_id/",json=patient_apidata)
-    # print(oustanding_res.text)
-    
+    print(oustanding_res.text)
+    # if 1:
+    #     return JsonResponse({'message': 'Payment successful'})
     if appstatus_response.ok and consultstatus_response.ok:
-            return JsonResponse({'message': 'Payment successful'})
+        return JsonResponse({'message': 'Payment successful'})
     else:
-            return JsonResponse({'message': 'Payment failed'}, status=400)
+        return JsonResponse({'message': 'Payment failed'}, status=400)
 
 
 def for_user(request,id):
@@ -4454,7 +4481,7 @@ def add_daycare(request):
                     "doctor_id":request.session["doctor_id"] ,
                     "patient_status":patient_status,
                     #"consultation_datetime":consultation_datetime,#appointment_datetime
-                    "instructions":request.POST["Prescription"],
+                    "instructions":request.POST['Prescription'] if request.POST.get('Prescription') else None,
                     "consultation_fees":request.POST["Fess"],
                     "referred_to_doctor":request.POST["referred_to_doctor"],
                     "referred_by_doctor":request.POST["referred_by_doctor"],
@@ -4469,15 +4496,17 @@ def add_daycare(request):
                 updateconsult_response=requests.post(updateconsult_url,json=update_consultation)
                 # print(updateconsult_response.text)
 
-                all_kco=request.POST['kco']
-                alladvice=request.POST['advice']
+                # Check if 'kco' and 'advice' are present in POST data, otherwise default to empty string
+                all_kco = request.POST.get('kco', '')
+                alladvice = request.POST.get('advice', '')
+
                 # Splitting the strings by newline characters and removing empty strings
                 kco_list = [kco.strip() for kco in all_kco.split('\n') if kco.strip()]
                 advice_list = [advice.strip() for advice in alladvice.split('\n') if advice.strip()]
 
                 # Joining the lists into single strings separated by commas
-                kco_str = ', '.join(kco_list)
-                advice_str = ', '.join(advice_list)
+                kco_str = ', '.join(kco_list) if kco_list else ''
+                advice_str = ', '.join(advice_list) if advice_list else ''
 
                 # print(kco_str)
                 # print(advice_str)
@@ -4731,7 +4760,7 @@ def add_daycare(request):
                 # print(delete_lab)
             
 #####################Update prescription details######################
-                prescritption=request.POST['Prescription']
+                prescritption=request.POST['Prescription'] if request.POST.get('Prescription') else '0'
                 # print(prescritption)
                 # updateprescription_url="http://localhost:8000/api/update_prescription_details/"
                 updateprescription_url="https://drishtis.app/drishti_medicalrecord/api/update_prescription_details/"
@@ -4751,17 +4780,17 @@ def add_daycare(request):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse": request.POST['heart_rate'],
-                    "patient_bpsystolic": request.POST['bp_s'],
-                    "patient_bpdistolic": request.POST['bp_d'],
-                    "patient_painscale": request.POST['pain_scale'],
-                    "patient_respiratoryrate": request.POST['respiratory_rate'],
-                    "patient_temparature": request.POST['temp'],
-                    "patient_chest": request.POST['chest'],
-                    "patient_ecg": request.POST['ecg'],
-                    "weight":request.POST['weight'],
-                    "height":request.POST['height'],
-                    "bmi":request.POST['bmi'],
+                    "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+                    "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+                    "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+                    "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+                    "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+                    "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+                    "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+                    "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+                    "weight":request.POST['weight'] if request.POST.get('weight') else None,
+                    "height":request.POST['height'] if request.POST.get('height') else None,
+                    "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":request.session['consultation_id']  
@@ -4783,11 +4812,11 @@ def add_daycare(request):
                     "Doctor_Id":request.session["doctor_id"] ,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":consultation_datetime,#appointment_datetime
-                    "instructions":request.POST["Prescription"],
+                    "instructions":request.POST['Prescription'] if request.POST.get('Prescription') else None,
                     "consultation_fees":request.POST["Fess"],
                     "referred_to_doctor":request.POST["referred_to_doctor"],
                     "referred_by_doctor":request.POST["referred_by_doctor"],
-                    "Followup_DateTime":"2024-06-10 14:30:00",
+                    "Followup_DateTime":None,
                     "appointment_id":request.session['appointment_id'],
                     'consultation_status':1
                 }
@@ -4814,17 +4843,17 @@ def add_daycare(request):
                     "Patient_Id":patient_id,
                     "Patient_Status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
-                    "patient_heartratepluse": request.POST['heart_rate'],
-                    "patient_bpsystolic": request.POST['bp_s'],
-                    "patient_bpdistolic": request.POST['bp_d'],
-                    "patient_painscale": request.POST['pain_scale'],
-                    "patient_respiratoryrate": request.POST['respiratory_rate'],
-                    "patient_temparature": request.POST['temp'],
-                    "patient_chest": request.POST['chest'],
-                    "patient_ecg": request.POST['ecg'],
-                    "weight":request.POST['weight'],
-                    "height":request.POST['height'],
-                    "bmi":request.POST['bmi'],
+                    "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
+                    "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
+                    "patient_bpdistolic": request.POST['bp_d'] if request.POST.get('bp_d') else 0,
+                    "patient_painscale": request.POST['pain_scale'] if request.POST.get('pain_scale') else 0,
+                    "patient_respiratoryrate": request.POST['respiratory_rate'] if request.POST.get('respiratory_rate') else 0,
+                    "patient_temparature": request.POST['temp'] if request.POST.get('temp') else 0,
+                    "patient_chest": request.POST['chest'] if request.POST.get('chest') else '0',
+                    "patient_ecg":request.POST['ecg'] if request.POST.get('ecg') else '0',
+                    "weight":request.POST['weight'] if request.POST.get('weight') else None,
+                    "height":request.POST['height'] if request.POST.get('height') else None,
+                    "bmi":request.POST['bmi'] if request.POST.get('bmi') else None,
                     "further_assited":"0",
                     'appointment_id':request.session['appointment_id'],
                     "consultation_id":consultation_id   
@@ -4835,15 +4864,17 @@ def add_daycare(request):
                 # print(response.text)
                 
     ###############################  insert finding symptoms(complaints & Diagnosis) ########################################
-                all_kco=request.POST['kco']
-                alladvice=request.POST['advice']
+                # Check if 'kco' and 'advice' are present in POST data, otherwise default to empty string
+                all_kco = request.POST.get('kco', '')
+                alladvice = request.POST.get('advice', '')
+
                 # Splitting the strings by newline characters and removing empty strings
                 kco_list = [kco.strip() for kco in all_kco.split('\n') if kco.strip()]
                 advice_list = [advice.strip() for advice in alladvice.split('\n') if advice.strip()]
 
                 # Joining the lists into single strings separated by commas
-                kco_str = ', '.join(kco_list)
-                advice_str = ', '.join(advice_list)
+                kco_str = ', '.join(kco_list) if kco_list else None
+                advice_str = ', '.join(advice_list) if advice_list else None
 
                 # print(kco_str)
                 # print(advice_str)
@@ -4865,7 +4896,7 @@ def add_daycare(request):
                 # print(findingsandsymtoms_response.text)
 
     #################################Prescription###############################
-                prescritption=request.POST['Prescription']
+                prescritption=request.POST['Prescription'] if request.POST.get('Prescription') else '0'
                 # print(prescritption)
                 prescription_url="https://drishtis.app/drishti_medicalrecord/api/insert_prescriptions/"
                 prescription_data={
