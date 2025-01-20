@@ -3,228 +3,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deals</title>
-    <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
-    <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"/>
-
-    <style>
-        .navbar {
-            background-color:  #008373;
-            color: white;
-            padding: 5px;
-            text-align: left;
-            font-size: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
-        }
-        .deal-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .deal-img {
-            width: 100%;
-            height: 200px;
-            /* object-fit: cover; */
-            object-fit: contain; /* Ensures the image is fully shown without cropping */
-            background-color: #f8f9fa; /* Optional: adds a background color for better aesthetics */
-
-        }
-        .deal-actions {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-        }
-        .deal-actions i {
-            cursor: pointer;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-
-        .deal-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .show-more-toggle {
-            color: #007bff;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        .show-more-toggle:hover {
-            text-decoration: underline;
-        }
-
-        p{
-            margin-bottom: 6px;
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Recorder</title>
+  <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+  <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
+  <style>
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    audio {
+      display: block;
+      margin: 20px 0;
+    }
+  </style>
 </head>
 <body>
-    <div class="navbar">
-        <a class="navbar-brand" href="/DoctorCollection/dashboard/">
-            <i class="fas fa-arrow-left" style="color: white;"></i>
-            <span style="color: white; font-size: 25px"> Offers</span> 
-        </a>
-    </div>
+  <h1>Audio Recorder</h1>
+  <button id="start">Start Recording</button>
+  <button id="stop" disabled>Stop Recording</button>
+  <button id="reset" disabled>Reset</button>
+  <button id="upload" disabled>Upload</button>
+  <audio id="audio" controls></audio>
 
-    <!-- Search bar -->
-    <div class="container">
-        <input type="text" id="searchInput" class="form-control search-bar" placeholder="Search deals by title, company, keywords, or mobile number">
-    </div>
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioBlob;
 
-    <!-- Deals container -->
-    <div class="container" id="dealsContainer">
-        {% for deal in alldeals %}
-        <div class="deal-card" data-deal="{{ deal|safe }}">
-            <img src="https://mahi-durg.app/MahiAdmin/static/assets/Deal_images/{{ deal.DealContentURL_forMobile }}?t={{ timestamp }}" class="deal-img" alt="Deal Image">
-            <div class="p-3">
-                <h6 class="mb-1">{{ deal.DealTitle }}</h6>
-                <!-- Collapsible details -->
-                <div class="deal-details">
-                    <p>{{ deal.CompanyName }}</p>
-                    <p><strong>#</strong> {{ deal.DealKeywords }}</p>
-                    <p>{{ deal.DealOwnerMobileNo }}</p>
-                    <p><a href="{{ deal.DealWebsiteURL }}" target="_blank">{{ deal.DealWebsiteURL }}</a></p>
-                </div>
+    const startButton = document.getElementById('start');
+    const stopButton = document.getElementById('stop');
+    const resetButton = document.getElementById('reset');
+    const uploadButton = document.getElementById('upload');
+    const audioElement = document.getElementById('audio');
 
-                <!-- Show More / Show Less button -->
-                <a href="javascript:void(0);" class="show-more-toggle">Show More</a>
-                <div class="deal-actions">
-                    <i class="fas fa-heart like-icon" data-deal-id="{{ deal.Deal_id }}" data-dealaction-id="{{ deal.dealactionrecorder.DealAction_id}}"  data-deal-like="{{ deal.dealactionrecorder.DealLike}}"  style="color: grey;"></i>
-                    <i class="fas fa-star interest-icon" data-deal-id="{{ deal.Deal_id }}" data-dealaction-id="{{ deal.dealactionrecorder.DealAction_id}}"  data-deal-interest="{{ deal.dealactionrecorder.DealInterest}}"  style="color: grey;"></i>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    // Request permission and initialize media recorder
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        mediaRecorder = new MediaRecorder(stream);
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        mediaRecorder.ondataavailable = event => {
+          audioChunks.push(event.data);
+        };
 
-    <script>
-        // AJAX for Like and Interested actions
-        $(document).ready(function() {
-            // Handle Like action
-            $(".like-icon").on("click", function() {
-                const dealId = $(this).data("deal-id");
-                const dealActionId = $(this).data("dealaction-id");
-                let isLiked = $(this).data("deal-like") === 1; // Check if it's already liked
-                const actionType = isLiked ? "unlike" : "like"; // Toggle between like and unlike
-                const icon = $(this);
+        mediaRecorder.onstop = () => {
+          audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          audioElement.src = URL.createObjectURL(audioBlob);
 
-                $.ajax({
-                    url: "{% url 'handle_deal_action' %}",  // Replace with your actual URL
-                    method: "POST",
-                    data: {
-                        deal_id: dealId,
-                        DealAction_id: dealActionId,
-                        action_type: actionType
-                    },
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                    success: function(response) {
-                        console.log(response);
-                        if (response.success) {
-                            if (isLiked) {
-                                icon.css("color", "grey");
-                                icon.data("deal-like", 0); // Update data attribute to unlike state
-                            } else {
-                                icon.css("color", "red");
-                                icon.data("deal-like", 1); // Update data attribute to like state
-                            }
-                        }
-                    }
-                });
-            });
+          stopButton.disabled = true;
+          resetButton.disabled = false;
+          uploadButton.disabled = false;
+        };
+      })
+      .catch(err => {
+        alert('Microphone access is required to record audio.');
+      });
 
-            // Handle Interested action
-            $(".interest-icon").on("click", function() {
-                const dealId = $(this).data("deal-id");
-                const dealActionId = $(this).data("dealaction-id");
-                let isInterested = $(this).data("deal-interest") === 1; // Check if it's already interested
-                const actionType = isInterested ? "uninterest" : "interest"; // Toggle between interest and uninterest
-                const icon = $(this);
+    // Event listeners for buttons
+    startButton.addEventListener('click', () => {
+      audioChunks = [];
+      mediaRecorder.start();
+      startButton.disabled = true;
+      stopButton.disabled = false;
+    });
 
-                $.ajax({
-                    url: "{% url 'handle_deal_action' %}",  // Replace with your actual URL
-                    method: "POST",
-                    data: {
-                        deal_id: dealId,
-                        DealAction_id: dealActionId,
-                        action_type: actionType
-                    },
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                    success: function(response) {
-                        console.log(response);
-                        if (response.success) {
-                            if (isInterested) {
-                                icon.css("color", "grey");
-                                icon.data("deal-interest", 0); // Update data attribute to uninterest state
-                            } else {
-                                icon.css("color", "orange");
-                                icon.data("deal-interest", 1); // Update data attribute to interest state
-                            }
-                        }
-                    }
-                });
-            });
+    stopButton.addEventListener('click', () => {
+      mediaRecorder.stop();
+    });
 
-            // Search functionality
-            $("#searchInput").on("keyup", function() {
-                const searchValue = $(this).val().toLowerCase();
-                $(".deal-card").filter(function() {
-                    const dealData = $(this).data("deal").toString().toLowerCase();
-                    $(this).toggle(dealData.includes(searchValue));
-                });
-            });
+    resetButton.addEventListener('click', () => {
+      audioElement.src = '';
+      resetButton.disabled = true;
+      uploadButton.disabled = true;
+      startButton.disabled = false;
+    });
+
+    uploadButton.addEventListener('click', () => {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recorded_audio.webm');
+
+      fetch('/DoctorCollection/upload_audio/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': getCSRFToken() // Add CSRF token
+        },
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('Audio uploaded successfully!');
+            resetButton.click();
+          } else {
+            alert('Failed to upload audio.');
+          }
         });
-    </script>
+    });
 
-    <script>
-        $(document).ready(function() {
-            $(".show-more-toggle").on("click", function() {
-                const details = $(this).siblings(".deal-details");
-                const isExpanded = details.css("max-height") !== "0px";
-
-                if (isExpanded) {
-                    details.css("max-height", "0");
-                    $(this).text("Show More");
-                } else {
-                    details.css("max-height", details[0].scrollHeight + "px");
-                    $(this).text("Show Less");
-                }
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Update icon colors based on DealActionType value on page load
-            $(".like-icon").each(function() {
-                const actionType = $(this).data("deal-like");
-                if (actionType === 1) {
-                    $(this).css("color", "red");  // Set color to red if action type is 1 or higher
-                }
-            });
-    
-            $(".interest-icon").each(function() {
-                const actionType = $(this).data("deal-interest");
-                if (actionType === 1) {
-                    $(this).css("color", "orange");  // Set color to orange if action type is 2
-                }
-            });
-        });
-    </script>
-    
+    // Helper function to get CSRF token
+    function getCSRFToken() {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        if (cookie.trim().startsWith('csrftoken=')) {
+          return cookie.trim().split('=')[1];
+        }
+      }
+      return '';
+    }
+  </script>
 </body>
 </html>

@@ -5641,9 +5641,29 @@ def daycarepayment(request):
         return redirect('get_unpaid_bills')
         #return HttpResponse("else part of 5525")        
 
+####################Recording
+def Recorder(request):
+    return render(request,'Doctor/demo.html')
+
+def upload_audio(request):
+    if request.method == 'POST' and request.FILES.get('audio'):
+        audio_file = request.FILES['audio']
+        directory = 'staticfiles/assets/UploadedAudio'
 
 
+        # Ensure the 'uploads' directory exists
+        os.makedirs(directory, exist_ok=True)
+        audio_path = os.path.join(directory, audio_file.name)
 
-    
+        with open(audio_path, 'wb') as f:
+            for chunk in audio_file.chunks():
+                f.write(chunk)
 
+        return JsonResponse({'message': 'Audio uploaded successfully!'}, status=200)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def showAudio(request):
+    return render(request,'Doctor/showAudio.html')
 

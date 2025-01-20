@@ -1,0 +1,65 @@
+{% load static %}
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Player</title>
+  <link rel="manifest" href="{% static 'assets/manifest.json' %}"> 
+  <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}">
+  <style>
+    .audio-container {
+      margin: 20px;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Audio Player</h1>
+  <div class="audio-container">
+    <!-- Set the audio file URL directly -->
+    <audio id="audio-player" controls>
+      <source src="https://drishtis.app/DoctorCollection/static/assets/UploadedAudio/recorded_audio.webm" type="audio/webm">
+      Your browser does not support the audio element.
+    </audio>
+    <br>
+    <!-- Direct download link for the audio file -->
+    <a id="download-link" href="https://drishtis.app/DoctorCollection/static/assets/UploadedAudio/recorded_audio.webm" download="example_audio.webm">
+      Download Audio
+    </a>
+  </div>
+
+  <script>
+    const audioPlayer = document.getElementById('audio-player');
+    const downloadLink = document.getElementById('download-link');
+
+    // Add event listeners to control audio behavior (if needed)
+    document.getElementById('audio-player').addEventListener('ended', () => {
+      console.log('Audio has finished playing.');
+    });
+
+    // Example: Start, stop, or manipulate the audio dynamically
+    function playAudio() {
+      audioPlayer.play();
+    }
+
+    function pauseAudio() {
+      audioPlayer.pause();
+    }
+
+    function restartAudio() {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play();
+    }
+  </script>
+</body>
+</html>
