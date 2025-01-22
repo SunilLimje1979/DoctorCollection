@@ -1304,8 +1304,18 @@ def fetch_data(request):
                 api_para={"consultation_id":appointment['consultation_id']}
                 consult_response=requests.post(consultation_url,json=api_para)
                 consult_data=(consult_response.json().get("message_data"))[0]
-                # # print(consult_data['consultation_fees'])
-                appointment['consult_fee']= float(consult_data['consultation_fees'])
+                print(consult_data)
+                appointment['patient_status']=consult_data['patient_status']
+                if(consult_data['patient_status']==2):
+                    bill_res=requests.post('https://drishtis.app/drishti_medicalrecord/api/get_bill_header_details/',json={"consultation_id":appointment['consultation_id']})
+                    if(bill_res.json().get('message_code')==1000):
+                        print(bill_res.text)
+                        appointment['consult_fee']=bill_res.json().get('message_data')[0].get('total_bill_amount')
+                    else:
+                        appointment['consult_fee']= float(consult_data['consultation_fees'])
+                else:
+                    # # print(consult_data['consultation_fees'])
+                    appointment['consult_fee']= float(consult_data['consultation_fees'])
                  
             
         for detail in data:
@@ -1313,7 +1323,8 @@ def fetch_data(request):
                 formatted_date=datetime.datetime.fromtimestamp(detail['createdon']).strftime( "%d-%m-%Y")
                 # print(formatted_date)
                 detail['createdon']=formatted_date
-        # # print('updated',data)
+        print('updated',data)
+        #data=[{'appointment_id': 28, 'appointment_datetime': 1737460083, 'appointment_token': 1, 'appointment_name': 'Aditya Mane', 'appointment_mobileno': '9026745890', 'appointment_gender': 0, 'appointment_status': 4, 'createdby': None, 'createdon': '21-01-2025', 'lastmodifiedon': None, 'lastmodifiedby': None, 'isdeleted': 0, 'deletedby': None, 'age': 25, 'doctor_id': 1, 'consultation_id': 24, 'patient_status': 2, 'consult_fee': 2040.0}, {'appointment_id': 29, 'appointment_datetime': 1737463901, 'appointment_token': 1, 'appointment_name': 'suraj roy', 'appointment_mobileno': '9012563489', 'appointment_gender': 0, 'appointment_status': 4, 'createdby': None, 'createdon': '21-01-2025', 'lastmodifiedon': None, 'lastmodifiedby': None, 'isdeleted': 0, 'deletedby': None, 'age': 24, 'doctor_id': 1, 'consultation_id': 25, 'patient_status': 1, 'consult_fee': 450.0}]
         return JsonResponse(data, safe=False) 
     
     return HttpResponse('hi')
@@ -2005,7 +2016,7 @@ def Consultation(request,id):
                 api_data = {
                     "Doctor_Id":request.session["doctor_id"],
                     "Patient_Id":patient_id,
-                    "Patient_Status":patient_status,
+                    "patient_status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
                     "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
@@ -2067,7 +2078,7 @@ def Consultation(request,id):
                 api_data = {
                     "Doctor_Id":request.session["doctor_id"],
                     "Patient_Id":patient_id,
-                    "Patient_Status":patient_status,
+                    "patient_status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
                     "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
@@ -4451,7 +4462,7 @@ def add_daycare(request):
             # # print(vital_response.text)
             vital_data=vital_response.json().get('message_data')
             patient_id= vital_data.get("patient_id")
-            patient_status= vital_data.get("patient_status")
+            patient_status= 2 # for Daycare
             # print("id and status",patient_id,patient_status)
             # dt = request.POST["followup_datetime"]
             # # print(dt)
@@ -4778,7 +4789,7 @@ def add_daycare(request):
                 api_data = {
                     "Doctor_Id":request.session["doctor_id"],
                     "Patient_Id":patient_id,
-                    "Patient_Status":patient_status,
+                    "patient_status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
                     "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
@@ -4798,7 +4809,7 @@ def add_daycare(request):
                 # url="http://localhost:8000/api/update_patientvitals_by_appointment_id/"
                 url="https://drishtis.app/drishti_medicalrecord/api/update_patientvitals_by_appointment_id/"
                 response=requests.post(url,json=api_data)
-                # print(response.text)
+                print(response.text)
 
                 url = f"{reverse('add_daycare')}?appointment_id={request.session['appointment_id']}"
                 return redirect(url)
@@ -4841,7 +4852,7 @@ def add_daycare(request):
                 api_data = {
                     "Doctor_Id":request.session["doctor_id"],
                     "Patient_Id":patient_id,
-                    "Patient_Status":patient_status,
+                    "patient_status":patient_status,
                     "Consultation_DateTime":request.POST["Consultation_DateTime"],
                     "patient_heartratepluse":request.POST['heart_rate'] if request.POST.get('heart_rate') else 0,
                     "patient_bpsystolic": request.POST['bp_s'] if request.POST.get('bp_s') else 0,
@@ -5360,7 +5371,7 @@ def daycare_finalize(request):
     patient_charges_data={
             "doctor_id": request.session['doctor_id'],
             "patient_id": consult_data['patient_id'],
-            "patient_status": 1,
+            "patient_status": 2,# patient added to daycare
             "charges_referencetype": 1,
             "charges_reference_id": 3,
             "charges_type": 1,

@@ -197,7 +197,7 @@
         </script>
     {% endif %}
 
-    <div class="d-flex justify-content-between" style="margin-top: 24%;">
+    <div class="d-flex justify-content-between" style="margin-top: 21%;">
         <button class="btn btn-primary filter-btn" data-status="1" style="margin-left:1%;margin-right: 1%;background-color:  #008373; border-color: #008373;" >Uncompleted</button>
         <button class="btn btn-primary filter-btn" data-status="2" style="background-color:  #008373; border-color: #008373;" >Partially Completed</button>
         <button class="btn btn-primary filter-btn" data-status="3" style="margin-right: 1%;margin-left: 1%;background-color:  #008373; border-color: #008373;" >Completed</button>
@@ -230,6 +230,14 @@
                         Unpaid: <span id="unpaidAmount"></span>
                     </p>
                 </div>
+            </div>
+            <div class="row" id="daycare-row"> 
+                <!-- <div class="col-md-12">
+                    <p>
+                        OPD: <span id="OPDAmount"></span>&nbsp;&nbsp;
+                        DayCare: <span id="DayCareAmount"></span>
+                    </p>
+                </div> -->
             </div>
         </div>
     </div>
@@ -467,6 +475,80 @@
 
 <script>
     // Function to calculate and update appointment and collection statistics
+    // function updateStats(data) {
+    //     const totalAppointments = data.length;
+    //     const completedAppointments = data.filter(appointment => appointment.appointment_status === 3).length;
+    //     const paidAppointments = data.filter(appointment => appointment.appointment_status === 4).length;
+    //     const pendingAppointments = data.filter(appointment => appointment.appointment_status === 1).length;
+    //     const partiallyCompletedAppointments = data.filter(appointment => appointment.appointment_status === 2).length;
+
+    //     // Update appointment statistics in the HTML
+    //     document.getElementById('totalAppointments').textContent = totalAppointments;
+    //     document.getElementById('completedAppointments').textContent = completedAppointments;
+    //     document.getElementById('paidAppointments').textContent = paidAppointments;
+    //     document.getElementById('pendingAppointments').textContent = pendingAppointments;
+    //     document.getElementById('partiallyCompletedAppointments').textContent = partiallyCompletedAppointments;
+    //     const role = "{{ role }}";
+    //     if (role === 'Doctor') {
+    //         // Calculate collection-related statistics
+    //             const totalAmount = data.reduce((total, appointment) => {
+    //                 if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
+    //                     return total + parseFloat(appointment.consult_fee);
+    //                 } else {
+    //                     return total;
+    //                 }
+    //             }, 0);
+
+    //             const paidAmount = data.reduce((total, appointment) => {
+    //                 if (appointment.appointment_status === 4) {
+    //                     return total + parseFloat(appointment.consult_fee);
+    //                 } else {
+    //                     return total;
+    //                 }
+    //             }, 0);
+
+    //             const unpaidAmount = data.reduce((total, appointment) => {
+    //                 if (appointment.appointment_status === 3) {
+    //                     return total + parseFloat(appointment.consult_fee);
+    //                 } else {
+    //                     return total;
+    //                 }
+    //             }, 0);
+
+    //             const OPDAmount = data.reduce((total, appointment) => {
+    //                 if (appointment.patient_status === 1) {
+    //                     return total + parseFloat(appointment.consult_fee);
+    //                 } else {
+    //                     return total;
+    //                 }
+    //             }, 0);
+
+    //             const DayCareAmount = data.reduce((total, appointment) => {
+    //                 if (appointment.patient_status === 2) {
+    //                     return total + parseFloat(appointment.consult_fee);
+    //                 } else {
+    //                     return total;
+    //                 }
+    //             }, 0);
+
+    //             // Update collection statistics in the HTML
+    //             document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
+    //             document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
+    //             document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
+    //             document.getElementById('OPDAmount').textContent = OPDAmount.toFixed(2); // Display OPD amount
+    //             document.getElementById('DayCareAmount').textContent = DayCareAmount.toFixed(2); // Display Daycare amount
+    //             // Hide the specific div (with id 'daycare-row') if DayCareAmount is 0 or 0.0
+    //             if (DayCareAmount === 0 || DayCareAmount === 0.0) {
+    //                 const daycareDiv = document.getElementById('daycare-row'); // Target the specific div by id
+    //                 daycareDiv.style.display = 'none'; // Hide the div
+    //             }else{
+    //                 const daycareDiv = document.getElementById('daycare-row'); // Target the specific div by id
+    //                 daycareDiv.style.display = 'flex'; // Hide the div
+    //             }
+
+    //     }
+    // }
+    // Function to calculate and update appointment and collection statistics
     function updateStats(data) {
         const totalAppointments = data.length;
         const completedAppointments = data.filter(appointment => appointment.appointment_status === 3).length;
@@ -480,69 +562,107 @@
         document.getElementById('paidAppointments').textContent = paidAppointments;
         document.getElementById('pendingAppointments').textContent = pendingAppointments;
         document.getElementById('partiallyCompletedAppointments').textContent = partiallyCompletedAppointments;
+
         const role = "{{ role }}";
         if (role === 'Doctor') {
-            // Calculate collection-related statistics
-                const totalAmount = data.reduce((total, appointment) => {
-                    if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
-                        return total + parseFloat(appointment.consult_fee);
-                    } else {
-                        return total;
-                    }
-                }, 0);
+            // Calculate Paid and Unpaid amounts for OPD and DayCare
+            const opdPaid = data.reduce((total, appointment) => {
+                if (appointment.patient_status === 1 && appointment.appointment_status === 4) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
 
-                const paidAmount = data.reduce((total, appointment) => {
-                    if (appointment.appointment_status === 4) {
-                        return total + parseFloat(appointment.consult_fee);
-                    } else {
-                        return total;
-                    }
-                }, 0);
+        //Calculate collection-related statistics
+            const totalAmount = data.reduce((total, appointment) => {
+                if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
 
-                const unpaidAmount = data.reduce((total, appointment) => {
-                    if (appointment.appointment_status === 3) {
-                        return total + parseFloat(appointment.consult_fee);
-                    } else {
-                        return total;
-                    }
-                }, 0);
+            const paidAmount = data.reduce((total, appointment) => {
+                if (appointment.appointment_status === 4) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
 
-                // Update collection statistics in the HTML
-                document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
-                document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
-                document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
+            const unpaidAmount = data.reduce((total, appointment) => {
+                if (appointment.appointment_status === 3) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
+            const opdUnpaid = data.reduce((total, appointment) => {
+                if (appointment.patient_status === 1 && appointment.appointment_status === 3) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
 
+            const daycarePaid = data.reduce((total, appointment) => {
+                if (appointment.patient_status === 2 && appointment.appointment_status === 4) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
+
+            const daycareUnpaid = data.reduce((total, appointment) => {
+                if (appointment.patient_status === 2 && appointment.appointment_status === 3) {
+                    return total + parseFloat(appointment.consult_fee);
+                } else {
+                    return total;
+                }
+            }, 0);
+
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
+            document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
+            document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
+            // Update the table dynamically
+            const tableHTML = `
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">Services</th>
+                            <th>Paid</th>
+                            <th>Unpaid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;">OPD</td>
+                            <td>${opdPaid.toFixed(2)}</td>
+                            <td>${opdUnpaid.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">DayCare</td>
+                            <td>${daycarePaid.toFixed(2)}</td>
+                            <td>${daycareUnpaid.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            // Insert the table into the targeted div
+            const tableContainer = document.getElementById('daycare-row');
+            tableContainer.innerHTML = tableHTML;
+
+            // Show or hide the daycare-row div based on DayCare amounts
+            if (daycarePaid === 0 && daycareUnpaid === 0) {
+                tableContainer.style.display = 'none'; // Hide the div if both amounts are zero
+            } else {
+                tableContainer.style.display = 'block'; // Show the div
+            }
         }
-        // // Calculate collection-related statistics
-        // const totalAmount = data.reduce((total, appointment) => {
-        //     if (appointment.appointment_status === 3 || appointment.appointment_status === 4) {
-        //         return total + parseFloat(appointment.consult_fee);
-        //     } else {
-        //         return total;
-        //     }
-        // }, 0);
-
-        // const paidAmount = data.reduce((total, appointment) => {
-        //     if (appointment.appointment_status === 4) {
-        //         return total + parseFloat(appointment.consult_fee);
-        //     } else {
-        //         return total;
-        //     }
-        // }, 0);
-
-        // const unpaidAmount = data.reduce((total, appointment) => {
-        //     if (appointment.appointment_status === 3) {
-        //         return total + parseFloat(appointment.consult_fee);
-        //     } else {
-        //         return total;
-        //     }
-        // }, 0);
-
-        // // Update collection statistics in the HTML
-        // document.getElementById('totalAmount').textContent = totalAmount.toFixed(2); // Display total amount
-        // document.getElementById('paidAmount').textContent = paidAmount.toFixed(2); // Display paid amount
-        // document.getElementById('unpaidAmount').textContent = unpaidAmount.toFixed(2); // Display unpaid amount
     }
+
 
     // Function to fetch data based on selected date
     function fetchData(selectedDate) {
