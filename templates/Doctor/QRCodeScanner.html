@@ -1,0 +1,232 @@
+{% comment %} <!-- {% load static %}
+{% load pwa %} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <!-- <link rel="manifest" href="{% static 'assets/manifest.json' %}">  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <!-- <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+        #reader {
+            width: 400px;
+            height: 400px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #result {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        .button-group button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+        #url {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <div id="reader"></div>
+    <div id="result">
+        <p>Scanned QR Code URL:</p>
+        <a id="url" target="_blank"></a>
+        <div class="button-group">
+            <button id="copy-btn" style="display: none;">Copy URL</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Ensure the Html5Qrcode library is available
+            if (typeof Html5Qrcode === "undefined") {
+                alert("QR Code scanner library failed to load. Please check your internet connection.");
+                return;
+            }
+
+            // Initialize the QR code scanner
+            const qrCodeReader = new Html5Qrcode("reader");
+            const urlElement = document.getElementById("url");
+            const copyBtn = document.getElementById("copy-btn");
+
+            const onScanSuccess = (decodedText) => {
+                // Stop the scanner once a QR code is successfully scanned
+                qrCodeReader.stop().then(() => {
+                    urlElement.textContent = decodedText;
+                    urlElement.href = decodedText;
+                    copyBtn.style.display = "inline-block";
+                });
+            };
+
+            const onScanFailure = (error) => {
+                console.warn(`QR Code Scan Error: ${error}`);
+            };
+
+            // Start the QR code scanner
+            qrCodeReader.start(
+                { facingMode: "environment" }, // Use the rear camera on mobile devices
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                onScanSuccess,
+                onScanFailure
+            );
+
+            // Copy the URL to the clipboard
+            copyBtn.addEventListener("click", () => {
+                navigator.clipboard.writeText(urlElement.textContent).then(() => {
+                    alert("URL copied to clipboard!");
+                });
+            });
+        });
+    </script>
+</body>
+</html> {% endcomment %}
+<!-- {% load static %}
+{% load pwa %} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <!-- <link rel="manifest" href="{% static 'assets/manifest.json' %}">  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <!-- <link rel="shortcut icon" href="{% static 'assets/img/OPDLogo.png' %}"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+        #reader {
+            width: 90vw; /* Make the scanner width responsive */
+            height: 90vw; /* Ensure height matches width for a square aspect ratio */
+            max-width: 500px; /* Cap the size on larger screens */
+            max-height: 500px; /* Cap the height to match the max width */
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #result {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        .button-group button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+        #url {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <div id="reader"></div>
+    <div id="result">
+        <p>Scanned QR Code URL:</p>
+        <a id="url" target="_blank"></a>
+        <div class="button-group">
+            <button id="copy-btn" style="display: none;">Copy URL</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Ensure the Html5Qrcode library is available
+            if (typeof Html5Qrcode === "undefined") {
+                alert("QR Code scanner library failed to load. Please check your internet connection.");
+                return;
+            }
+
+            // Initialize the QR code scanner
+            const qrCodeReader = new Html5Qrcode("reader");
+            const urlElement = document.getElementById("url");
+            const copyBtn = document.getElementById("copy-btn");
+
+            const onScanSuccess = (decodedText) => {
+                // Stop the scanner once a QR code is successfully scanned
+                qrCodeReader.stop().then(() => {
+                    urlElement.textContent = decodedText;
+                    urlElement.href = decodedText;
+                    copyBtn.style.display = "inline-block";
+                });
+            };
+
+            const onScanFailure = (error) => {
+                console.warn(`QR Code Scan Error: ${error}`);
+            };
+
+            // Start the QR code scanner
+            qrCodeReader.start(
+                { facingMode: "environment" }, // Use the rear camera on mobile devices
+                {
+                    fps: 10,
+                    qrbox: { width: 400, height: 400 } // Increase the scanner box size
+                },
+                onScanSuccess,
+                onScanFailure
+            );
+
+            // Copy the URL to the clipboard
+            copyBtn.addEventListener("click", () => {
+                navigator.clipboard.writeText(urlElement.textContent).then(() => {
+                    alert("URL copied to clipboard!");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -4203,6 +4203,7 @@ def medical_certificate(request):
             print(request.POST)
             certificate_body = request.POST.get('certificate_body')
             print(certificate_body)
+            # return HttpResponse("4206")
             data = {
                 "patient_name": request.POST.get('patient_name', ''),
                 "patient_age": request.POST.get('patient_age', ''),
@@ -4216,6 +4217,8 @@ def medical_certificate(request):
                 "IssueCertificate_Type":request.POST.get('certificate_type', ''),
                 "IssueCertificate_body":certificate_body
             }
+            if(request.POST.get('system_patient_id')):
+                data['patient_id']= int(request.POST.get('system_patient_id'))
             if(request.POST.get('leave_Starton')):
                 data["leave_Starton"]= request.POST.get('leave_Starton', '')
             if(request.POST.get('leave_Endon')):
@@ -5678,3 +5681,5 @@ def upload_audio(request):
 def showAudio(request):
     return render(request,'Doctor/showAudio.html')
 
+def QRCodeScanner(request):
+    return render(request,'Doctor/QRCodeScanner.html')

@@ -96,4 +96,5 @@ urlpatterns = [
     path('upload_audio/',upload_audio,name='upload_audio'),
     path('Recorder/',Recorder,name='Recorder'),
     path('showAudio/',showAudio,name='showAudio'),
+    path('QRscanner/',QRCodeScanner,name='QRscanner'),
 ]
