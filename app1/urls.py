@@ -97,4 +97,6 @@ urlpatterns = [
     path('Recorder/',Recorder,name='Recorder'),
     path('showAudio/',showAudio,name='showAudio'),
     path('QRscanner/',QRCodeScanner,name='QRscanner'),
+    path('masters/' , masters , name='masters'),
+    path("bookappointment_onthe_spot/<int:id>",bookappointment_onthe_spot,name='bookappointment_onthe_spot'),
 ]
