@@ -3408,7 +3408,7 @@ def all_patient(request):
                     else:
                         if(data['patient_mobileno']==all_data[i]['patient_mobileno']):
                             print(data)
-                            data['outstanding']+= all_data[i]['outstanding'] if all_data[i]['outstanding'] else 0
+                            data['outstanding'] = (data['outstanding'] if data['outstanding'] else 0) + (all_data[i]['outstanding'] if all_data[i]['outstanding'] else 0)
                             family_members.append(all_data[i])
             if(family_members):
                 data['family_members']=family_members
