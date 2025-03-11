@@ -316,7 +316,7 @@
         crossorigin="anonymous"></script>
     
     
-    <script>
+    {% comment %} <script>
          
         document.getElementById('searchInput').addEventListener('input', function () {
             const searchValue = this.value.toLowerCase().trim();
@@ -342,9 +342,59 @@
                 }
             });
         });
-        
-        
-    </script>
+    </script> {% endcomment %}
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase().trim();
+            const searchWords = searchValue.split(/\s+/); // Split input into words
+            const patientCards = document.querySelectorAll('.patient-card');
+    
+            patientCards.forEach(function (card) {
+                const nameElement = card.querySelector('.patientname');  // Main Patient Name
+                const mobileElement = card.querySelector('.patient-info');  // Mobile Number
+                const familySection = card.nextElementSibling; // Family members section (collapse div)
+                const familyMemberElements = familySection ? familySection.querySelectorAll('.patient-label') : []; // Family Member Names
+    
+                const nameText = nameElement ? nameElement.textContent.toLowerCase() : '';  
+                const mobileText = mobileElement ? mobileElement.textContent.toLowerCase() : '';
+                let familyMemberText = '';
+    
+                // Collect all family member names inside a single string
+                familyMemberElements.forEach(member => {
+                    familyMemberText += member.textContent.toLowerCase() + ' ';
+                });
+    
+                // Check if any search word matches name, mobile, or family member names
+                const matchesSearch = searchWords.every(word => 
+                    nameText.includes(word) || 
+                    mobileText.includes(word) || 
+                    familyMemberText.includes(word)
+                );
+    
+                if (matchesSearch) {
+                    card.classList.remove('d-none'); // Show main patient card
+                } else {
+                    card.classList.add('d-none'); // Hide non-matching cards
+                }
+            });
+    
+            // **Fix Bootstrap Collapse Toggle Issue**
+            document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(toggle => {
+                let targetId = toggle.getAttribute('data-bs-target');
+                let collapseElement = document.querySelector(targetId);
+                
+                if (collapseElement) {
+                    let bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
+                    
+                    // Reset collapse state if search is cleared
+                    if (!searchValue) {
+                        bsCollapse.hide();
+                    }
+                }
+            });
+        });
+    </script> 
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
